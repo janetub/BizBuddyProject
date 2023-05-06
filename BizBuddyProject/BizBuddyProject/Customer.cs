@@ -9,7 +9,7 @@ namespace BizBuddyProject.Classes
 {
     public class Customer
     {
-        private int id;
+        private Guid id = Guid.NewGuid();
         private string firstName;
         private string middleName;
         private string lastName;
@@ -17,8 +17,7 @@ namespace BizBuddyProject.Classes
         
         public int ID
         {
-            get => this.id; 
-            set => this.id = value;
+            get => this.id;
         }
 
         public string FirstName
@@ -37,6 +36,43 @@ namespace BizBuddyProject.Classes
         {
             get => this.lastName;
             set => this.lastName = value;
+        }
+
+        public int AddContact(string type, string contact)
+        {
+            int flag = 0;
+            if(this.contacts.ContainsKey(type))
+            {
+                contacts[type].Add(contact);
+                flag = 1;
+            }
+            else
+            {
+                contacts.Add(type, new List<string> {contact});
+                flag = 1;
+            }
+            return flag;
+        }
+
+        public int RemoveContact(string type, string contact)
+        {
+            int flag = 0;
+            if(this.contacts.ContainsKey(type))
+            {
+                contacts[type].Remove(contact);
+                flag = 1;
+            }
+            return flag;
+        }
+
+        public int EditContact(string type, string oldContact, string newContact)
+        {
+            int index = contacts[type].IndexOf(oldContact);
+            if(index != -1)
+            {
+                contacts[type][index] = newContact;
+            }
+            return (index != -1);
         }
     }
 }
