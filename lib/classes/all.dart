@@ -1,1 +1,1 @@
-export 'customer.dart';
+export 'person.dart';

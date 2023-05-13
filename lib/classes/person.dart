@@ -1,31 +1,15 @@
-import 'dart:collection';
 
-class Customer {
-  String id ;
-  String firstName;
-  String middleName;
-  String lastName;
+class Person {
+  final String _id = idGenerator();
+  String firstName = '';
+  String? middleName;
+  String lastName = '';
   Map<String, List<String>> contacts = {};
 
-  String get ID => id;
+  String get id => _id;
 
-  String getFirstName() => firstName;
 
-  void setFirstName(String value) {
-    firstName = value;
-  }
-
-  String getMiddleName() => middleName;
-
-  void setMiddleName(String value) {
-    middleName = value;
-  }
-
-  String getLastName() => lastName;
-
-  void setLastName(String value) {
-    lastName = value;
-  }
+  Person(this.firstName, String this.middleName, this.lastName);
 
   int addContact(String type, String contact) {
     int flag = 0;
@@ -56,15 +40,7 @@ class Customer {
     return (index != -1) ? 1 : 0;
   }
 
-  Customer(String firstName, String middleName, String lastName)
-  {
-    this.id = idGenerator();
-    this.firstName = firstName;
-    this.middleName = middleName;
-    this.lastName = lastName;
-  }
-
-  String idGenerator() {
+  static String idGenerator() {
     final now = DateTime.now();
     return now.microsecondsSinceEpoch.toString();
   }
