@@ -16,6 +16,7 @@ class MainCanvas extends StatelessWidget
         drawer: NavBar(),
         appBar: AppBar(
           backgroundColor: Colors.black54,
+          centerTitle: true,
           title: const Text('BizBuddy',),
         ),
         body: Container(
