@@ -1,5 +1,6 @@
 
-class Person {
+class Person
+{
   final String _id = idGenerator();
   String firstName = '';
   String? middleName;
