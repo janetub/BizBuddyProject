@@ -30,13 +30,27 @@ class NavBar extends StatelessWidget {
             //     width: 35.0,
             //     height: 35.0,
             // ),
-            title: const Text('Cart'),
+            title: const Text('Place Orders'),
             onTap: () {},
           ),
-          const Divider(),
           ListTile(
-            leading: const Icon(Icons.shopping_cart),
-            title: const Text('Button2'),
+            leading: const Icon(Icons.assignment_outlined),
+            title: const Text('Order Status'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.inventory_2_outlined),
+            title: const Text('Inventory'),
+            onTap: () {},
+          ),
+          const Divider(
+            thickness: .8,
+            indent: 10,
+            endIndent: 10,
+          ),
+          ListTile(
+            leading: const Icon(Icons.notifications),
+            title: const Text('Notifications'),
             onTap: () {},
             trailing: ClipOval(
               child: Container(
@@ -56,8 +70,33 @@ class NavBar extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.shopping_cart_sharp),
-            title: const Text('Button3'),
+            leading: const Icon(Icons.show_chart),
+            title: const Text('Analytics'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.people_alt_outlined),
+            title: const Text('Customer/Employees'),
+            onTap: () {},
+          ),
+          const Divider(
+            thickness: .8,
+            indent: 10,
+            endIndent: 10,
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: const Text('FAQ'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.alternate_email),
+            title: const Text('Contact Us'),
             onTap: () {},
           ),
         ],

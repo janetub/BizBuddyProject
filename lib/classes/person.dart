@@ -2,9 +2,9 @@
 class Person
 {
   final String _id = idGenerator();
-  String firstName = '';
+  String firstName;
   String? middleName;
-  String lastName = '';
+  String lastName;
   Map<String, List<String>> contacts = {};
 
   String get id => _id;
