@@ -1,2 +1,2 @@
-export 'Person.dart';
-export 'Item.dart';
+export 'person.dart';
+export 'item.dart';

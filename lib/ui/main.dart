@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../classes/all.dart';
-import 'NavBar.dart';
+import 'sidebar.dart';
 
 void main() => runApp(const MainCanvas());
 
@@ -13,7 +13,7 @@ class MainCanvas extends StatelessWidget
   {
     return MaterialApp(
       home: Scaffold(
-        drawer: NavBar(),
+        drawer: Sidebar(),
         appBar: AppBar(
           backgroundColor: Colors.black54,
           centerTitle: true,

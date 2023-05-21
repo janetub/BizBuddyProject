@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'navigation_manager.dart';
 
-class NavBar extends StatelessWidget {
-  NavBar({Key? key}) : super(key: key);
-
-    final SampleNum sampleNum = SampleNum(); // reference cannot be changed
+class Sidebar extends StatelessWidget {
+  const Sidebar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,17 +31,26 @@ class NavBar extends StatelessWidget {
             //     height: 35.0,
             // ),
             title: const Text('Place Orders'),
-            onTap: () {},
+            onTap: () {
+              BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.placeOrderPageClickedEvent);
+              Navigator.pop(context);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.assignment_outlined),
             title: const Text('Order Status'),
-            onTap: () {},
+            onTap: () {
+              BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.orderStatusPageClickedEvent);
+              Navigator.pop(context);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.inventory_2_outlined),
             title: const Text('Inventory'),
-            onTap: () {},
+            onTap: () {
+              BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.inventoryPageClickedEvent);
+              Navigator.pop(context);
+            },
           ),
           const Divider(
             thickness: .8,
@@ -49,7 +58,7 @@ class NavBar extends StatelessWidget {
             endIndent: 10,
           ),
           ListTile(
-            leading: const Icon(Icons.notifications),
+            leading: const Icon(Icons.notifications_none),
             title: const Text('Notifications'),
             onTap: () {},
             trailing: ClipOval(
@@ -57,15 +66,15 @@ class NavBar extends StatelessWidget {
                 color: Colors.red,
                 width: 20,
                 height: 20,
-                child: Center(
-                  child: Text(
-                    '${sampleNum.num}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
+                // child: Center(
+                //   child: Text(
+                //     '${sampleNum.num}',
+                //     style: const TextStyle(
+                //       color: Colors.white,
+                //       fontSize: 12,
+                //     ),
+                //   ),
+                // ),
               ),
             ),
           ),
@@ -85,7 +94,7 @@ class NavBar extends StatelessWidget {
             endIndent: 10,
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
+            leading: const Icon(Icons.settings_outlined),
             title: const Text('Settings'),
             onTap: () {},
           ),
@@ -103,9 +112,4 @@ class NavBar extends StatelessWidget {
       ),
     );
   }
-}
-
-class SampleNum {
-  int num = 67;
-  int get number => num;
 }
