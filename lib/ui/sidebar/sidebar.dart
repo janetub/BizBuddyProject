@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'navigation_manager.dart';
+import '../pages/place_order.dart';
+import '../pages/order_status.dart';
+import '../pages/inventory_view.dart';
 
 class Sidebar extends StatelessWidget {
-  const Sidebar({Key? key}) : super(key: key);
+  final ValueChanged<Widget> onPageChanged;
+  const Sidebar({super.key, required this.onPageChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -14,25 +16,20 @@ class Sidebar extends StatelessWidget {
           const UserAccountsDrawerHeader(
             accountName: null,
             accountEmail: null,
-            decoration:  BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
-                    'images/BizBuddy_Header_zoomed.png',
+                  'images/BizBuddy_Header_zoomed.png',
                 ),
                 fit: BoxFit.cover,
-              )
+              ),
             ),
-            ),
+          ),
           ListTile(
             leading: const Icon(Icons.add_shopping_cart),
-            // Image.asset(
-            //     'images/cart.png',
-            //     width: 35.0,
-            //     height: 35.0,
-            // ),
             title: const Text('Place Orders'),
             onTap: () {
-              BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.placeOrderPageClickedEvent);
+              onPageChanged(PlaceOrderPage());
               Navigator.pop(context);
             },
           ),
@@ -40,16 +37,16 @@ class Sidebar extends StatelessWidget {
             leading: const Icon(Icons.assignment_outlined),
             title: const Text('Order Status'),
             onTap: () {
-              BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.orderStatusPageClickedEvent);
-              Navigator.pop(context);
+                  onPageChanged(OrderStatusPage());
+                  Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.inventory_2_outlined),
             title: const Text('Inventory'),
             onTap: () {
-              BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.inventoryPageClickedEvent);
-              Navigator.pop(context);
+                  onPageChanged(InventoryPage());
+                  Navigator.pop(context);
             },
           ),
           const Divider(
@@ -66,15 +63,6 @@ class Sidebar extends StatelessWidget {
                 color: Colors.red,
                 width: 20,
                 height: 20,
-                // child: Center(
-                //   child: Text(
-                //     '${sampleNum.num}',
-                //     style: const TextStyle(
-                //       color: Colors.white,
-                //       fontSize: 12,
-                //     ),
-                //   ),
-                // ),
               ),
             ),
           ),

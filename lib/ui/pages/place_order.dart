@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import '../navigation_manager.dart';
+import 'package:flutter/material.dart';
 
-class PlaceOrderPage extends StatelessWidget with NavigationStates
+class PlaceOrderPage extends StatelessWidget
 {
   PlaceOrderPage({super.key});
 
@@ -11,7 +10,11 @@ class PlaceOrderPage extends StatelessWidget with NavigationStates
     return const Center(
       child: Text(
         'Ready to sell?\nStart adding products!',
-        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28),
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.grey,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

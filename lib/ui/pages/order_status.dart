@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import '../navigation_manager.dart';
+import 'package:flutter/material.dart';
 
-class OrderStatusPage extends StatelessWidget with NavigationStates
+class OrderStatusPage extends StatelessWidget
 {
   OrderStatusPage({super.key});
 
@@ -10,9 +9,51 @@ class OrderStatusPage extends StatelessWidget with NavigationStates
   {
     return const Center(
       child: Text(
-        'Orders placed will appear here.',
-        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28),
+        'No orders placed yet.',
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.grey,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }
 }
+
+/*
+class OrderStatusPage extends StatelessWidget with NavigationStates {
+  OrderStatusPage({super.key});
+
+  @override
+  _orderStatusPageState createState() => _orderStatusPageState();
+}
+
+class _orderStatusPagestate extends State<OrderStatusPage>
+{
+  List <Order> _orders = [];
+
+  @override
+  Widget build(BuildContext context)
+  {
+    return Center(
+      child: _orders.isEmpty
+        ? const Text(
+            'No orders placed yet.',
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.grey,
+          ),
+          textAlign: TextAlign.center,
+        )
+      : ListView.builder(
+        itemCount: _orders.length,
+        itemBuilder: (context, index)
+        {
+          final order = _orders[index];
+          // build order item
+        },
+      ),
+    );
+  }
+}
+*/

@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import '../navigation_manager.dart';
+import 'package:flutter/material.dart';
 
-class InventoryPage extends StatelessWidget with NavigationStates
+class InventoryPage extends StatelessWidget
 {
   InventoryPage({super.key});
 
@@ -10,8 +9,12 @@ class InventoryPage extends StatelessWidget with NavigationStates
   {
     return const Center(
       child: Text(
-        'Your stocks will appear here.',
-        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28),
+        "Inventory is empty.",
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.grey,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }
