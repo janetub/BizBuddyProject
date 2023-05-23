@@ -7,14 +7,28 @@ class PlaceOrderPage extends StatelessWidget
   @override
   Widget build(BuildContext context)
   {
-    return const Center(
-      child: Text(
-        'Ready to sell?\nStart adding products!',
-        style: TextStyle(
-          fontSize: 15,
-          color: Colors.grey,
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        backgroundColor: Colors.grey[400],
+        elevation: 100,
+        child: const Icon(
+          Icons.add,
+          color: Colors.black87,
+          size: 30,
         ),
-        textAlign: TextAlign.center,
+      ),
+      body: const Center(
+        child: Text(
+          'Ready to sell?\nStart adding products!',
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.grey,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

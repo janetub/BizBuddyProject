@@ -26,16 +26,16 @@ class _MainCanvasState extends State<MainCanvas>
     });
   }
 
-  void _onFabPressed()
-  {
-    if (_currentPage is PlaceOrderPage) {
-    // handle FAB press on PlaceOrderPage
-    } else if (_currentPage is OrderStatusPage) {
-    // handle FAB press on OrderStatusPage
-    } else if (_currentPage is InventoryPage) {
-    // handle FAB press on InventoryPage
-    }
-  }
+  // void _onFabPressed()
+  // {
+  //   if (_currentPage is PlaceOrderPage) {
+  //   // handle FAB press on PlaceOrderPage
+  //   } else if (_currentPage is OrderStatusPage) {
+  //   // handle FAB press on OrderStatusPage
+  //   } else if (_currentPage is InventoryPage) {
+  //   // handle FAB press on InventoryPage
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context)
@@ -52,16 +52,6 @@ class _MainCanvasState extends State<MainCanvas>
         ),
         body: Container(
           child: _currentPage,
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _onFabPressed,
-          backgroundColor: Colors.grey[400],
-          elevation: 100,
-          child: const Icon(
-            Icons.add,
-            color: Colors.black87,
-            size: 30,
-          ),
         ),
       ),
     );
