@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../pages/place_order.dart';
-import '../pages/order_status.dart';
-import '../pages/inventory_view.dart';
+import '../main_pages/place_order.dart';
+import '../main_pages/order_status.dart';
+import '../main_pages/inventory_view.dart';
 
 class Sidebar extends StatelessWidget {
   final ValueChanged<Widget> onPageChanged;

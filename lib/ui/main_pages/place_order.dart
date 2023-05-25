@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../input_forms/add_item.dart';
 
 class PlaceOrderPage extends StatelessWidget
 {
@@ -10,8 +11,19 @@ class PlaceOrderPage extends StatelessWidget
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your onPressed code here!
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            builder: (context) => AddItemPage(),
+          );
         },
+
         backgroundColor: Colors.grey[400],
         elevation: 100,
         child: const Icon(
@@ -21,13 +33,16 @@ class PlaceOrderPage extends StatelessWidget
         ),
       ),
       body: const Center(
-        child: Text(
+        child: Visibility(
+          visible: true,
+          child: Text(
           'Ready to sell?\nStart adding products!',
           style: TextStyle(
             fontSize: 15,
             color: Colors.grey,
           ),
           textAlign: TextAlign.center,
+        ),
         ),
       ),
     );
