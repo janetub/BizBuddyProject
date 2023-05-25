@@ -5,11 +5,11 @@ class Item {
   int _quantity = 1;
   DateTime? _dateBought;
   DateTime? _dateSold;
-  final Set<String>? _tags;
+  final Set<String> _tags = {};
   String description;
+  Set<Item> components = {};
 
-
-  Item(this.name, this._tags, this.description)
+  Item(this.name, this.description)
   {
     dateBought = DateTime.now();
   }
@@ -61,6 +61,8 @@ class Item {
 
   Set<String>? get tags => _tags;
 
-  void addTag(String tag) => _tags?.add(tag);
-  void removeTag(String tag) => _tags?.remove(tag);
+  void addTag(String tag) => _tags.add(tag);
+  void removeTag(String tag) => _tags.remove(tag);
+  void addComponent(Item component) => components.add(component);
+  void removeComponent(Item component) => components.remove(component);
 }

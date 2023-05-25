@@ -23,7 +23,7 @@ class _AddItemState extends State<AddItemPage>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -33,7 +33,7 @@ class _AddItemState extends State<AddItemPage>
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
-              SliverAppBar(
+              const SliverAppBar(
                 backgroundColor: Colors.transparent,
                 title: Text('Add a product'),
                 elevation: 0,
@@ -103,8 +103,8 @@ class _AddItemState extends State<AddItemPage>
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Customize the padding
-                                      title: Text('Cost'),
-                                      content: Text('Money spent to buy the product. Original cost.'),
+                                      title: const Text('Cost'),
+                                      content: const Text('Money spent to buy the product. Original cost.'),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
