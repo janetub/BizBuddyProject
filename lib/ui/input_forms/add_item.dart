@@ -452,13 +452,13 @@ class _AddItemState extends State<AddItemPage>
                               onPressed: _onCancel,
                               child: Row(
                                 children: [
-                                  Icon(Icons.close), // Use Icons.close for the "x" icon
+                                  Icon(Icons.close),
                                   SizedBox(width: 4),
                                   Text('Cancel'),
                                 ],
                               ),
                               style: TextButton.styleFrom(
-                                primary: Colors.red, // Set text color to red
+                                primary: Colors.red,
                               ),
                             ),
                             SizedBox(width: 8),
@@ -466,13 +466,13 @@ class _AddItemState extends State<AddItemPage>
                               onPressed: _onReset,
                               child: Row(
                                 children: [
-                                  Icon(Icons.refresh), // Replace with your imported logo
+                                  Icon(Icons.refresh),
                                   SizedBox(width: 4),
                                   Text('Reset'),
                                 ],
                               ),
                               style: TextButton.styleFrom(
-                                primary: Colors.grey, // Set text color to red
+                                primary: Colors.grey,,
                               ),
                             ),
                             SizedBox(width: 8),
@@ -532,9 +532,7 @@ class _AddItemState extends State<AddItemPage>
 
   void _onConfirm() {
     if (_formKey.currentState!.validate()) {
-      // Instantiate an Item object with the extracted text from the fields
-      // ...
-
+      // Instantiate
       Navigator.pop(context);
     }
   }
