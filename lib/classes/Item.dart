@@ -19,7 +19,17 @@ class Item {
     dateBought = DateTime.now();
   }
 
-  double get cost => _cost;
+  double get cost {
+    if (components.isEmpty) {
+      return _cost;
+    } else {
+      double totalCost = 0;
+      for (Item component in components) {
+        totalCost += component.cost;
+      }
+      return totalCost;
+    }
+  }
 
   set cost(double value) {
     if (value >= 0) {
@@ -70,7 +80,7 @@ class Item {
 
   double getProfit()
   {
-    return (_price - _cost) * _quantity;
+    return (price - cost) * _quantity;
   }
 
   bool isInStock()
