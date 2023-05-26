@@ -7,7 +7,7 @@ class Item {
   String name;
   double _cost = 0;
   double _price = 0;
-  int _quantity = 1;
+  int _quantity = 0;
   DateTime? _dateBought;
   DateTime? _dateSold;
   final Set<String> _tags = {};

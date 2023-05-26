@@ -189,7 +189,7 @@ class _AddItemState extends State<AddItemPage>
                               child: TextFormField(
                                 controller: _quantityController,
                                 decoration: InputDecoration(
-                                  labelText: 'Quantity',
+                                  labelText: 'Stocks',
                                   labelStyle: TextStyle(color: Colors.grey),
                                   fillColor: Colors.white,
                                   filled: true,
