@@ -19,6 +19,9 @@ class _AddItemState extends State<AddItemPage>
   final TextEditingController _descriptionController = TextEditingController();
   final List<String> _tags = [];
 
+  /*
+  * reaches beyond the notification/task bar
+   */
   @override
   Widget build(BuildContext context) {
     return Scaffold(

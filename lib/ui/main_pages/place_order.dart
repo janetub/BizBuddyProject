@@ -1,3 +1,6 @@
+/*
+*  rename to product catalog
+ */
 import 'package:flutter/material.dart';
 import '../input_forms/add_item.dart';
 

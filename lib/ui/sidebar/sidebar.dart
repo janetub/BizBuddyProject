@@ -27,7 +27,7 @@ class Sidebar extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.add_shopping_cart),
-            title: const Text('Place Orders'),
+            title: const Text('Product Catalog'),
             onTap: () {
               onPageChanged(PlaceOrderPage());
               Navigator.pop(context);

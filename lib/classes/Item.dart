@@ -1,3 +1,8 @@
+/*
+* This class represents an item in the inventory.
+* It can be a product to sell or a raw material.
+* Add attributes and methods to this class to manage the item’s availability and other details.
+ */
 class Item {
   String name;
   double _cost = 0;
@@ -34,19 +39,16 @@ class Item {
     }
   }
 
-  int get quantity => _quantity;
-
-  set quantity(int value) {
-    if (value >= 1) {
-      _quantity = value;
-    } else {
-      throw ArgumentError('Quantity must be at least 1.');
-    }
-  }
+  double calculateTotalValue() => _price * _quantity;
 
   DateTime? get dateBought => _dateBought;
 
-  set dateBought(DateTime? value) => dateBought = value;
+  set dateBought(DateTime? value) {
+    if (value != null && value.isAfter(DateTime.now())) {
+      throw ArgumentError('Date bought cannot be in the future.');
+    }
+    _dateBought = value;
+  }
 
   DateTime? get dateSold => _dateSold;
 
@@ -65,4 +67,26 @@ class Item {
   void removeTag(String tag) => _tags.remove(tag);
   void addComponent(Item component) => components.add(component);
   void removeComponent(Item component) => components.remove(component);
+
+  double getProfit()
+  {
+    return (_price - _cost) * _quantity;
+  }
+
+  bool isInStock()
+  {
+    return _quantity > 0;
+  }
+
+  void addQuantity(int quantityToAdd) {
+    _quantity += quantityToAdd;
+  }
+
+  void removeQuantity(int quantityToRemove) {
+    if ((_quantity - quantityToRemove) >= 0) {
+      _quantity -= quantityToRemove;
+    } else {
+      throw ArgumentError('Quantity cannot be negative.');
+    }
+  }
 }
