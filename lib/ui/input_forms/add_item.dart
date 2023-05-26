@@ -7,6 +7,15 @@ class AddItemPage extends StatefulWidget {
 }
 class _AddItemState extends State<AddItemPage>
 {
+  // TODO: review
+  final List<Item> _rawMaterials = [
+    Item('Flour', 'A powdery substance used for baking'),
+    Item('Sugar', 'A sweet crystalline substance'),
+    Item('Eggs', 'A nutritious food produced by chickens'),
+  ];
+  final Set<Item> _selectedRawMaterials = {};
+
+
   final _formKey = GlobalKey<FormState>();
   final _costInfoButton = GlobalKey<FormState>();
   final _priceInfoButton = GlobalKey<FormState>();
@@ -18,6 +27,7 @@ class _AddItemState extends State<AddItemPage>
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
   final List<String> _tags = [];
+
 
   /* FIXME:
   * reaches beyond the notification/task bar
@@ -345,6 +355,77 @@ class _AddItemState extends State<AddItemPage>
                           }).toList(),
                         ),
                         SizedBox(height: 10),
+                        DropdownButton<Item>(
+                          hint: Text('Select Raw Materials'),
+                          items: _rawMaterials.map((Item rawMaterial) {
+                            return DropdownMenuItem<Item>(
+                              value: rawMaterial,
+                              child: Text(rawMaterial.name),
+                            );
+                          }).toList(),
+                          onChanged: (Item? selectedRawMaterial) {
+                            if (selectedRawMaterial != null) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  int quantity = 0;
+
+                                  return AlertDialog(
+                                    title: Text('Set Quantity'),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text('Enter the quantity for ${selectedRawMaterial.name}:'),
+                                        SizedBox(height: 10),
+                                        TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          initialValue: quantity.toString(),
+                                          onChanged: (value) {
+                                            quantity = int.tryParse(value) ?? 0;
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            selectedRawMaterial.addQuantity(quantity);
+                                            _selectedRawMaterials.add(selectedRawMaterial);
+                                          });
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Confirm'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          },
+
+                        ),
+                        Wrap(
+                          spacing: 8.0,
+                          children: _selectedRawMaterials.map((rawMaterial) {
+                            return Chip(
+                              label: Text('${rawMaterial.name} (${rawMaterial.quantity})'),
+                              onDeleted: () {
+                                setState(() {
+                                  _selectedRawMaterials.remove(rawMaterial);
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+
+                        SizedBox(height: 10),
                         TextFormField(
                           controller: _descriptionController,
                           maxLines: null,
@@ -427,6 +508,7 @@ class _AddItemState extends State<AddItemPage>
       ),
     );
   }
+
 
   void onDeleteTag(String tag) {
     setState(() => _tags.remove(tag));
