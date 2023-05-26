@@ -10,7 +10,7 @@ class OrderStatusPage extends StatelessWidget
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your onPressed code here!
+          // TODO: add customizeable labels
         },
         backgroundColor: Colors.grey[400],
         elevation: 100,
