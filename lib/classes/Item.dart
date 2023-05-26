@@ -78,6 +78,8 @@ class Item {
   void addComponent(Item component) => components.add(component);
   void removeComponent(Item component) => components.remove(component);
 
+  int get quantity => _quantity;
+
   double getProfit()
   {
     return (price - cost) * _quantity;
