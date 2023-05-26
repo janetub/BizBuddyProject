@@ -15,11 +15,11 @@ class _AddItemState extends State<AddItemPage>
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _dateBoughtController = TextEditingController();
-  final TextEditingController _tagsController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _tagController = TextEditingController();
   final List<String> _tags = [];
 
-  /*
+  /* FIXME:
   * reaches beyond the notification/task bar
    */
   @override
@@ -79,7 +79,7 @@ class _AddItemState extends State<AddItemPage>
                           },
                         ),
                         SizedBox(height: 15),
-                        /*
+                        /* FIXME:
                         * Info button disappearing
                          */
                         TextFormField(
@@ -131,7 +131,7 @@ class _AddItemState extends State<AddItemPage>
                           },
                         ),
                         SizedBox(height: 15),
-                        /*
+                        /* FIXME:
                         * Info button disappearing
                          */
                         TextFormField(
@@ -267,11 +267,10 @@ class _AddItemState extends State<AddItemPage>
                           ],
                         ),
                         SizedBox(height: 10),
-                        /*
-                        *  can only be clicked, no other input/keyboard interface
+                        /* FIXME: can only be clicked, no other input/keyboard interface
                         * icon on right
                         * can be null
-                        */
+                         */
                         TextFormField(
                           controller: _dateBoughtController,
                           keyboardType: TextInputType.none,
@@ -304,14 +303,46 @@ class _AddItemState extends State<AddItemPage>
                             }
                           },
                         ),
-                        /*
-                        * tags?
-                         */
-                        Wrap(
-                          children: List<Widget>.generate(
-                            _tags.length,
-                                (int index) => TagTile(_tags[index], onDeleteTag),
+                        SizedBox(height: 10),
+                        // TODO: respond to enter key
+                        TextFormField(
+                          controller: _tagController,
+                          decoration: InputDecoration(
+                            labelText: 'Tags',
+                            labelStyle: TextStyle(color: Colors.grey),
+                            fillColor: Colors.white,
+                            filled: true,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () {
+                                setState(() {
+                                  final tag = _tagController.text.trim();
+                                  if (tag.isNotEmpty) {
+                                    _tags.add(tag);
+                                    _tagController.clear();
+                                  }
+                                });
+                              },
+                            ),
                           ),
+                        ),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          children: _tags.map((tag) {
+                            return TagTile(
+                              tag,
+                                  (tag) => onDeleteTag(tag),
+                            );
+                          }).toList(),
                         ),
                         SizedBox(height: 10),
                         TextFormField(
