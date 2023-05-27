@@ -8,7 +8,7 @@ class InventoryPage extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your onPressed code here!
+          // TODO: add item(s)/stock(s)
         },
         backgroundColor: Colors.grey[400],
         elevation: 100,

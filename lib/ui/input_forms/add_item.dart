@@ -472,7 +472,7 @@ class _AddItemPageState extends State<AddItemPage>
                               ),
                               child: const Row(
                                 children: [
-                                  Icon(Icons.close), // Use Icons.close for the "x" icon
+                                  Icon(Icons.close),
                                   SizedBox(width: 4),
                                   Text('Cancel'),
                                 ],
@@ -486,7 +486,7 @@ class _AddItemPageState extends State<AddItemPage>
                               ),
                               child: const Row(
                                 children: [
-                                  Icon(Icons.refresh), // Replace with your imported logo
+                                  Icon(Icons.refresh),
                                   SizedBox(width: 4),
                                   Text('Reset'),
                                 ],
@@ -563,7 +563,6 @@ class _AddItemPageState extends State<AddItemPage>
       widget.onSubmit(newItem); // Pass the newly created item to the callback
 
       Navigator.pop(context); // Close the bottom sheet
-
     }
   }
 }
