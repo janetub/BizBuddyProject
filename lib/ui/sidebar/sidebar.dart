@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import '../main_pages/place_order.dart';
+import '../../classes/all.dart';
+import '../main_pages/product_catalog.dart';
 import '../main_pages/order_status.dart';
 import '../main_pages/inventory_view.dart';
 
 class Sidebar extends StatelessWidget {
   final ValueChanged<Widget> onPageChanged;
-  const Sidebar({super.key, required this.onPageChanged});
+  Sidebar({super.key, required this.onPageChanged});
+  Set<Item> myItems = <Item>{};
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class Sidebar extends StatelessWidget {
             leading: const Icon(Icons.add_shopping_cart),
             title: const Text('Product Catalog'),
             onTap: () {
-              onPageChanged(PlaceOrderPage());
+              onPageChanged(ProductCatalogPage(productCatalog: myItems,));
               Navigator.pop(context);
             },
           ),

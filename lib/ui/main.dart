@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'main_pages/place_order.dart';
+import 'main_pages/product_catalog.dart';
 import 'main_pages/order_status.dart';
 import 'main_pages/inventory_view.dart';
 import '../../classes/all.dart';
@@ -16,7 +16,14 @@ class MainCanvas extends StatefulWidget {
 }
 class _MainCanvasState extends State<MainCanvas>
 {
-  Widget _currentPage = PlaceOrderPage();
+  Set<Item> myItems = <Item>{};
+  Widget? _currentPage;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPage = ProductCatalogPage(productCatalog: myItems);
+  }
 
   void _onPageChanged(Widget page)
   {

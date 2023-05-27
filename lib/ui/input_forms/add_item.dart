@@ -2,19 +2,25 @@ import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 
 class AddItemPage extends StatefulWidget {
+  final Function(Item) onSubmit;
+  final Set<Item> productCatalog;
+
+  AddItemPage({required this.onSubmit, required this.productCatalog});
+
   @override
-  _AddItemState createState() => _AddItemState();
+  _AddItemPageState createState() => _AddItemPageState();
 }
-class _AddItemState extends State<AddItemPage>
+class _AddItemPageState extends State<AddItemPage>
 {
+
   // TODO: review
   final List<Item> _rawMaterials = [
     Item('Flour', 'A powdery substance used for baking'),
     Item('Sugar', 'A sweet crystalline substance'),
     Item('Eggs', 'A nutritious food produced by chickens'),
   ];
-  final Set<Item> _selectedRawMaterials = {};
 
+  final Set<Item> _selectedRawMaterials = {};
 
   final _formKey = GlobalKey<FormState>();
   final _costInfoButton = GlobalKey<FormState>();
@@ -27,7 +33,6 @@ class _AddItemState extends State<AddItemPage>
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
   final List<String> _tags = [];
-
 
   /* FIXME:
   * reaches beyond the notification/task bar
@@ -47,6 +52,7 @@ class _AddItemState extends State<AddItemPage>
           child: CustomScrollView(
             slivers: [
               const SliverAppBar(
+                //expandedHeight: 100,
                 backgroundColor: Colors.transparent,
                 title: Text('Add a product'),
                 elevation: 0,
@@ -62,6 +68,8 @@ class _AddItemState extends State<AddItemPage>
                   margin: EdgeInsets.all(30),
                   child: Padding(
                     padding: EdgeInsets.all(25),
+                  child: Form(
+                    key: _formKey,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -80,6 +88,10 @@ class _AddItemState extends State<AddItemPage>
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: Colors.grey),
                             ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
                           ),
                           validator: (value) {
                             if (value==null || value.isEmpty) {
@@ -89,9 +101,6 @@ class _AddItemState extends State<AddItemPage>
                           },
                         ),
                         SizedBox(height: 15),
-                        /* FIXME:
-                        * Info button disappearing
-                         */
                         TextFormField(
                           controller: _costController,
                           decoration: InputDecoration(
@@ -130,6 +139,10 @@ class _AddItemState extends State<AddItemPage>
                                   },
                                 );
                               },
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.red),
                             ),
                           ),
                           keyboardType: TextInputType.number,
@@ -183,6 +196,10 @@ class _AddItemState extends State<AddItemPage>
                                 );
                               },
                             ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
                           ),
                           keyboardType: TextInputType.number,
                           validator: (value) {
@@ -210,6 +227,10 @@ class _AddItemState extends State<AddItemPage>
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(color: Colors.grey),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(color: Colors.red),
                                   ),
                                 ),
                                 keyboardType: TextInputType.number,
@@ -239,7 +260,7 @@ class _AddItemState extends State<AddItemPage>
                                       child: const Padding(
                                         padding: EdgeInsets.all(4),
                                         child: Icon(
-                                            Icons.arrow_upward,
+                                          Icons.arrow_upward,
                                           size: 25,
                                         ),
                                       ),
@@ -265,7 +286,7 @@ class _AddItemState extends State<AddItemPage>
                                       child: const Padding(
                                         padding: EdgeInsets.all(4),
                                         child: Icon(
-                                            Icons.arrow_downward,
+                                          Icons.arrow_downward,
                                           size: 25,
                                         ),
                                       ),
@@ -277,10 +298,6 @@ class _AddItemState extends State<AddItemPage>
                           ],
                         ),
                         SizedBox(height: 10),
-                        /* FIXME: can only be clicked, no other input/keyboard interface
-                        * icon on right
-                        * can be null
-                         */
                         TextFormField(
                           controller: _dateBoughtController,
                           keyboardType: TextInputType.none,
@@ -343,6 +360,7 @@ class _AddItemState extends State<AddItemPage>
                               },
                             ),
                           ),
+                          onChanged: (value){},
                         ),
                         Wrap(
                           spacing: 8,
@@ -356,7 +374,8 @@ class _AddItemState extends State<AddItemPage>
                         ),
                         SizedBox(height: 10),
                         DropdownButton<Item>(
-                          hint: Text('Select Raw Materials'),
+                          value: null,
+                          hint: Text('Select Components'),
                           items: _rawMaterials.map((Item rawMaterial) {
                             return DropdownMenuItem<Item>(
                               value: rawMaterial,
@@ -369,7 +388,6 @@ class _AddItemState extends State<AddItemPage>
                                 context: context,
                                 builder: (BuildContext context) {
                                   int quantity = 0;
-
                                   return AlertDialog(
                                     title: Text('Set Quantity'),
                                     content: Column(
@@ -424,7 +442,6 @@ class _AddItemState extends State<AddItemPage>
                             );
                           }).toList(),
                         ),
-
                         SizedBox(height: 10),
                         TextFormField(
                           controller: _descriptionController,
@@ -450,41 +467,34 @@ class _AddItemState extends State<AddItemPage>
                           children: [
                             TextButton(
                               onPressed: _onCancel,
-                              child: Row(
+                              style: TextButton.styleFrom(
+                                primary: Colors.red, // Set text color to red
+                              ),
+                              child: const Row(
                                 children: [
                                   Icon(Icons.close), // Use Icons.close for the "x" icon
                                   SizedBox(width: 4),
                                   Text('Cancel'),
                                 ],
                               ),
-                              style: TextButton.styleFrom(
-                                primary: Colors.red, // Set text color to red
-                              ),
                             ),
                             SizedBox(width: 8),
                             TextButton(
                               onPressed: _onReset,
-                              child: Row(
+                              style: TextButton.styleFrom(
+                                primary: Colors.grey, // Set text color to red
+                              ),
+                              child: const Row(
                                 children: [
                                   Icon(Icons.refresh), // Replace with your imported logo
                                   SizedBox(width: 4),
                                   Text('Reset'),
                                 ],
                               ),
-                              style: TextButton.styleFrom(
-                                primary: Colors.grey, // Set text color to red
-                              ),
                             ),
                             SizedBox(width: 8),
                             ElevatedButton(
                               onPressed: _onConfirm,
-                              child: Row(
-                                children: [
-                                  SizedBox(width: 4),
-                                  Text('Confirm'),
-                                  Icon(Icons.check),
-                                ],
-                              ),
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
@@ -494,11 +504,19 @@ class _AddItemState extends State<AddItemPage>
                                 // Color(0xFF808080) represents the color #808080
                                 // Color(0xFFFFC107) represents the color #FFC107
                               ),
+                              child: const Row(
+                                children: [
+                                  SizedBox(width: 4),
+                                  Text('Confirm'),
+                                  Icon(Icons.check),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
+                  ),
                   ),
                 ),
               ),
@@ -527,15 +545,25 @@ class _AddItemState extends State<AddItemPage>
       _dateBoughtController.clear();
       _tags.clear();
       _descriptionController.clear();
+      _selectedRawMaterials.clear();
     });
   }
 
   void _onConfirm() {
     if (_formKey.currentState!.validate()) {
-      // Instantiate an Item object with the extracted text from the fields
-      // ...
+      final newItem = Item(_nameController.text, _descriptionController.text);
+      newItem.cost = double.parse(_costController.text);
+      newItem.price = double.parse(_priceController.text);
+      newItem.addQuantity(int.parse(_quantityController.text));
+      if(_dateBoughtController.text.isNotEmpty) {
+        newItem.dateBought = DateTime.parse(_dateBoughtController.text);
+      }
+      newItem.tags?.addAll(_tags);
+      newItem.components.addAll(_selectedRawMaterials);
+      widget.onSubmit(newItem); // Pass the newly created item to the callback
 
-      Navigator.pop(context);
+      Navigator.pop(context); // Close the bottom sheet
+
     }
   }
 }
