@@ -13,6 +13,7 @@ class ProductCatalogPage extends StatefulWidget {
 
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
   Set<Item> _productCatalog = Set<Item>();
+  final _quantityController = TextEditingController();
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFE5E5E5),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
@@ -65,6 +67,50 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         )
             : Container(
           // TODO: display populated data
+          child: Expanded(
+            child: ListView.builder(
+              itemCount: _productCatalog.length,
+              itemBuilder: (context, index) {
+                final item = _productCatalog.toList()[index];
+                return Card(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                    BorderRadius.circular(7), // Rounded corners
+                  ),
+                  child: ListTile(
+                    title: Text(item.name),
+                    subtitle: Text(item.description),
+                    trailing: SizedBox(
+                      width: 50,
+                      child: TextField(
+                        controller: _quantityController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Qty',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          fillColor: Colors.white,
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
