@@ -66,7 +66,8 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           textAlign: TextAlign.center,
         )
             : Container(
-          // TODO: display populated data
+          // TODO: improve design
+          // FIXME: only put text on focused boxes
           child: Expanded(
             child: ListView.builder(
               itemCount: _productCatalog.length,
