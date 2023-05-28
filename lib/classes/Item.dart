@@ -1,7 +1,8 @@
 /*
+* TODO:
 * This class represents an item in the inventory.
 * It can be a product to sell or a raw material.
-* Add attributes and methods to this class to manage the item’s availability and other details.
+* Add necessary attributes and methods to this class to manage the item’s availability and other details.
  */
 class Item {
   String name;

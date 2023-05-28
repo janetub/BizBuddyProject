@@ -127,7 +127,7 @@ class _AddItemPageState extends State<AddItemPage>
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Customize the padding
+                                      contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                       title: const Text('Cost'),
                                       content: const Text('Money spent to buy the product. Original cost.'),
                                       actions: [
@@ -161,9 +161,6 @@ class _AddItemPageState extends State<AddItemPage>
                           },
                         ),
                         SizedBox(height: 15),
-                        /* FIXME:
-                        * Info button disappearing
-                         */
                         TextFormField(
                           controller: _priceController,
                           decoration: InputDecoration(
@@ -187,7 +184,7 @@ class _AddItemPageState extends State<AddItemPage>
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Customize the padding
+                                      contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                       title: Text('Price'),
                                       content: Text('Selling price of the product.'),
                                       actions: [
@@ -575,9 +572,9 @@ class _AddItemPageState extends State<AddItemPage>
       }
       newItem.tags?.addAll(_tags);
       newItem.components.addAll(_selectedRawMaterials);
-      widget.onSubmit(newItem); // Pass the newly created item to the callback
+      widget.onSubmit(newItem);
 
-      Navigator.pop(context); // Close the bottom sheet
+      Navigator.pop(context);
     }
   }
 }

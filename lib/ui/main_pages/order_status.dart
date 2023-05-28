@@ -39,7 +39,7 @@ class OrderStatusPage extends StatelessWidget {
           return ListTile(
             title: Text('Order #${order.orderId}'),
             subtitle:
-            Text('Total Price: \$${order.calculateTotalPrice()}'),
+            Text('Total Price: Php ${order.calculateTotalPrice()}'),
           );
         },
       ),

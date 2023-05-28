@@ -16,6 +16,10 @@ class Sidebar extends StatelessWidget {
     required this.myOrders,
   }) : super(key: key);
 
+  void _addOrder(Order order) {
+    myOrders.add(order);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -38,7 +42,9 @@ class Sidebar extends StatelessWidget {
               leading: const Icon(Icons.add_shopping_cart),
               title: const Text('Product Catalog'),
               onTap: () {
-                onPageChanged(ProductCatalogPage(productCatalog: myProducts, navigateToOrderStatus: () => onPageChanged(OrderStatusPage(orders: myOrders)),));
+                onPageChanged(ProductCatalogPage(productCatalog: myProducts, navigateToOrderStatus: () => onPageChanged(OrderStatusPage(orders: myOrders)),
+                  onPlaceOrder: _addOrder,
+                ));
                 Navigator.pop(context);
               },
             ),

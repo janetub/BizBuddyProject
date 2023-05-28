@@ -22,7 +22,7 @@ class _MainCanvasState extends State<MainCanvas> {
   @override
   void initState() {
     super.initState();
-    _currentPage = ProductCatalogPage(productCatalog: myProducts, navigateToOrderStatus: _navigateToOrderStatus,);
+    _currentPage = ProductCatalogPage(productCatalog: myProducts, navigateToOrderStatus: _navigateToOrderStatus, onPlaceOrder: (Order value) {  },);
   }
 
   void _navigateToOrderStatus() {
