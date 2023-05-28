@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../classes/all.dart';
 
-class OrderStatusPage extends StatelessWidget
-{
-  OrderStatusPage({super.key});
+class OrderStatusPage extends StatelessWidget {
+  final List<Order>? orders;
+
+  OrderStatusPage({Key? key, required this.orders}) : super(key: key);
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: add customizeable labels
+          // TODO: add customizable labels
         },
         backgroundColor: Colors.grey[400],
         elevation: 100,
@@ -20,7 +21,8 @@ class OrderStatusPage extends StatelessWidget
           size: 30,
         ),
       ),
-      body: const Center(
+      body: orders == null || orders!.isEmpty
+          ? const Center(
         child: Text(
           'No orders placed yet.',
           style: TextStyle(
@@ -29,45 +31,18 @@ class OrderStatusPage extends StatelessWidget
           ),
           textAlign: TextAlign.center,
         ),
-      ),
-    );
-  }
-}
-
-/*
-class OrderStatusPage extends StatelessWidget with NavigationStates {
-  OrderStatusPage({super.key});
-
-  @override
-  _orderStatusPageState createState() => _orderStatusPageState();
-}
-
-class _orderStatusPagestate extends State<OrderStatusPage>
-{
-  List <Order> _orders = [];
-
-  @override
-  Widget build(BuildContext context)
-  {
-    return Center(
-      child: _orders.isEmpty
-        ? const Text(
-            'No orders placed yet.',
-          style: TextStyle(
-            fontSize: 15,
-            color: Colors.grey,
-          ),
-          textAlign: TextAlign.center,
-        )
-      : ListView.builder(
-        itemCount: _orders.length,
-        itemBuilder: (context, index)
-        {
-          final order = _orders[index];
-          // build order item
+      )
+          : ListView.builder(
+        itemCount: orders!.length,
+        itemBuilder: (context, index) {
+          Order order = orders![index];
+          return ListTile(
+            title: Text('Order #${order.orderId}'),
+            subtitle:
+            Text('Total Price: \$${order.calculateTotalPrice()}'),
+          );
         },
       ),
     );
   }
 }
-*/

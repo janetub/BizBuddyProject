@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import '../input_forms/add_item.dart';
 import '../../classes/all.dart';
+import 'order_status.dart';
 
 class ProductCatalogPage extends StatefulWidget {
   final Set<Item> productCatalog;
+  final Function navigateToOrderStatus;
 
-  ProductCatalogPage({Key? key, required this.productCatalog}) : super(key: key);
+  ProductCatalogPage({
+    Key? key,
+    required this.productCatalog,
+    required this.navigateToOrderStatus,
+  }) : super(key: key);
 
   @override
   _ProductCatalogPageState createState() => _ProductCatalogPageState();
@@ -13,7 +19,6 @@ class ProductCatalogPage extends StatefulWidget {
 
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
   Set<Item> _productCatalog = Set<Item>();
-  final _quantityController = TextEditingController();
 
   @override
   void initState() {
@@ -42,8 +47,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 setState(() {
                   _productCatalog.add(item); // Add the item to the product catalog
                 });
-              },
-              productCatalog: _productCatalog, // Pass the product catalog to the AddItemPage
+              },// Pass the product catalog to the AddItemPage
             ),
           );
         },
@@ -65,55 +69,81 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           ),
           textAlign: TextAlign.center,
         )
-            : Container(
-          // TODO: improve design
-          // FIXME: only put text on focused boxes
-          child: Expanded(
-            child: ListView.builder(
-              itemCount: _productCatalog.length,
-              itemBuilder: (context, index) {
-                final item = _productCatalog.toList()[index];
-                return Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.circular(7), // Rounded corners
-                  ),
-                  child: ListTile(
-                    title: Text(item.name),
-                    subtitle: Text(item.description),
-                    trailing: SizedBox(
-                      width: 50,
-                      child: TextField(
-                        controller: _quantityController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Qty',
-                          labelStyle: TextStyle(color: Colors.grey),
-                          fillColor: Colors.white,
-                          filled: true,
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+            : ListView.builder(
+          itemCount: _productCatalog.length,
+          itemBuilder: (context, index) {
+            final item = _productCatalog.toList()[index];
+            return Card(
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: ListTile(
+                title: Text(item.name),
+                subtitle: Text(item.description),
+                trailing: IconButton(
+                  icon: Icon(Icons.add_shopping_cart),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return AlertDialog(
+                          title: const Text('Place Order'),
+                          content: const Text('Are you sure you want to place this order?'),
+                          actions: [
+                            TextButton(
+                              child: const Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(dialogContext).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('Confirm'),
+                              onPressed: () {
+                                Order order = Order(items: [item]);
+                                Navigator.of(dialogContext).pop();
+                                _showSuccessDialog(order);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            );
+          },
         ),
       ),
+    );
+  }
+
+  void _showSuccessDialog(Order order) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Success'),
+          content: const Text(
+              'The item has been added to moved to the Order Status page for processing.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Go to Order Status'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                  widget.navigateToOrderStatus();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

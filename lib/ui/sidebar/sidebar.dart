@@ -6,14 +6,21 @@ import '../main_pages/inventory_view.dart';
 
 class Sidebar extends StatelessWidget {
   final ValueChanged<Widget> onPageChanged;
-  Sidebar({super.key, required this.onPageChanged});
-  Set<Item> myItems = <Item>{};
+  final Set<Item> myProducts;
+  final List<Order> myOrders;
+
+  Sidebar({
+    Key? key,
+    required this.onPageChanged,
+    required this.myProducts,
+    required this.myOrders,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero, // removes whitespace above the header
+        padding: EdgeInsets.zero,
         children: [
           const UserAccountsDrawerHeader(
             accountName: null,
@@ -27,28 +34,28 @@ class Sidebar extends StatelessWidget {
               ),
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.add_shopping_cart),
-            title: const Text('Product Catalog'),
-            onTap: () {
-              onPageChanged(ProductCatalogPage(productCatalog: myItems,));
-              Navigator.pop(context);
-            },
-          ),
+            ListTile(
+              leading: const Icon(Icons.add_shopping_cart),
+              title: const Text('Product Catalog'),
+              onTap: () {
+                onPageChanged(ProductCatalogPage(productCatalog: myProducts, navigateToOrderStatus: () => onPageChanged(OrderStatusPage(orders: myOrders)),));
+                Navigator.pop(context);
+              },
+            ),
           ListTile(
             leading: const Icon(Icons.assignment_outlined),
             title: const Text('Order Status'),
             onTap: () {
-                  onPageChanged(OrderStatusPage());
-                  Navigator.pop(context);
+              onPageChanged(OrderStatusPage(orders: myOrders));
+              Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.inventory_2_outlined),
             title: const Text('Inventory'),
             onTap: () {
-                  onPageChanged(InventoryPage());
-                  Navigator.pop(context);
+              onPageChanged(InventoryPage());
+              Navigator.pop(context);
             },
           ),
           const Divider(

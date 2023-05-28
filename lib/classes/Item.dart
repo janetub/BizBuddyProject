@@ -9,7 +9,6 @@ class Item {
   double _price = 0;
   int _quantity = 0;
   DateTime? _dateBought;
-  DateTime? _dateSold;
   final Set<String> _tags = {};
   String description;
   Set<Item> components = {};
@@ -58,17 +57,6 @@ class Item {
       throw ArgumentError('Date bought cannot be in the future.');
     }
     _dateBought = value;
-  }
-
-  DateTime? get dateSold => _dateSold;
-
-  set dateSold(DateTime? value)
-  {
-    if(value != null && value.isBefore(_dateBought!))
-      {
-        throw ArgumentError("Date sold must not be earlier than date bought.");
-      }
-    _dateSold = value;
   }
 
   Set<String>? get tags => _tags;

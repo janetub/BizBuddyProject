@@ -3,9 +3,8 @@ import '../../classes/all.dart';
 
 class AddItemPage extends StatefulWidget {
   final Function(Item) onSubmit;
-  final Set<Item> productCatalog;
 
-  AddItemPage({required this.onSubmit, required this.productCatalog});
+  AddItemPage({required this.onSubmit});
 
   @override
   _AddItemPageState createState() => _AddItemPageState();
@@ -92,6 +91,10 @@ class _AddItemPageState extends State<AddItemPage>
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: Colors.red),
                             ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
                           ),
                           validator: (value) {
                             if (value==null || value.isEmpty) {
@@ -141,6 +144,10 @@ class _AddItemPageState extends State<AddItemPage>
                               },
                             ),
                             errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: Colors.red),
                             ),
@@ -200,6 +207,10 @@ class _AddItemPageState extends State<AddItemPage>
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(color: Colors.red),
                             ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
                           ),
                           keyboardType: TextInputType.number,
                           validator: (value) {
@@ -229,6 +240,10 @@ class _AddItemPageState extends State<AddItemPage>
                                     borderSide: BorderSide(color: Colors.grey),
                                   ),
                                   errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(color: Colors.red),
                                   ),
