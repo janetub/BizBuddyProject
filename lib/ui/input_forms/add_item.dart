@@ -129,7 +129,7 @@ class _AddItemPageState extends State<AddItemPage>
                                     return AlertDialog(
                                       contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                       title: const Text('Cost'),
-                                      content: const Text('Money spent to buy the product. Original cost.'),
+                                      content: const Text('Money spent to buy the product.\nOriginal cost.'),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
