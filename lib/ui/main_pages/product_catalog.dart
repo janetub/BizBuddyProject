@@ -274,12 +274,16 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     Order order = Order(items:_cartItems);
     widget.onPlaceOrder(order);
   }
-}
+  void _onProductEdit(Item item) {
 
-void _onProductEdit(Item item) {
+  }
 
-}
-
-void _onProductDelete(Item item) {
-
+  /*
+  * FIXME: exception thrown, object not properly deleted
+  * */
+  void _onProductDelete(Item item) {
+    setState(() {
+      _productCatalog.remove(item);
+    });
+  }
 }
