@@ -156,10 +156,32 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   }
 
   void _addToCart(Item item) {
-    setState(() {
-      _cartItems.add(item);
-    });
+    if (item.quantity > 0) {
+      setState(() {
+        _cartItems.add(item);
+        item.removeQuantity(1); // Decrease the quantity of the added item
+      });
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text('Out of Stock'),
+            content: const Text('This item is currently out of stock.'),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
+
 
   void _onPlaceOrderButtonPressed() {
     Order order = Order(items: _cartItems);

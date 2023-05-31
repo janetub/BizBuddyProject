@@ -69,6 +69,14 @@ class Item {
 
   int get quantity => _quantity;
 
+  set quantity(int newQuantity) {
+    if (newQuantity >= 0) {
+      _quantity = newQuantity;
+    } else {
+      throw ArgumentError('Quantity cannot be negative.');
+    }
+  }
+
   double getProfit()
   {
     return (price - cost) * _quantity;
@@ -77,17 +85,5 @@ class Item {
   bool isInStock()
   {
     return _quantity > 0;
-  }
-
-  void addQuantity(int quantityToAdd) {
-    _quantity += quantityToAdd;
-  }
-
-  void removeQuantity(int quantityToRemove) {
-    if ((_quantity - quantityToRemove) >= 0) {
-      _quantity -= quantityToRemove;
-    } else {
-      throw ArgumentError('Quantity cannot be negative.');
-    }
   }
 }
