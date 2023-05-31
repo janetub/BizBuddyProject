@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../components/product_tile.dart';
 import '../input_forms/add_item.dart';
 import '../../classes/all.dart';
+import '../input_forms/edit_item.dart';
 import 'order_status.dart';
 
 class ProductCatalogPage extends StatefulWidget {
@@ -37,9 +39,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: () {
-              _showCartDialog();
-            },
+            onPressed: _showCartDialog,
             backgroundColor: Colors.grey[400],
             elevation: 1,
             child: const Icon(
@@ -50,25 +50,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           ),
           const SizedBox(height: 10),
           FloatingActionButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                ),
-                builder: (context) => AddItemPage(
-                  onSubmit: (item) {
-                    setState(() {
-                      _productCatalog.add(item);
-                    });
-                  },
-                ),
-              );
-            },
+            onPressed: _showAddItemPage,
             backgroundColor: Colors.grey[400],
             elevation: 1,
             child: const Icon(
@@ -93,55 +75,14 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           itemCount: _productCatalog.length,
           itemBuilder: (context, index) {
             final item = _productCatalog.toList()[index];
-            return Dismissible(
-              key: Key(item.name),
-              confirmDismiss: (direction) {
-                if (direction == DismissDirection.startToEnd){
-                  return Future.value(false);
-                }
-                return Future.value(true);
-              },
-              background: Container(),
-              secondaryBackground: ClipRRect(
-                borderRadius: BorderRadius.circular(7),
-                child: Container(
-                  color: Colors.red,
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(Icons.delete),
-                    ),
-                  ),
-                ),
-              ),
-              onDismissed: (direction) {
-                if (direction == DismissDirection.endToStart) {
-                  _onProductDelete;
-                }
-              },
-              child: Card(
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                child: ListTile(
-                  onTap: () {
-                    _onProductEdit;
-                  },
-                  title: Text(item.name),
-                  subtitle: Text(item.description),
-                  trailing: IconButton(
-                    icon: Icon(Icons.add_shopping_cart),
-                    onPressed: () {
-                      _cartItems.add(item);
-                    },
-                  ),
-                ),
-              ),
+            return ProductTile(
+              item: item,
+              onProductEdit: _onProductEdit,
+              onProductDelete: _onProductDelete,
+              onAddToCart: _addToCart,
             );
           },
-        )
+        ),
       ),
     );
   }
@@ -204,33 +145,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                   TextButton(
                     child: const Text('Place Order'),
                     onPressed: () {
-                      Navigator.of(dialogContext).pop();
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext dialogContext) {
-                          return AlertDialog(
-                            title: const Text('Place Order'),
-                            content:
-                            const Text('Are you sure you want to place this order?'),
-                            actions: [
-                              TextButton(
-                                child: const Text('Cancel'),
-                                onPressed: () {
-                                  Navigator.of(dialogContext).pop();
-                                },
-                              ),
-                              TextButton(
-                                child: const Text('Confirm'),
-                                onPressed: () {
-                                  Order order = Order(items:_cartItems);
-                                  Navigator.of(dialogContext).pop();
-                                  _showSuccessDialog(order);
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                      _onPlaceOrderButtonPressed;
                     },
                   ),
               ],
@@ -270,20 +185,82 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     );
   }
 
-  void _onPlaceOrderButtonPressed() {
-    Order order = Order(items:_cartItems);
-    widget.onPlaceOrder(order);
+  void _showAddItemPage() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      builder: (context) => AddItemPage(
+        onSubmit: (item) {
+          setState(() {
+            _productCatalog.add(item);
+          });
+        },
+      ),
+    );
   }
-  void _onProductEdit(Item item) {
 
-  }
-
-  /*
-  * FIXME: exception thrown, object not properly deleted
-  * */
-  void _onProductDelete(Item item) {
+  void _addToCart(Item item) {
     setState(() {
-      _productCatalog.remove(item);
+      _cartItems.add(item);
     });
+  }
+
+  void _onPlaceOrderButtonPressed() {
+    Order order = Order(items: _cartItems);
+    widget.onPlaceOrder(order);
+    _showSuccessDialog(order);
+  }
+
+  void _onProductEdit(Item item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditItemPage(
+          item: item,
+          onSubmit: (editedItem) {
+            setState(() {
+              // Update the item in the product catalog
+              _productCatalog.remove(item);
+              _productCatalog.add(editedItem);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  void _onProductDelete(Item item) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this item?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                setState(() {
+                  _productCatalog.remove(item);
+                });
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

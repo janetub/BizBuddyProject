@@ -3,9 +3,9 @@ import '../../classes/all.dart';
 
 class ProductTile extends StatelessWidget {
   final Item item;
-  final VoidCallback onProductEdit;
-  final VoidCallback onProductDelete;
-  final VoidCallback onAddToCart;
+  final void Function(Item) onProductEdit;
+  final void Function(Item) onProductDelete;
+  final void Function(Item) onAddToCart;
 
   const ProductTile({
     Key? key,
@@ -41,7 +41,7 @@ class ProductTile extends StatelessWidget {
       ),
       onDismissed: (direction) {
         if (direction == DismissDirection.endToStart) {
-          onProductDelete();
+          onProductDelete(item);
         }
       },
       child: Card(
@@ -50,12 +50,12 @@ class ProductTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(7),
         ),
         child: ListTile(
-          onTap: onProductEdit,
+          onTap: () => onProductEdit(item),
           title: Text(item.name),
           subtitle: Text(item.description),
           trailing: IconButton(
             icon: Icon(Icons.add_shopping_cart),
-            onPressed: onAddToCart,
+            onPressed: () => onAddToCart(item),
           ),
         ),
       ),
