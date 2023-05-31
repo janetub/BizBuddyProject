@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../components/cart_dialog.dart';
 import '../components/product_tile.dart';
 import '../input_forms/add_item.dart';
 import '../../classes/all.dart';
@@ -91,70 +92,19 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              backgroundColor: const Color(0xFFE5E5E5),
-              title: const Text('Cart'),
-              content: _cartItems.isEmpty
-                  ? const Text('Your cart is empty.')
-                  : SizedBox(
-                width: double.maxFinite,
-                child: ListView.builder(
-                  itemCount: _cartItems.length,
-                  itemBuilder: (context, index) {
-                    final item = _cartItems[index];
-                    return Card(
-                      child: ListTile(
-                        title: Text(item.name),
-                        subtitle: Text(item.description),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              onPressed: () {
-                                setState(() {
-                                  _cartItems.add(item);
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.remove),
-                              onPressed: () {
-                                setState(() {
-                                  _cartItems.remove(item);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: const Text('Close'),
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-                if (_cartItems.isNotEmpty)
-                  TextButton(
-                    child: const Text('Place Order'),
-                    onPressed: () {
-                      _onPlaceOrderButtonPressed;
-                    },
-                  ),
-              ],
-            );
+        return CartDialog(
+          cartItems: _cartItems,
+          onClose: () {
+            Navigator.of(dialogContext).pop();
+          },
+          onPlaceOrder: () {
+            _onPlaceOrderButtonPressed();
           },
         );
       },
     );
   }
+
 
   void _showSuccessDialog(Order order) {
     _onPlaceOrderButtonPressed();
