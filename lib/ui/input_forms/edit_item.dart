@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 
-class EditItemPage extends StatefulWidget {
-  final Item item;
-  final Function(Item) onSubmit;
+/*
+* TODO: change design, esp colors
+* */
 
-  EditItemPage({required this.item, required this.onSubmit});
+class EditItemPage extends StatefulWidget {
+  final Function(Item) onSubmit;
+  final Item item;
+
+  EditItemPage({required this.onSubmit, required this.item});
 
   @override
   _EditItemPageState createState() => _EditItemPageState();
@@ -17,6 +21,7 @@ class _EditItemPageState extends State<EditItemPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
 
   @override
   void initState() {
@@ -25,89 +30,102 @@ class _EditItemPageState extends State<EditItemPage> {
     _descriptionController.text = widget.item.description;
     _costController.text = widget.item.cost.toString();
     _priceController.text = widget.item.price.toString();
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _costController.dispose();
-    _priceController.dispose();
-    super.dispose();
+    _quantityController.text = widget.item.quantity.toString();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: Text('Edit Item'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: 'Product Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Field cannot be left blank';
-                  }
-                  return null;
-                },
+        child: Card(
+          elevation: 2.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            side: BorderSide(color: Colors.grey.shade400),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(labelText: 'Product Name'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Field cannot be left blank';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(labelText: 'Description'),
+                  ),
+                  TextFormField(
+                    controller: _costController,
+                    decoration: InputDecoration(labelText: 'Cost'),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Field cannot be left blank';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _priceController,
+                    decoration: InputDecoration(labelText: 'Price'),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Field cannot be left blank';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _quantityController,
+                    decoration: InputDecoration(labelText: 'Quantity'),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Field cannot be left blank';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: _onSubmit,
+                    child: Text('Save Changes'),
+                  ),
+                ],
               ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _costController,
-                decoration: InputDecoration(labelText: 'Cost'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Field cannot be left blank';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _priceController,
-                decoration: InputDecoration(labelText: 'Price'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Field cannot be left blank';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _onSave,
-                child: Text('Save'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _onSave() {
+  void _onSubmit() {
     if (_formKey.currentState!.validate()) {
-      final editedItem = Item(
+      final updatedItem = Item(
         _nameController.text,
         _descriptionController.text,
       );
-      editedItem.cost = double.parse(_costController.text);
-      editedItem.price = double.parse(_priceController.text);
-      widget.onSubmit(editedItem);
+      updatedItem.cost = double.parse(_costController.text);
+      updatedItem.price = double.parse(_priceController.text);
+      updatedItem.quantity = int.parse(_quantityController.text);
+
+      widget.onSubmit(updatedItem);
+
       Navigator.pop(context);
     }
   }

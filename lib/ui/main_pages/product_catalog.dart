@@ -4,7 +4,10 @@ import '../components/product_tile.dart';
 import '../input_forms/add_item.dart';
 import '../../classes/all.dart';
 import '../input_forms/edit_item.dart';
-import 'order_status.dart';
+
+/*
+* TODO: add quantity field for placing order
+* */
 
 class ProductCatalogPage extends StatefulWidget {
   final Set<Item> productCatalog;
@@ -23,14 +26,7 @@ class ProductCatalogPage extends StatefulWidget {
 }
 
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
-  Set<Item> _productCatalog = Set<Item>();
   List<Item> _cartItems = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _productCatalog = widget.productCatalog;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +59,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         ],
       ),
       body: Center(
-        child: _productCatalog.isEmpty
+        child: widget.productCatalog.isEmpty
             ? const Text(
           'Ready to sell?\nStart adding products!',
           style: TextStyle(
@@ -73,9 +69,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           textAlign: TextAlign.center,
         )
             : ListView.builder(
-          itemCount: _productCatalog.length,
+          itemCount: widget.productCatalog.length,
           itemBuilder: (context, index) {
-            final item = _productCatalog.toList()[index];
+            final item = widget.productCatalog.toList()[index];
             return ProductTile(
               item: item,
               onProductEdit: _onProductEdit,
@@ -88,26 +84,44 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     );
   }
 
-  void _showCartDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return CartDialog(
-          cartItems: _cartItems,
-          onClose: () {
-            Navigator.of(dialogContext).pop();
+  void _onPlaceOrder() {
+    Order order = Order(items: _cartItems);
+    widget.onPlaceOrder(order);
+    _showSuccessDialog(order);
+  }
+
+  void _onProductEdit(Item item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditItemPage(
+          item: item,
+          onSubmit: (editedItem) {
+            setState(() {
+              // Update the item in the product catalog
+              widget.productCatalog.remove(item);
+              widget.productCatalog.add(editedItem);
+            });
           },
-          onPlaceOrder: () {
-            _onPlaceOrderButtonPressed();
-          },
-        );
-      },
+        ),
+      ),
     );
   }
 
+  void _showCartDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => CartDialog(
+        cartItems: _cartItems,
+        onClose: () => Navigator.pop(context),
+        onPlaceOrder: _onPlaceOrder,
+        onUpdateQuantity: _onUpdateQuantity,
+      ),
+    );
+  }
 
   void _showSuccessDialog(Order order) {
-    _onPlaceOrderButtonPressed();
+    _onPlaceOrder();
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -148,63 +162,68 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       builder: (context) => AddItemPage(
         onSubmit: (item) {
           setState(() {
-            _productCatalog.add(item);
+            widget.productCatalog.add(item);
           });
         },
       ),
     );
   }
 
-  void _addToCart(Item item) {
-    if (item.quantity > 0) {
-      setState(() {
-        _cartItems.add(item);
-        item.removeQuantity(1); // Decrease the quantity of the added item
-      });
-    } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text('Out of Stock'),
-            content: const Text('This item is currently out of stock.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
-
-  void _onPlaceOrderButtonPressed() {
-    Order order = Order(items: _cartItems);
-    widget.onPlaceOrder(order);
-    _showSuccessDialog(order);
-  }
-
-  void _onProductEdit(Item item) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditItemPage(
-          item: item,
-          onSubmit: (editedItem) {
-            setState(() {
-              // Update the item in the product catalog
-              _productCatalog.remove(item);
-              _productCatalog.add(editedItem);
-            });
+  void _addToCart(Item item, int quantity) {
+    int index = _cartItems.indexWhere((cartItem) => cartItem.name == item.name);
+    if (index != -1) { // product already exists in cart
+      if (item.quantity >= quantity) {
+        setState(() {
+          _cartItems[index].quantity += quantity; // find that product in the cart and add quantity
+          item.quantity -= quantity;
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text('Insufficient Stock'),
+              content: const Text('The requested quantity is not available.'),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                ),
+              ],
+            );
           },
-        ),
-      ),
-    );
+        );
+      }
+    } else { // new product in cart
+      if (item.quantity >= quantity) {
+        setState(() {
+          Item movProd = Item(item.name, item.description);
+          movProd.quantity = quantity;
+          _cartItems.add(movProd); // add the item with the specified quantity
+          item.quantity -= quantity;
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text('Insufficient Stock'),
+              content: const Text('The requested quantity is not available.'),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 
   void _onProductDelete(Item item) {
@@ -225,7 +244,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               child: const Text('Delete'),
               onPressed: () {
                 setState(() {
-                  _productCatalog.remove(item);
+                  widget.productCatalog.remove(item);
                 });
                 Navigator.of(dialogContext).pop();
               },
@@ -234,5 +253,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         );
       },
     );
+  }
+
+  void _onUpdateQuantity(Item item, int) {
+
   }
 }

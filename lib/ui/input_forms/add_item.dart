@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
-
+/*
+* TODO: products must not have the same names
+* */
 class AddItemPage extends StatefulWidget {
   final Function(Item) onSubmit;
 
@@ -426,7 +428,7 @@ class _AddItemPageState extends State<AddItemPage>
                                       TextButton(
                                         onPressed: () {
                                           setState(() {
-                                            selectedRawMaterial.addQuantity(quantity);
+                                            selectedRawMaterial.quantity += quantity;
                                             _selectedRawMaterials.add(selectedRawMaterial);
                                           });
                                           Navigator.of(context).pop();
@@ -566,7 +568,7 @@ class _AddItemPageState extends State<AddItemPage>
       final newItem = Item(_nameController.text, _descriptionController.text);
       newItem.cost = double.parse(_costController.text);
       newItem.price = double.parse(_priceController.text);
-      newItem.addQuantity(int.parse(_quantityController.text));
+      newItem.quantity += (int.parse(_quantityController.text));
       if(_dateBoughtController.text.isNotEmpty) {
         newItem.dateBought = DateTime.parse(_dateBoughtController.text);
       }
