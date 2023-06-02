@@ -78,11 +78,12 @@ class _CartTileState extends State<CartTile> {
               onPressed: () {
                 final newQuantity =
                     int.tryParse(_quantityController.text) ?? 1;
-                setState(() {});
-                if (widget.item.quantity == 1) {
+                widget.onUpdateQuantity(widget.item, newQuantity);
+                if (widget.item.quantity <= 1) {
                   widget.onRemove();
                 }
-                widget.onUpdateQuantity(widget.item, newQuantity);
+                _quantityController.clear();
+                setState(() {});
               },
             ),
           ],
