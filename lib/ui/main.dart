@@ -16,7 +16,7 @@ class MainCanvas extends StatefulWidget {
 
 class _MainCanvasState extends State<MainCanvas> {
   Set<Item> myProducts = <Item>{};
-  List<Order> myOrders = <Order>[];
+  Set<Order> myOrders = <Order>{};
   Widget? _currentPage;
 
   @override

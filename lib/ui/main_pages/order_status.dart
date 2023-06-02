@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 
+/*
+*
+* */
+
 class OrderStatusPage extends StatelessWidget {
-  final List<Order>? orders;
+  final Set<Order>? orders;
 
   OrderStatusPage({Key? key, required this.orders}) : super(key: key);
 
@@ -35,7 +39,7 @@ class OrderStatusPage extends StatelessWidget {
           : ListView.builder(
         itemCount: orders!.length,
         itemBuilder: (context, index) {
-          Order order = orders![index];
+          Order order = orders!.elementAt(index);
           return ListTile(
             title: Text('Order #${order.orderId}'),
             subtitle:

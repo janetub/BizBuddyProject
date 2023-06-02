@@ -6,7 +6,7 @@ import '../../classes/all.dart';
 import '../input_forms/edit_item.dart';
 
 /*
-* TODO: add quantity field for placing order
+* FIXME: do not move the order to order status page if quantity of orders is zero or do not include items with zero quantity
 * */
 
 class ProductCatalogPage extends StatefulWidget {
@@ -26,7 +26,7 @@ class ProductCatalogPage extends StatefulWidget {
 }
 
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
-  List<Item> _cartItems = [];
+  Set<Item> _cartItems = {};
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
             : ListView.builder(
           itemCount: widget.productCatalog.length,
           itemBuilder: (context, index) {
-            final item = widget.productCatalog.toList()[index];
+            final item = widget.productCatalog.elementAt(index);
             return ProductTile(
               item: item,
               onProductEdit: _onProductEdit,
@@ -170,11 +170,13 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   }
 
   void _addToCart(Item item, int quantity) {
-    int index = _cartItems.indexWhere((cartItem) => cartItem.name == item.name);
-    if (index != -1) { // product already exists in cart
+    bool containsItem = _cartItems.any((cartItem) => cartItem.name == item.name);
+    if (containsItem) {
+      // product already exists in cart
       if (item.quantity >= quantity) {
         setState(() {
-          _cartItems[index].quantity += quantity; // find that product in the cart and add quantity
+          Item cartItem = _cartItems.firstWhere((cartItem) => cartItem.name == item.name);
+          cartItem.quantity += quantity;
           item.quantity -= quantity;
         });
       } else {
@@ -196,12 +198,13 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           },
         );
       }
-    } else { // new product in cart
+    } else {
+      // new product in cart
       if (item.quantity >= quantity) {
         setState(() {
-          Item movProd = Item(item.name, item.description);
+          Item movProd = item.duplicate();
           movProd.quantity = quantity;
-          _cartItems.add(movProd); // add the item with the specified quantity
+          _cartItems.add(movProd);
           item.quantity -= quantity;
         });
       } else {
@@ -255,7 +258,46 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     );
   }
 
-  void _onUpdateQuantity(Item item, int) {
-
+  void _onUpdateQuantity(Item item, int quantity) {
+    if (quantity > 0) {
+      // removing quantity
+      if (item.quantity >= quantity) {
+        setState(() {
+          item.quantity -= quantity;
+          if(item.quantity == 0) {
+            _cartItems.remove(item);
+          }
+          // update productCatalog
+          bool containsItem = widget.productCatalog.any((cartItem) => cartItem.name == item.name);
+          if(containsItem) {
+              Item catalogItem = widget.productCatalog.firstWhere((cartItem) => cartItem.name == item.name);
+              catalogItem.quantity += quantity;
+            } else {
+            Item newItem = item.duplicate();
+            newItem.quantity = item.quantity;
+            widget.productCatalog.add(newItem);
+          }
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text('Invalid Quantity'),
+              content: const Text(
+                  'The requested quantity to remove is not valid.'),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 }

@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
+import 'cart_product_tile.dart';
 
 /*
-* TODO: quantity field
-* TODO: separate tile component, improve design
-* TODO: remove product from cart if quantity is zero
-* FIXME: increment quantity if product already exists
 * TODO: add product details dialog when clicked
 * */
 
 class CartDialog extends StatefulWidget {
-  final List<Item> cartItems;
+  final Set<Item> cartItems;
   final VoidCallback onClose;
   final VoidCallback onPlaceOrder;
   final void Function(Item, int) onUpdateQuantity;
@@ -40,29 +37,10 @@ class _CartDialogState extends State<CartDialog> {
         child: ListView.builder(
           itemCount: widget.cartItems.length,
           itemBuilder: (context, index) {
-            final item = widget.cartItems[index];
-            return Card(
-              child: ListTile(
-                title: Text(item.name),
-                subtitle: Text('${item.description} - Quantity: ${item.quantity}'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () {
-                       widget.onUpdateQuantity(item, 1);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.remove),
-                      onPressed: () {
-                        widget.onUpdateQuantity(item, -1);
-                      },
-                    ),
-                  ],
-                ),
-              ),
+            final item = widget.cartItems.elementAt(index);
+            return CartTile(
+              item: item,
+              onUpdateQuantity: widget.onUpdateQuantity,
             );
           },
         ),

@@ -35,8 +35,7 @@ class _AddItemPageState extends State<AddItemPage>
   final TextEditingController _tagController = TextEditingController();
   final List<String> _tags = [];
 
-  /* FIXME:
-  * reaches beyond the notification/task bar
+  /* FIXME: reaches beyond the notification/task bar
    */
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,7 @@ import '../main_pages/inventory_view.dart';
 class Sidebar extends StatelessWidget {
   final ValueChanged<Widget> onPageChanged;
   final Set<Item> myProducts;
-  final List<Order> myOrders;
+  final Set<Order> myOrders;
 
   Sidebar({
     Key? key,
