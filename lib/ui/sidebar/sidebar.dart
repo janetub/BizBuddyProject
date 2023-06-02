@@ -8,12 +8,14 @@ class Sidebar extends StatelessWidget {
   final ValueChanged<Widget> onPageChanged;
   final Set<Item> myProducts;
   final Set<Order> myOrders;
+  final Set<Item> cartItems;
 
   Sidebar({
     Key? key,
     required this.onPageChanged,
     required this.myProducts,
     required this.myOrders,
+    required this.cartItems,
   }) : super(key: key);
 
   void _addOrder(Order order) {
@@ -42,7 +44,10 @@ class Sidebar extends StatelessWidget {
               leading: const Icon(Icons.add_shopping_cart),
               title: const Text('Product Catalog'),
               onTap: () {
-                onPageChanged(ProductCatalogPage(productCatalog: myProducts, navigateToOrderStatus: () => onPageChanged(OrderStatusPage(orders: myOrders)),
+                onPageChanged(ProductCatalogPage(
+                  productCatalog: myProducts,
+                  cartItems: cartItems,
+                  navigateToOrderStatus: () => onPageChanged(OrderStatusPage(orders: myOrders)),
                   onPlaceOrder: _addOrder,
                 ));
                 Navigator.pop(context);

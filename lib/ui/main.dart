@@ -17,12 +17,18 @@ class MainCanvas extends StatefulWidget {
 class _MainCanvasState extends State<MainCanvas> {
   Set<Item> myProducts = <Item>{};
   Set<Order> myOrders = <Order>{};
+  Set<Item> cartItems = <Item>{};
   Widget? _currentPage;
 
   @override
   void initState() {
     super.initState();
-    _currentPage = ProductCatalogPage(productCatalog: myProducts, navigateToOrderStatus: _navigateToOrderStatus, onPlaceOrder: (Order value) {  },);
+    _currentPage = ProductCatalogPage(
+      productCatalog: myProducts,
+      cartItems: cartItems,
+      navigateToOrderStatus: _navigateToOrderStatus,
+      onPlaceOrder: (Order value) {},
+    );
   }
 
   void _navigateToOrderStatus() {
@@ -45,6 +51,7 @@ class _MainCanvasState extends State<MainCanvas> {
           onPageChanged: _onPageChanged,
           myProducts: myProducts,
           myOrders: myOrders,
+          cartItems: cartItems,
         ),
         appBar: AppBar(
           backgroundColor: Colors.black54,

@@ -11,12 +11,14 @@ import '../input_forms/edit_item.dart';
 
 class ProductCatalogPage extends StatefulWidget {
   final Set<Item> productCatalog;
+  final Set<Item> cartItems;
   final VoidCallback navigateToOrderStatus;
   final ValueChanged<Order> onPlaceOrder;
 
   ProductCatalogPage({
     Key? key,
     required this.productCatalog,
+    required this.cartItems,
     required this.navigateToOrderStatus,
     required this.onPlaceOrder,
   }) : super(key: key);
@@ -26,7 +28,7 @@ class ProductCatalogPage extends StatefulWidget {
 }
 
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
-  Set<Item> _cartItems = {};
+  late Set<Item> _cartItems = widget.cartItems;
 
   @override
   Widget build(BuildContext context) {
@@ -85,9 +87,30 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   }
 
   void _onPlaceOrder() {
-    Order order = Order(items: _cartItems);
-    widget.onPlaceOrder(order);
-    _showSuccessDialog(order);
+    // Check if all items have zero quantity
+    if (_cartItems.every((item) => item.quantity == 0)) {
+      // Show dialog to notify user that their cart is empty
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Empty Cart'),
+          content: const Text('All items in your cart have zero quantity.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Filter out items with zero quantity
+      final nonZeroItems = _cartItems.where((item) => item.quantity > 0).toSet();
+      // Create order with non-zero quantity items
+      Order order = Order(items: nonZeroItems);
+      widget.onPlaceOrder(order);
+      _showSuccessDialog(order);
+    }
   }
 
   void _onProductEdit(Item item) {
