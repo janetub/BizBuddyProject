@@ -28,7 +28,6 @@ class ProductCatalogPage extends StatefulWidget {
 }
 
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
-  late Set<Item> _cartItems = widget.cartItems;
 
   @override
   Widget build(BuildContext context) {
@@ -86,33 +85,6 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     );
   }
 
-  void _onPlaceOrder() {
-    // Check if all items have zero quantity
-    if (_cartItems.every((item) => item.quantity == 0)) {
-      // Show dialog to notify user that their cart is empty
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Empty Cart'),
-          content: const Text('All items in your cart have zero quantity.'),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-    } else {
-      // Filter out items with zero quantity
-      final nonZeroItems = _cartItems.where((item) => item.quantity > 0).toSet();
-      // Create order with non-zero quantity items
-      Order order = Order(items: nonZeroItems);
-      widget.onPlaceOrder(order);
-      _showSuccessDialog(order);
-    }
-  }
-
   void _onProductEdit(Item item) {
     Navigator.push(
       context,
@@ -135,7 +107,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     showDialog(
       context: context,
       builder: (context) => CartDialog(
-        cartItems: _cartItems,
+        cartItems: widget.cartItems,
         onClose: () => Navigator.pop(context),
         onPlaceOrder: _onPlaceOrder,
         onUpdateQuantity: _onUpdateQuantity,
@@ -143,22 +115,43 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     );
   }
 
+  void _onPlaceOrder() {
+    // Check if all items have zero quantity
+    if (widget.cartItems.every((item) => item.quantity == 0)) {
+      // Show dialog to notify user that their cart is empty
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Empty Cart'),
+          content: const Text('All items in your cart have zero quantity.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Filter out items with zero quantity
+      final nonZeroItems = widget.cartItems.where((item) => item.quantity > 0).toSet();
+      // Create order with non-zero quantity items
+      Order order = Order(items: nonZeroItems);
+      widget.onPlaceOrder(order);
+      _showSuccessDialog(order);
+      widget.cartItems.clear();
+    }
+  }
+
   void _showSuccessDialog(Order order) {
-    _onPlaceOrder();
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Success'),
           content: const Text(
-              'The item has been added to moved to the Order Status page for processing.'),
+              'The item has been added and moved to the Order Status page for processing.'),
           actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
             TextButton(
               child: const Text('Go to Order Status'),
               onPressed: () {
@@ -170,6 +163,12 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         );
       },
     );
+  }
+
+
+  void _navigateToOrderStatus() {
+    Navigator.of(context).pop();
+    widget.navigateToOrderStatus();
   }
 
   void _showAddItemPage() {
@@ -193,12 +192,12 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   }
 
   void _addToCart(Item item, int quantity) {
-    bool containsItem = _cartItems.any((cartItem) => cartItem.name == item.name);
+    bool containsItem = widget.cartItems.any((cartItem) => cartItem.name == item.name);
     if (containsItem) {
       // product already exists in cart
       if (item.quantity >= quantity) {
         setState(() {
-          Item cartItem = _cartItems.firstWhere((cartItem) => cartItem.name == item.name);
+          Item cartItem = widget.cartItems.firstWhere((cartItem) => cartItem.name == item.name);
           cartItem.quantity += quantity;
           item.quantity -= quantity;
         });
@@ -227,7 +226,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         setState(() {
           Item movProd = item.duplicate();
           movProd.quantity = quantity;
-          _cartItems.add(movProd);
+          widget.cartItems.add(movProd);
           item.quantity -= quantity;
         });
       } else {
@@ -288,7 +287,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         setState(() {
           item.quantity -= quantity;
           if(item.quantity == 0) {
-            _cartItems.remove(item);
+            widget.cartItems.remove(item);
           }
           // update productCatalog
           bool containsItem = widget.productCatalog.any((cartItem) => cartItem.name == item.name);

@@ -4,11 +4,13 @@ import '../../classes/all.dart';
 class CartTile extends StatefulWidget {
   final Item item;
   final void Function(Item, int) onUpdateQuantity;
+  final VoidCallback onRemove;
 
   const CartTile({
     Key? key,
     required this.item,
     required this.onUpdateQuantity,
+    required this.onRemove,
   }) : super(key: key);
 
   @override
@@ -74,8 +76,13 @@ class _CartTileState extends State<CartTile> {
             IconButton(
               icon: const Icon(Icons.remove),
               onPressed: () {
-                widget.onUpdateQuantity(widget.item, (int.tryParse(_quantityController.text) ?? 1));
+                final newQuantity =
+                    int.tryParse(_quantityController.text) ?? 1;
                 setState(() {});
+                if (widget.item.quantity == 1) {
+                  widget.onRemove();
+                }
+                widget.onUpdateQuantity(widget.item, newQuantity);
               },
             ),
           ],

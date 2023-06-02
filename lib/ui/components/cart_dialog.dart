@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 import 'cart_product_tile.dart';
 
+
 /*
 * TODO: add product details dialog when clicked
 * */
@@ -31,7 +32,14 @@ class _CartDialogState extends State<CartDialog> {
       backgroundColor: const Color(0xFFE5E5E5),
       title: const Text('Cart'),
       content: widget.cartItems.isEmpty
-          ? const Text('Your cart is empty.')
+          ? const Text(
+        'Your cart is empty.',
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.grey,
+        ),
+        textAlign: TextAlign.center,
+      )
           : SizedBox(
         width: double.maxFinite,
         child: ListView.builder(
@@ -41,6 +49,11 @@ class _CartDialogState extends State<CartDialog> {
             return CartTile(
               item: item,
               onUpdateQuantity: widget.onUpdateQuantity,
+              onRemove: () {
+                setState(() {
+                  widget.cartItems.remove(item);
+                });
+              },
             );
           },
         ),
