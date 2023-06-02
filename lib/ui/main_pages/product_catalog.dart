@@ -32,28 +32,28 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE5E5E5),
+      backgroundColor: const Color(0xFFEEEDF1),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
             onPressed: _showCartDialog,
-            backgroundColor: Colors.grey[400],
+            backgroundColor: Color(0xFFEF911E),
             elevation: 1,
             child: const Icon(
               Icons.shopping_cart,
-              color: Colors.black87,
+              color: Colors.white,
               size: 30,
             ),
           ),
           const SizedBox(height: 10),
           FloatingActionButton(
             onPressed: _showAddItemPage,
-            backgroundColor: Colors.grey[400],
+            backgroundColor: Color(0xFF1AB428),
             elevation: 1,
             child: const Icon(
               Icons.add,
-              color: Colors.black87,
+              color: Colors.white,
               size: 30,
             ),
           ),
@@ -127,6 +127,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           actions: [
             TextButton(
               child: const Text('OK'),
+              style: TextButton.styleFrom(
+                primary: Color(0xFFEF911E),
+              ),
               onPressed: () => Navigator.pop(context),
             ),
           ],
@@ -154,6 +157,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           actions: [
             TextButton(
               child: const Text('Go to Order Status'),
+              style: TextButton.styleFrom(
+                primary: Color(0xFFEF911E),
+              ),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
                 widget.navigateToOrderStatus();
@@ -211,6 +217,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               actions: [
                 TextButton(
                   child: const Text('OK'),
+                  style: TextButton.styleFrom(
+                    primary: Color(0xFFEF911E),
+                  ),
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
                   },
@@ -239,6 +248,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               actions: [
                 TextButton(
                   child: const Text('OK'),
+                  style: TextButton.styleFrom(
+                    primary: Color(0xFFEF911E),
+                  ),
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
                   },
@@ -261,6 +273,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           actions: [
             TextButton(
               child: const Text('Cancel'),
+              style: TextButton.styleFrom(
+                primary: Color(0xFFEF911E),
+              ),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
@@ -311,6 +326,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               actions: [
                 TextButton(
                   child: const Text('OK'),
+                  style: TextButton.styleFrom(
+                    primary: Color(0xFFEF911E),
+                  ),
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
                   },

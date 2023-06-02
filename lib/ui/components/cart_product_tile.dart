@@ -23,6 +23,10 @@ class _CartTileState extends State<CartTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: ExpansionTile(
         title: Text(widget.item.name),
         subtitle:
@@ -47,28 +51,17 @@ class _CartTileState extends State<CartTile> {
                     true,
                     enabledBorder:
                     OutlineInputBorder(borderRadius:
-                    BorderRadius.circular(10),
+                    BorderRadius.circular(15),
                         borderSide:
                         BorderSide(color:
                         Colors.grey)),
                     focusedBorder:
                     OutlineInputBorder(borderRadius:
-                    BorderRadius.circular(10),
+                    BorderRadius.circular(15),
                         borderSide:
                         BorderSide(color:
                         Colors.grey)),
-                    errorBorder:
-                    OutlineInputBorder(borderRadius:
-                    BorderRadius.circular(10),
-                        borderSide:
-                        BorderSide(color:
-                        Colors.red)),
-                    focusedErrorBorder:
-                    OutlineInputBorder(borderRadius:
-                    BorderRadius.circular(10),
-                        borderSide:
-                        BorderSide(color:
-                        Colors.red))),
+                    ),
                 keyboardType:
                 TextInputType.number,
               ),
@@ -76,10 +69,11 @@ class _CartTileState extends State<CartTile> {
             IconButton(
               icon: const Icon(Icons.remove),
               onPressed: () {
-                final newQuantity =
-                    int.tryParse(_quantityController.text) ?? 1;
+                final newQuantity = _quantityController.text == '0'
+                    ? 0
+                    : int.tryParse(_quantityController.text) ?? 1;
                 widget.onUpdateQuantity(widget.item, newQuantity);
-                if (widget.item.quantity <= 1) {
+                if (widget.item.quantity == 0) {
                   widget.onRemove();
                 }
                 _quantityController.clear();

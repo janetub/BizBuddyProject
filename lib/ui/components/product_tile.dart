@@ -34,13 +34,13 @@ class _ProductTileState extends State<ProductTile> {
       },
       background: Container(),
       secondaryBackground: ClipRRect(
-        borderRadius: BorderRadius.circular(7),
+        borderRadius: BorderRadius.circular(20),
         child: Container(
           color: Colors.red,
           child: Align(
             alignment: Alignment.centerRight,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(15),
               child: Icon(Icons.delete),
             ),
           ),
@@ -54,61 +54,87 @@ class _ProductTileState extends State<ProductTile> {
       child: Card(
         elevation: 1,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(7),
+          borderRadius: BorderRadius.circular(15),
         ),
-        child: ListTile(
-          onTap: () => widget.onProductEdit(widget.item),
-          title: Text(widget.item.name),
-          subtitle:
-          Text('${widget.item.description} - Quantity: ${widget.item.quantity}'),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 60,
-                child: TextFormField(
-                  controller: _quantityController,
-                  decoration: InputDecoration(
-                    labelText: 'Qty',
-                    labelStyle: TextStyle(color: Colors.grey),
-                    fillColor: Colors.white,
-                    filled: true,
-                    enabledBorder:
-                    OutlineInputBorder(borderRadius:
-                    BorderRadius.circular(10),
-                        borderSide:
-                        BorderSide(color:
-                        Colors.grey)),
-                    focusedBorder:
-                    OutlineInputBorder(borderRadius:
-                    BorderRadius.circular(10),
-                        borderSide:
-                        BorderSide(color:
-                        Colors.grey)),
-                    errorBorder:
-                    OutlineInputBorder(borderRadius:
-                    BorderRadius.circular(10),
-                        borderSide:
-                        BorderSide(color:
-                        Colors.red)),
-                    focusedErrorBorder:
-                    OutlineInputBorder(borderRadius:
-                    BorderRadius.circular(10),
-                        borderSide:
-                        BorderSide(color:
-                        Colors.red)),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(5,10,0,10),
+            child: Column(
+              children: [
+                ListTile(
+                  onTap: () => widget.onProductEdit(widget.item),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(widget.item.name),
+                      Text('₱ ${widget.item.price}'),
+                    ],
                   ),
-                  keyboardType:
-                  TextInputType.number,
+                  subtitle:
+                  Text('Stocks: ${widget.item.quantity}\n${widget.item.description}',
+                  maxLines: 2,
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 60,
+                        height: 50,
+                        child: TextFormField(
+                          controller: _quantityController,
+                          decoration: InputDecoration(
+                            labelText: 'Qty',
+                            labelStyle: TextStyle(color: Colors.grey),
+                            fillColor: Colors.white,
+                            filled: true,
+                            enabledBorder:
+                            OutlineInputBorder(borderRadius:
+                            BorderRadius.circular(15),
+                                borderSide:
+                                BorderSide(color:
+                                Colors.grey)),
+                            focusedBorder:
+                            OutlineInputBorder(borderRadius:
+                            BorderRadius.circular(15),
+                                borderSide:
+                                BorderSide(color:
+                                Colors.grey)),
+                          ),
+                          keyboardType:
+                          TextInputType.number,
+                        ),
+                      ),
+                      IconButton(
+                        //padding: EdgeInsets.zero,
+                        tooltip: "Add product to cart",
+                        icon: Icon(
+                          Icons.add_shopping_cart,
+                          color: Color(0xFFEF911E),
+                        ),
+                        onPressed: () => widget.onAddToCart(widget.item, int.tryParse(_quantityController.text) ?? 1),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.add_shopping_cart),
-                onPressed: () => widget.onAddToCart(widget.item, int.tryParse(_quantityController.text) ?? 1),
-              ),
-            ],
+                if (widget.item.tags.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 0, 15, 5),
+                    child: Wrap(
+                      spacing: 5,
+                      alignment: WrapAlignment.start,
+                      children: widget.item.tags.map((tag) =>
+                          Text(
+                            '#$tag',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          )
+                      ).toList(),
+                    ),
+                  ),
+              ],
+            )
           ),
-        ),
       ),
     );
   }

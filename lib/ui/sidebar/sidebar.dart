@@ -34,7 +34,7 @@ class Sidebar extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
-                  'images/BizBuddy_Header_zoomed.png',
+                  'images/banner.png',
                 ),
                 fit: BoxFit.cover,
               ),

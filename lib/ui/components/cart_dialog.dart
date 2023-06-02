@@ -29,7 +29,10 @@ class _CartDialogState extends State<CartDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFFE5E5E5),
+      backgroundColor: const Color(0xFFEEEDF1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
       title: const Text('Cart'),
       content: widget.cartItems.isEmpty
           ? const Text(
@@ -61,13 +64,28 @@ class _CartDialogState extends State<CartDialog> {
       actions: [
         TextButton(
           child: const Text('Close'),
+          style: TextButton.styleFrom(
+            primary: Colors.grey,
+          ),
           onPressed: widget.onClose,
         ),
         if (widget.cartItems.isNotEmpty)
-          TextButton(
-            child: const Text('Place Order'),
+          ElevatedButton(
             onPressed: widget.onPlaceOrder,
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              backgroundColor: Color(0xFF1AB428),
+            ),
+            child: const Column(
+              children: [
+                SizedBox(width: 4),
+                Text('Place Order'),
+              ],
+            ),
           ),
+        SizedBox(width: 0),
       ],
     );
   }

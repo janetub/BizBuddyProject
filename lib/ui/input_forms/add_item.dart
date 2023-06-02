@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 /*
 * TODO: products must not have the same names
+* TODO: limit name input
 * */
 class AddItemPage extends StatefulWidget {
   final Function(Item) onSubmit;
@@ -137,6 +138,9 @@ class _AddItemPageState extends State<AddItemPage>
                                             Navigator.of(context).pop();
                                           },
                                           child: Text('OK'),
+                                          style: TextButton.styleFrom(
+                                            primary: Color(0xFFEF911E),
+                                          ),
                                         ),
                                       ],
                                     );
@@ -194,6 +198,9 @@ class _AddItemPageState extends State<AddItemPage>
                                             Navigator.of(context).pop();
                                           },
                                           child: Text('OK'),
+                                          style: TextButton.styleFrom(
+                                            primary: Color(0xFFEF911E),
+                                          ),
                                         ),
                                       ],
                                     );
@@ -274,6 +281,7 @@ class _AddItemPageState extends State<AddItemPage>
                                         padding: EdgeInsets.all(4),
                                         child: Icon(
                                           Icons.arrow_upward,
+                                          color: Color(0xFFEF911E),
                                           size: 25,
                                         ),
                                       ),
@@ -300,6 +308,7 @@ class _AddItemPageState extends State<AddItemPage>
                                         padding: EdgeInsets.all(4),
                                         child: Icon(
                                           Icons.arrow_downward,
+                                          color: Color(0xFFEF911E),
                                           size: 25,
                                         ),
                                       ),
@@ -362,6 +371,7 @@ class _AddItemPageState extends State<AddItemPage>
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(Icons.add),
+                              color: Color(0xFFEF911E),
                               onPressed: () {
                                 setState(() {
                                   final tag = _tagController.text.trim();
@@ -388,6 +398,7 @@ class _AddItemPageState extends State<AddItemPage>
                         SizedBox(height: 10),
                         DropdownButton<Item>(
                           value: null,
+                          iconEnabledColor: Color(0xFFEF911E),
                           hint: Text('Select Components'),
                           items: _rawMaterials.map((Item rawMaterial) {
                             return DropdownMenuItem<Item>(
@@ -412,7 +423,7 @@ class _AddItemPageState extends State<AddItemPage>
                                           keyboardType: TextInputType.number,
                                           initialValue: quantity.toString(),
                                           onChanged: (value) {
-                                            quantity = int.tryParse(value) ?? 0;
+                                            quantity = int.tryParse(value) ?? 1;
                                           },
                                         ),
                                       ],
@@ -426,10 +437,12 @@ class _AddItemPageState extends State<AddItemPage>
                                       ),
                                       TextButton(
                                         onPressed: () {
-                                          setState(() {
-                                            selectedRawMaterial.quantity += quantity;
-                                            _selectedRawMaterials.add(selectedRawMaterial);
-                                          });
+                                          if (quantity != 0) {
+                                            setState(() {
+                                              selectedRawMaterial.quantity += quantity;
+                                              _selectedRawMaterials.add(selectedRawMaterial);
+                                            });
+                                          }
                                           Navigator.of(context).pop();
                                         },
                                         child: Text('Confirm'),
@@ -512,7 +525,7 @@ class _AddItemPageState extends State<AddItemPage>
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                backgroundColor: Color(0xFF00B894),
+                                backgroundColor: Color(0xFF1AB428),
                                 // Color(0xFF00B894) represents the color #00B894
                                 // Color(0xFF808080) represents the color #808080
                                 // Color(0xFFFFC107) represents the color #FFC107
@@ -571,7 +584,7 @@ class _AddItemPageState extends State<AddItemPage>
       if(_dateBoughtController.text.isNotEmpty) {
         newItem.dateBought = DateTime.parse(_dateBoughtController.text);
       }
-      newItem.tags?.addAll(_tags);
+      newItem.tags.addAll(_tags);
       newItem.components.addAll(_selectedRawMaterials);
       widget.onSubmit(newItem);
 

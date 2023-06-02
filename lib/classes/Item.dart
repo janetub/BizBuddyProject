@@ -10,7 +10,7 @@ class Item {
   double _price = 0;
   int _quantity = 0;
   DateTime? _dateBought;
-  final Set<String> _tags = {};
+  Set<String> tags = {};
   String description;
   Set<Item> components = {};
 
@@ -60,13 +60,6 @@ class Item {
     _dateBought = value;
   }
 
-  Set<String>? get tags => _tags;
-
-  void addTag(String tag) => _tags.add(tag);
-  void removeTag(String tag) => _tags.remove(tag);
-  void addComponent(Item component) => components.add(component);
-  void removeComponent(Item component) => components.remove(component);
-
   int get quantity => _quantity;
 
   set quantity(int newQuantity) {
@@ -93,7 +86,7 @@ class Item {
     newItem._price = _price;
     newItem._quantity = 0;
     newItem._dateBought = _dateBought;
-    newItem._tags.addAll(_tags);
+    newItem.tags.addAll(tags);
     newItem.components.addAll(components);
     return newItem;
   }
