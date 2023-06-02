@@ -7,12 +7,12 @@ import 'all.dart';
 * */
 class Order {
   final String orderId;
-  final List<Item> items;
-  final List<OrderStatus> statuses;
+  final Set<Item> items;
+  final Set<OrderStatus> statuses;
   int currentStatusIndex;
   DateTime datePlaced;
 
-  Order({required this.items,}) : statuses = [], currentStatusIndex = -1, orderId = idGenerator(),
+  Order({required this.items,}) : statuses = {}, currentStatusIndex = -1, orderId = idGenerator(),
         datePlaced = DateTime.now() {if (items.isEmpty) {throw ArgumentError('An order must have at least one item.');}
     for (var item in items) {
       item.dateBought = DateTime.now();
@@ -68,7 +68,7 @@ class Order {
 
   OrderStatus? getCurrentStatus() {
     if (currentStatusIndex >= 0 && currentStatusIndex < statuses.length) {
-      return statuses[currentStatusIndex];
+      return statuses.elementAt(currentStatusIndex);
     }
     return null;
   }
