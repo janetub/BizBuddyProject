@@ -86,4 +86,15 @@ class Item {
   {
     return _quantity > 0;
   }
+
+  Item duplicate() {
+    Item newItem = Item(name, description);
+    newItem._cost = _cost;
+    newItem._price = _price;
+    newItem._quantity = 0;
+    newItem._dateBought = _dateBought;
+    newItem._tags.addAll(_tags);
+    newItem.components.addAll(components);
+    return newItem;
+  }
 }
