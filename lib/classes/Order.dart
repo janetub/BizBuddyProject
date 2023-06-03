@@ -15,7 +15,7 @@ class Order {
   Order({required this.items,}) : statuses = {}, currentStatusIndex = -1, orderId = idGenerator(),
         datePlaced = DateTime.now() {if (items.isEmpty) {throw ArgumentError('An order must have at least one item.');}
     for (var item in items) {
-      item.dateBought = DateTime.now();
+      item.dateAdded = DateTime.now();
     }
   }
 
@@ -26,7 +26,7 @@ class Order {
 
   void addItem(Item item) {
     items.add(item);
-    item.dateBought = DateTime.now();
+    item.dateAdded = DateTime.now();
   }
 
   void removeItem(Item item) {

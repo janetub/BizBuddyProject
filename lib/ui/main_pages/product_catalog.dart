@@ -171,12 +171,6 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     );
   }
 
-
-  void _navigateToOrderStatus() {
-    Navigator.of(context).pop();
-    widget.navigateToOrderStatus();
-  }
-
   void _showAddItemPage() {
     showModalBottomSheet(
       context: context,
@@ -198,67 +192,69 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   }
 
   void _addToCart(Item item, int quantity) {
-    bool containsItem = widget.cartItems.any((cartItem) => cartItem.name == item.name);
-    if (containsItem) {
-      // product already exists in cart
-      if (item.quantity >= quantity) {
-        setState(() {
-          Item cartItem = widget.cartItems.firstWhere((cartItem) => cartItem.name == item.name);
-          cartItem.quantity += quantity;
-          item.quantity -= quantity;
-        });
-      } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              title: const Text('Insufficient Stock'),
-              content: const Text('The requested quantity is not available.'),
-              actions: [
-                TextButton(
-                  child: const Text('OK'),
-                  style: TextButton.styleFrom(
-                    primary: Color(0xFFEF911E),
+    if(quantity>0) {
+      bool containsItem = widget.cartItems.any((cartItem) => cartItem.name == item.name);
+      if (containsItem) {
+        // product already exists in cart
+        if (item.quantity >= quantity) {
+          setState(() {
+            Item cartItem = widget.cartItems.firstWhere((cartItem) => cartItem.name == item.name);
+            cartItem.quantity += quantity;
+            item.quantity -= quantity;
+          });
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext dialogContext) {
+              return AlertDialog(
+                title: const Text('Insufficient Stock'),
+                content: const Text('The requested quantity is not available.'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    style: TextButton.styleFrom(
+                      primary: Color(0xFFEF911E),
+                    ),
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                    },
                   ),
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
-    } else {
-      // new product in cart
-      if (item.quantity >= quantity) {
-        setState(() {
-          Item movProd = item.duplicate();
-          movProd.quantity = quantity;
-          widget.cartItems.add(movProd);
-          item.quantity -= quantity;
-        });
+                ],
+              );
+            },
+          );
+        }
       } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              title: const Text('Insufficient Stock'),
-              content: const Text('The requested quantity is not available.'),
-              actions: [
-                TextButton(
-                  child: const Text('OK'),
-                  style: TextButton.styleFrom(
-                    primary: Color(0xFFEF911E),
+        // new product in cart
+        if (item.quantity >= quantity) {
+          setState(() {
+            Item movProd = item.duplicate();
+            movProd.quantity = quantity;
+            widget.cartItems.add(movProd);
+            item.quantity -= quantity;
+          });
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext dialogContext) {
+              return AlertDialog(
+                title: const Text('Insufficient Stock'),
+                content: const Text('The requested quantity is not available.'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    style: TextButton.styleFrom(
+                      primary: Color(0xFFEF911E),
+                    ),
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                    },
                   ),
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+                ],
+              );
+            },
+          );
+        }
       }
     }
   }

@@ -115,22 +115,29 @@ class _ProductTileState extends State<ProductTile> {
                     ],
                   ),
                 ),
+                /*
+                * TODO: remove tags, display during search
+                * */
                 if (widget.item.tags.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(15, 0, 15, 5),
-                    child: Wrap(
-                      spacing: 5,
-                      alignment: WrapAlignment.start,
-                      children: widget.item.tags.map((tag) =>
-                          Text(
-                            '#$tag',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey,
-                            ),
-                          )
-                      ).toList(),
-                    ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 0, 15, 5),
+                        child: Wrap(
+                          spacing: 5,
+                          alignment: WrapAlignment.start,
+                          children: widget.item.tags.map((tag) =>
+                              Text(
+                                '#$tag',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey,
+                                ),
+                              )
+                          ).toList(),
+                        ),
+                      ),
+                    ],
                   ),
               ],
             )

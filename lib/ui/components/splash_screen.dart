@@ -22,8 +22,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Lottie.asset('animations/handshake.json'),
+      body: Padding(
+        padding: const EdgeInsets.only(right: 25.0),
+        child: Center(
+          child: Lottie.asset('animations/handshake.json'),
+        ),
       ),
     );
   }

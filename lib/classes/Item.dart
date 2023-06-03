@@ -9,14 +9,14 @@ class Item {
   double _cost = 0;
   double _price = 0;
   int _quantity = 0;
-  DateTime? _dateBought;
+  DateTime? _dateAdded;
   Set<String> tags = {};
   String description;
   Set<Item> components = {};
 
   Item(this.name, this.description)
   {
-    dateBought = DateTime.now();
+    dateAdded = DateTime.now();
   }
 
   double get cost {
@@ -51,13 +51,13 @@ class Item {
 
   double calculateTotalValue() => _price * _quantity;
 
-  DateTime? get dateBought => _dateBought;
+  DateTime? get dateAdded => _dateAdded;
 
-  set dateBought(DateTime? value) {
+  set dateAdded(DateTime? value) {
     if (value != null && value.isAfter(DateTime.now())) {
       throw ArgumentError('Date bought cannot be in the future.');
     }
-    _dateBought = value;
+    _dateAdded = value;
   }
 
   int get quantity => _quantity;
@@ -85,7 +85,7 @@ class Item {
     newItem._cost = _cost;
     newItem._price = _price;
     newItem._quantity = 0;
-    newItem._dateBought = _dateBought;
+    newItem._dateAdded = _dateAdded;
     newItem.tags.addAll(tags);
     newItem.components.addAll(components);
     return newItem;
