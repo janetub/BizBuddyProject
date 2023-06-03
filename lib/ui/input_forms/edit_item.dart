@@ -20,7 +20,7 @@ class _EditItemPageState extends State<EditItemPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _markupController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
 
   @override
@@ -29,7 +29,7 @@ class _EditItemPageState extends State<EditItemPage> {
     _nameController.text = widget.item.name;
     _descriptionController.text = widget.item.description;
     _costController.text = widget.item.cost.toString();
-    _priceController.text = widget.item.price.toString();
+    _markupController.text = widget.item.price.toString();
     _quantityController.text = widget.item.quantity.toString();
   }
 
@@ -79,8 +79,8 @@ class _EditItemPageState extends State<EditItemPage> {
                     },
                   ),
                   TextFormField(
-                    controller: _priceController,
-                    decoration: InputDecoration(labelText: 'Price'),
+                    controller: _markupController,
+                    decoration: InputDecoration(labelText: 'Markup'),
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -121,7 +121,7 @@ class _EditItemPageState extends State<EditItemPage> {
         _descriptionController.text,
       );
       updatedItem.cost = double.parse(_costController.text);
-      updatedItem.price = double.parse(_priceController.text);
+      updatedItem.markup = double.parse(_markupController.text);
       updatedItem.quantity = int.parse(_quantityController.text);
 
       widget.onSubmit(updatedItem);

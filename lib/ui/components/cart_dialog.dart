@@ -26,6 +26,11 @@ class CartDialog extends StatefulWidget {
 }
 
 class _CartDialogState extends State<CartDialog> {
+
+  double get _totalValue {
+    return widget.cartItems.fold(0, (sum, item) => sum + item.calculateTotalValue());
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

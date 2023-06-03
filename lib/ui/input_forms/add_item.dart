@@ -57,7 +57,7 @@ class _AddItemPageState extends State<AddItemPage>
   final _priceInfoButton = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _markupController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _dateBoughtController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -202,9 +202,9 @@ class _AddItemPageState extends State<AddItemPage>
                         SizedBox(height: 15),
                         TextFormField(
                           focusNode: _priceFocusNode,
-                          controller: _priceController,
+                          controller: _markupController,
                           decoration: InputDecoration(
-                            labelText: 'Price',
+                            labelText: 'Markup',
                             labelStyle: TextStyle(color: Colors.grey),
                             fillColor: Colors.white,
                             filled: true,
@@ -230,8 +230,8 @@ class _AddItemPageState extends State<AddItemPage>
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                                      title: Text('Price'),
-                                      content: Text('Selling price of the product.'),
+                                      title: Text('Markup'),
+                                      content: Text('Markup is the amount added to the cost of a product to determine its selling price.'),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
@@ -587,7 +587,7 @@ class _AddItemPageState extends State<AddItemPage>
     setState(() {
       _nameController.clear();
       _costController.clear();
-      _priceController.clear();
+      _markupController.clear();
       _quantityController.clear();
       _dateBoughtController.clear();
       _tags.clear();
@@ -600,7 +600,7 @@ class _AddItemPageState extends State<AddItemPage>
     if (_formKey.currentState!.validate()) {
       final newItem = Item(_nameController.text, _descriptionController.text);
       newItem.cost = double.parse(_costController.text);
-      newItem.price = double.parse(_priceController.text);
+      newItem.markup = double.parse(_markupController.text);
       newItem.quantity += (int.parse(_quantityController.text));
       if(_dateBoughtController.text.isNotEmpty) {
         newItem.dateAdded = DateTime.parse(_dateBoughtController.text);

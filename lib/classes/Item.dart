@@ -1,21 +1,19 @@
 /*
-* TODO:
 * This class represents an item in the inventory.
 * It can be a product to sell or a raw material.
-* Add necessary attributes and methods to this class to manage the item’s availability and other details.
  */
+
 class Item {
   String name;
   double _cost = 0;
-  double _price = 0;
+  double _markup = 0;
   int _quantity = 0;
   DateTime? _dateAdded;
   Set<String> tags = {};
   String description;
   Set<Item> components = {};
 
-  Item(this.name, this.description)
-  {
+  Item(this.name, this.description) {
     dateAdded = DateTime.now();
   }
 
@@ -39,17 +37,23 @@ class Item {
     }
   }
 
-  double get price => _price;
+  double get price => cost + _markup;
 
-  set price(double value) {
+  set markup(double value) {
     if (value >= 0) {
-      _price = value;
+      _markup = value;
     } else {
-      throw ArgumentError('Price cannot be negative.');
+      throw ArgumentError('Markup cannot be negative.');
     }
   }
 
-  double calculateTotalValue() => _price * _quantity;
+  double calculateTotalValue() {
+    double totalValue = price * _quantity;
+    for (Item component in components) {
+      totalValue += component.calculateTotalValue();
+    }
+    return totalValue;
+  }
 
   DateTime? get dateAdded => _dateAdded;
 
@@ -70,20 +74,18 @@ class Item {
     }
   }
 
-  double getProfit()
-  {
+  double getProfit() {
     return (price - cost) * _quantity;
   }
 
-  bool isInStock()
-  {
+  bool isInStock() {
     return _quantity > 0;
   }
 
   Item duplicate() {
     Item newItem = Item(name, description);
     newItem._cost = _cost;
-    newItem._price = _price;
+    newItem._markup = _markup;
     newItem._quantity = 0;
     newItem._dateAdded = _dateAdded;
     newItem.tags.addAll(tags);

@@ -35,7 +35,7 @@ class _SearchResultTileState extends State<SearchResultTile> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(widget.item.name),
-                  Text('₱ ${widget.item.price}'),
+                  Text('₱ ${widget.item.cost}'),
                 ],
               ),
               trailing: Row(
