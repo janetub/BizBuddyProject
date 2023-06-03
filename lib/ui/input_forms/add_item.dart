@@ -360,6 +360,9 @@ class _AddItemPageState extends State<AddItemPage>
                           ],
                         ),
                         SizedBox(height: 10),
+                        /*
+                        * FIXME: date bought bug
+                        * */
                         TextFormField(
                           controller: _dateBoughtController,
                           keyboardType: TextInputType.none,

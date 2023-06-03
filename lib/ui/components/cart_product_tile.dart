@@ -28,9 +28,19 @@ class _CartTileState extends State<CartTile> {
         borderRadius: BorderRadius.circular(15),
       ),
       child: ExpansionTile(
-        title: Text(widget.item.name),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(widget.item.name),
+            Text('₱ ${widget.item.price}'),
+          ],
+        ),
         subtitle:
-        Text('${widget.item.description} - Quantity: ${widget.item.quantity}'),
+        Text('Quantity: ${widget.item.quantity}',
+        style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

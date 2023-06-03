@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 import 'cart_product_tile.dart';
-
+import 'package:intl/intl.dart';
 
 /*
 * TODO: add product details dialog when clicked
@@ -26,8 +26,7 @@ class CartDialog extends StatefulWidget {
 }
 
 class _CartDialogState extends State<CartDialog> {
-
-  double get _totalValue {
+  double get _totalPrice {
     return widget.cartItems.fold(0, (sum, item) => sum + item.calculateTotalValue());
   }
 
@@ -50,29 +49,44 @@ class _CartDialogState extends State<CartDialog> {
       )
           : SizedBox(
         width: double.maxFinite,
-        child: ListView.builder(
-          itemCount: widget.cartItems.length,
-          itemBuilder: (context, index) {
-            final item = widget.cartItems.elementAt(index);
-            return CartTile(
-              item: item,
-              onUpdateQuantity: widget.onUpdateQuantity,
-              onRemove: () {
-                setState(() {
-                  widget.cartItems.remove(item);
-                });
-              },
-            );
-          },
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.cartItems.length,
+                itemBuilder: (context, index) {
+                  final item = widget.cartItems.elementAt(index);
+                  return CartTile(
+                    item: item,
+                    onUpdateQuantity: widget.onUpdateQuantity,
+                    onRemove: () {
+                      setState(() {
+                        widget.cartItems.remove(item);
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child:
+                  Text('Total Price: ₱${NumberFormat('#,##0.00').format(_totalPrice)}'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
       actions: [
         TextButton(
-          child: const Text('Close'),
           style: TextButton.styleFrom(
             primary: Colors.grey,
           ),
           onPressed: widget.onClose,
+          child: const Text('Close'),
         ),
         if (widget.cartItems.isNotEmpty)
           ElevatedButton(

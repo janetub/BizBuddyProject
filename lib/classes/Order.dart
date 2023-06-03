@@ -5,6 +5,11 @@ import 'all.dart';
 * Add attributes and methods to this class to manage the order’s status and other details.
 * add feature typing number of quantity to order
 * */
+
+/*
+*
+* */
+
 class Order {
   final String orderId;
   final Set<Item> items;

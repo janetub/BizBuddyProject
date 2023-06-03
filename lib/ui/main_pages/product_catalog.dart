@@ -70,8 +70,11 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           textAlign: TextAlign.center,
         )
             : ListView.builder(
-          itemCount: widget.productCatalog.length,
+          itemCount: widget.productCatalog.length + 1,
           itemBuilder: (context, index) {
+            if (index == widget.productCatalog.length) {
+              return Container(height: kFloatingActionButtonMargin + 120);
+            }
             final item = widget.productCatalog.elementAt(index);
             return ProductTile(
               item: item,
@@ -163,6 +166,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               onPressed: () {
                 Navigator.of(dialogContext).pop();
                 widget.navigateToOrderStatus();
+                Navigator.of(dialogContext).pop();
               },
             ),
           ],

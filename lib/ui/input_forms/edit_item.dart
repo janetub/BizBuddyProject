@@ -23,13 +23,18 @@ class _EditItemPageState extends State<EditItemPage> {
   final TextEditingController _markupController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
 
+  /*
+  * TODO: display old price
+  *  TODO: stocks
+  * */
+
   @override
   void initState() {
     super.initState();
     _nameController.text = widget.item.name;
     _descriptionController.text = widget.item.description;
     _costController.text = widget.item.cost.toString();
-    _markupController.text = widget.item.price.toString();
+    _markupController.text = (widget.item.price - widget.item.cost).toString();
     _quantityController.text = widget.item.quantity.toString();
   }
 
