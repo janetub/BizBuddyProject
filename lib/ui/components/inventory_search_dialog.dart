@@ -53,18 +53,34 @@ class _InventorySearchDialogState extends State<InventorySearchDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
+              cursorColor: Color(0xFFEF911E),
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search',
-                prefixIcon: Icon(Icons.search),
+                labelStyle: TextStyle(color: Colors.grey),
+                fillColor: Colors.white,
+                filled: true,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                prefixIcon: Icon(
+                    Icons.search,
+                  color: Color(0xFFEF911E),
+                ),
               ),
               onChanged: _searchInventory,
             ),
             SizedBox(height: 20),
             Expanded(
               child: Scrollbar(
-                  thickness: 3,
-                  interactive: true,
+                isAlwaysShown: true,
+                thickness: 3,
+                interactive: true,
                 child: ListView.builder(
                   itemCount: _searchResults.length,
                   itemBuilder: (context, index) {

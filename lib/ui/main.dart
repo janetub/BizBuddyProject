@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'components/search_dialog.dart';
 import 'components/splash_screen.dart';
 import 'main_pages/product_catalog.dart';
 import 'main_pages/order_status.dart';
@@ -22,6 +23,8 @@ class _MainCanvasState extends State<MainCanvas> {
   Set<Order> myOrders = <Order>{};
   Set<Item> cartItems = <Item>{};
   Widget? _currentPage;
+  String _currentPageTitle = 'Product Catalog';
+  VoidCallback? _onSearchButtonPressed;
 
   @override
   void initState() {
@@ -31,45 +34,69 @@ class _MainCanvasState extends State<MainCanvas> {
       cartItems: cartItems,
       navigateToOrderStatus: _navigateToOrderStatus,
       onPlaceOrder: (Order value) {},
+      onSearchButtonPressed: (void Function() value) => _onSearchButtonPressed = value,
     );
   }
 
   void _navigateToOrderStatus() {
     setState(() {
       _currentPage = OrderStatusPage(orders: myOrders);
+      _currentPageTitle = 'Order Status';
     });
   }
 
   void _onPageChanged(Widget page) {
     setState(() {
       _currentPage = page;
+      if (page is ProductCatalogPage) {
+        _currentPageTitle = 'Product Catalog';
+      } else if (page is OrderStatusPage) {
+        _currentPageTitle = 'Order Status';
+      } else if (page is InventoryPage) {
+        _currentPageTitle = 'Inventory View';
+      } else {
+        _currentPageTitle = 'BizBuddy';
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        drawer: Sidebar(
-          onPageChanged: _onPageChanged,
-          myProducts: myProducts,
-          myOrders: myOrders,
-          cartItems: cartItems,
-        ),
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: const Color(0xFFEEEDF1),
-          centerTitle: true,
-          title: Text(
-            'BizBuddy',
-            style: TextStyle(color: Color(0xFF545454)),
-          ),
-          iconTheme: IconThemeData(color: Color(0xFF545454)),
-        ),
-        body: Container(
-          child: _currentPage,
-        ),
-      ),
+        home: Scaffold(
+            drawer: Sidebar(
+              onPageChanged: _onPageChanged,
+              myProducts: myProducts,
+              myOrders: myOrders,
+              cartItems: cartItems,
+              onSearchButtonPressed: (void Function() value) => _onSearchButtonPressed = value,
+            ),
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: const Color(0xFFEEEDF1),
+              centerTitle: true,
+              title: Text(
+                _currentPageTitle,
+                style: TextStyle(color: Color(0xFF545454)),
+              ),
+              iconTheme: IconThemeData(color: Color(0xFF545454)),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () async {
+                    if(_currentPage is ProductCatalogPage) {
+                      _onSearchButtonPressed?.call();
+                    } else if (_currentPage is OrderStatusPage) {
+                      // TODO
+                    } else if (_currentPage is InventoryPage) {
+                      // TODO
+                    }
+                  },
+                ),
+              ],
+            ),
+            body : Container(child : _currentPage)
+        )
     );
   }
 }

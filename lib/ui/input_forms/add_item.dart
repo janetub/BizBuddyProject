@@ -35,11 +35,30 @@ class _AddItemPageState extends State<AddItemPage>
     samp2.tags.add("sweet");
     samp2.tags.add("ingredients");
     samp2.tags.add("fats");
+    samp2.tags.add("fats");
+    samp2.tags.add("fats");
+    samp2.tags.add("fats");
+    samp2.tags.add("fats2");
+    samp2.tags.add("fats3");
+    samp2.tags.add("fats4");
+    samp2.tags.add("fats5");
+    samp2.tags.add("fats6");
+    samp2.tags.add("fats7");
+    samp2.tags.add("fats8");
+    samp2.tags.add("fats9");
     samp2.quantity = 3;
     inventory.addItem(samp2);
     Item samp3 = Item('Eggs', 'A nutritious food produced by chickens');
     samp3.tags.add("white");
     inventory.addItem(samp3);
+    Item samp4 = Item('Berry Berry Berry Berry Berry Berry The quick brown fox', '');
+    inventory.addItem(samp4);
+    Item samp5 = Item('Straw', '');
+    inventory.addItem(samp5);
+    Item samp6 = Item('Bag', '');
+    inventory.addItem(samp6);
+    Item samp7 = Item('Paper', '');
+    inventory.addItem(samp7);
   }
   @override
   void dispose() {

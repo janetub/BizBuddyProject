@@ -53,7 +53,8 @@ class _CartDialogState extends State<CartDialog> {
           children: [
             Expanded(
               child: Scrollbar(
-                thickness: 3,
+                isAlwaysShown: true,
+                thickness: 3.0,
                 interactive: true,
                 child: ListView.builder(
                   itemCount: widget.cartItems.length,

@@ -15,6 +15,7 @@ class ProductCatalogPage extends StatefulWidget {
   final Set<Item> cartItems;
   final VoidCallback navigateToOrderStatus;
   final ValueChanged<Order> onPlaceOrder;
+  final ValueChanged<VoidCallback> onSearchButtonPressed;
 
   ProductCatalogPage({
     Key? key,
@@ -22,6 +23,7 @@ class ProductCatalogPage extends StatefulWidget {
     required this.cartItems,
     required this.navigateToOrderStatus,
     required this.onPlaceOrder,
+    required this.onSearchButtonPressed,
   }) : super(key: key);
 
   @override
@@ -30,17 +32,29 @@ class ProductCatalogPage extends StatefulWidget {
 
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
 
+  final TextEditingController _searchController = TextEditingController();
+  Set<Item> filteredItems = {};
+  final ScrollController _scrollController = ScrollController();
+  bool _isSearchFieldVisible = true;
+
   // TODO: for debugging, remove later
   @override
   void initState() {
     super.initState();
+    widget.onSearchButtonPressed(_searchButtonPressed);
     for (int i = 1; i <= 15; i++) {
       Item item = Item('Item $i', 'Description for Item $i');
       item.cost = i * 10;
       item.markup = i * 5;
       item.quantity = 100 - (i * 5);
       if(i%2==0) {
-        item.description = 'The quick brown fox jumps over the lazy dog.';
+        item.description = 'The quick brown fox jumps over the lazy dog. The dog found this entertaining and the fox laughs at the dog\'s reaction. The dog realizing this also laughs at himself. After awhile, both became friends.';
+        item.tags.add('Lorem');
+        item.tags.add('Ipsum');
+        item.tags.add('Solem');
+        item.tags.add('Lorem');
+        item.tags.add('Animal');
+        item.tags.add('Door');
         item.tags.add('Lorem');
         item.tags.add('Ipsum');
         item.tags.add('Solem');
@@ -52,124 +66,41 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         item.components.add(Item('Tulip',''));
         item.components.add(Item('Mop',''));
         item.components.add(Item('Cat',''));
+        item.components.add(Item('Roof',''));item.components.add(Item('Mop',''));
+        item.components.add(Item('Tulip',''));
+        item.components.add(Item('Mop',''));
+        item.components.add(Item('Cat',''));
         item.components.add(Item('Roof',''));
       }
       widget.productCatalog.add(item);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFEEEDF1),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              FloatingActionButton(
-                onPressed: _showCartDialog,
-                backgroundColor: Color(0xFFEF911E),
-                elevation: 1,
-                heroTag: 'cartButton',
-                tooltip: 'Check out cart',
-                child: const Icon(
-                  Icons.shopping_cart,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              ),
-              if (widget.cartItems.length > 0)
-                Positioned(
-                  right: 1,
-                  top: 1,
-                  child: Container(
-                    padding: EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    constraints: BoxConstraints(
-                      minWidth: 20,
-                      minHeight: 20,
-                    ),
-                    child: Text(
-                      widget.cartItems.length > 99 ? '99+' : '${widget.cartItems.length}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            onPressed: _showAddItemPage,
-            backgroundColor: Color(0xFF1AB428),
-            elevation: 1,
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 30,
-            ),
-            heroTag: 'addButton',
-            tooltip: 'Add an item',
-          ),
-        ],
-      ),
-      body: Center(
-        child: widget.productCatalog.isEmpty
-            ? const Text(
-          'Ready to sell?\nStart adding products!',
-          style: TextStyle(
-            fontSize: 15,
-            color: Colors.grey,
-          ),
-          textAlign: TextAlign.center,
-        )
-            : Scrollbar(
-              thickness: 3,
-              interactive: true,
-            child: ListView.builder(
-              itemCount: widget.productCatalog.length + 1,
-              itemBuilder: (context, index) {
-                if (index == widget.productCatalog.length) {
-                  return Container(height: kFloatingActionButtonMargin + 120);
-                }
-                final item = widget.productCatalog.elementAt(index);
-                return ProductTile(
-                  item: item,
-                  onProductEdit: _onProductEdit,
-                  onProductDelete: _onProductDelete,
-                  onAddToCart: _addToCart,
-                );
-              },
-            ),
-        )
-      ),
-    );
+  void _searchButtonPressed() {
+    setState(() {
+      _isSearchFieldVisible = !_isSearchFieldVisible;
+    });
   }
 
-  void _onProductEdit(Item item) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditItemPage(
-          item: item,
-          onSubmit: (editedItem) {
-            setState(() {
-              // Update the item in the product catalog
-              widget.productCatalog.remove(item);
-              widget.productCatalog.add(editedItem);
-            });
-          },
-        ),
-      ),
-    );
+  void _performSearch(String query) {
+    setState(() {
+      widget.productCatalog.addAll(filteredItems);
+      filteredItems.clear();
+      filteredItems = widget.productCatalog.where((item) {
+        final nameMatch = item.name.toLowerCase().contains(query.toLowerCase());
+        final tagMatch = item.tags.any((tag) => tag.toLowerCase().contains(query.toLowerCase()));
+        return !nameMatch && !tagMatch;
+      }).toSet();
+      widget.productCatalog.removeAll(filteredItems);
+    });
+  }
+
+  void _clearSearchField() {
+    setState(() {
+      widget.productCatalog.addAll(filteredItems);
+      filteredItems.clear();
+      _searchController.clear();
+    });
   }
 
   void _showCartDialog() {
@@ -257,6 +188,24 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
             widget.productCatalog.add(item);
           });
         },
+      ),
+    );
+  }
+
+  void _onProductEdit(Item item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditItemPage(
+          item: item,
+          onSubmit: (editedItem) {
+            setState(() {
+              // Update the item in the product catalog
+              widget.productCatalog.remove(item);
+              widget.productCatalog.add(editedItem);
+            });
+          },
+        ),
       ),
     );
   }
@@ -405,5 +354,141 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         );
       }
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFEEEDF1),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              FloatingActionButton(
+                onPressed: _showCartDialog,
+                backgroundColor: Color(0xFFEF911E),
+                elevation: 1,
+                heroTag: 'cartButton',
+                tooltip: 'Check out cart',
+                child: const Icon(
+                  Icons.shopping_cart,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              if (widget.cartItems.length > 0)
+                Positioned(
+                  right: 1,
+                  top: 1,
+                  child: Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 20,
+                      minHeight: 20,
+                    ),
+                    child: Text(
+                      widget.cartItems.length > 99 ? '99+' : '${widget.cartItems.length}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            onPressed: _showAddItemPage,
+            backgroundColor: Color(0xFF1AB428),
+            elevation: 1,
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 30,
+            ),
+            heroTag: 'addButton',
+            tooltip: 'Add an item',
+          ),
+        ],
+      ),
+      body: Center(
+          child: widget.productCatalog.isEmpty && filteredItems.isEmpty
+              ? const Text(
+            'Ready to sell?\nStart adding products!',
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.grey,
+            ),
+            textAlign: TextAlign.center,
+          )
+              : Column(
+                  children: [
+                  if(_isSearchFieldVisible)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        cursorColor: Color(0xFFEF911E),
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          labelText: 'Search',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          fillColor: Colors.white,
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Color(0xFFEF911E),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.clear),
+                            onPressed: _clearSearchField,
+                          ),
+                        ),
+                        onChanged: _performSearch,
+                      ),
+                    ),
+                  Expanded(
+                      child: Scrollbar(
+                        controller: _scrollController,
+                        isAlwaysShown: true,
+                        thickness: 3,
+                        interactive: true,
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          itemCount: widget.productCatalog.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == widget.productCatalog.length) {
+                              return Container(height: kFloatingActionButtonMargin + 120);
+                            }
+                            final item = widget.productCatalog.elementAt(index);
+                            return ProductTile(
+                              item: item,
+                              onProductEdit: _onProductEdit,
+                              onProductDelete: _onProductDelete,
+                              onAddToCart: _addToCart,
+                            );
+                          },
+                        ),
+                      ),
+                  ),
+                ],
+              ),
+      ),
+    );
   }
 }

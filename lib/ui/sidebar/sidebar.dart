@@ -9,6 +9,7 @@ class Sidebar extends StatelessWidget {
   final Set<Item> myProducts;
   final Set<Order> myOrders;
   final Set<Item> cartItems;
+  final ValueChanged<VoidCallback> onSearchButtonPressed;
 
   Sidebar({
     Key? key,
@@ -16,6 +17,7 @@ class Sidebar extends StatelessWidget {
     required this.myProducts,
     required this.myOrders,
     required this.cartItems,
+    required this.onSearchButtonPressed,
   }) : super(key: key);
 
   void _addOrder(Order order) {
@@ -49,6 +51,7 @@ class Sidebar extends StatelessWidget {
                   cartItems: cartItems,
                   navigateToOrderStatus: () => onPageChanged(OrderStatusPage(orders: myOrders)),
                   onPlaceOrder: _addOrder,
+                  onSearchButtonPressed: onSearchButtonPressed,
                 ));
                 Navigator.pop(context);
               },
