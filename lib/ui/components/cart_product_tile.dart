@@ -1,3 +1,4 @@
+import 'package:bizbuddyproject/ui/components/product_details_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 
@@ -28,6 +29,14 @@ class _CartTileState extends State<CartTile> {
         borderRadius: BorderRadius.circular(15),
       ),
       child: ExpansionTile(
+        textColor: Colors.black,
+        collapsedTextColor: Colors.black,
+        onExpansionChanged: (bool isExpanded) {
+          showDialog(
+            context: context,
+            builder: (context) => ProductDetailsDialog(item: widget.item),
+          );
+        },
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -77,7 +86,10 @@ class _CartTileState extends State<CartTile> {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.remove),
+              icon: const Icon(
+                Icons.remove,
+                color: Color(0xFFEF911E),
+              ),
               onPressed: () {
                 final newQuantity = _quantityController.text == '0'
                     ? 0

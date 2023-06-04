@@ -62,16 +62,20 @@ class _InventorySearchDialogState extends State<InventorySearchDialog> {
             ),
             SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
-                itemCount: _searchResults.length,
-                itemBuilder: (context, index) {
-                  final item = _searchResults.elementAt(index);
-                  return SearchResultTile(
-                    item: item,
-                    onAddToComponents: _addToComponents,
-                  );
-                },
-              ),
+              child: Scrollbar(
+                  thickness: 3,
+                  interactive: true,
+                child: ListView.builder(
+                  itemCount: _searchResults.length,
+                  itemBuilder: (context, index) {
+                    final item = _searchResults.elementAt(index);
+                    return SearchResultTile(
+                      item: item,
+                      onAddToComponents: _addToComponents,
+                    );
+                  },
+                ),
+              )
             ),
           ],
         ),

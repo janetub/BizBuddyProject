@@ -7,6 +7,7 @@ import '../input_forms/edit_item.dart';
 
 /*
 * FIXME: do not move the order to order status page if quantity of orders is zero or do not include items with zero quantity
+*  TODO: updates in product details in product catalog, inform user to remove item from cart
 * */
 
 class ProductCatalogPage extends StatefulWidget {
@@ -29,6 +30,34 @@ class ProductCatalogPage extends StatefulWidget {
 
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
 
+  // TODO: for debugging, remove later
+  @override
+  void initState() {
+    super.initState();
+    for (int i = 1; i <= 15; i++) {
+      Item item = Item('Item $i', 'Description for Item $i');
+      item.cost = i * 10;
+      item.markup = i * 5;
+      item.quantity = 100 - (i * 5);
+      if(i%2==0) {
+        item.description = 'The quick brown fox jumps over the lazy dog.';
+        item.tags.add('Lorem');
+        item.tags.add('Ipsum');
+        item.tags.add('Solem');
+        item.tags.add('Lorem');
+        item.tags.add('Animal');
+        item.tags.add('Door');
+        item.tags.add('Slippers');
+        item.components.add(Item('Mop',''));
+        item.components.add(Item('Tulip',''));
+        item.components.add(Item('Mop',''));
+        item.components.add(Item('Cat',''));
+        item.components.add(Item('Roof',''));
+      }
+      widget.productCatalog.add(item);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,15 +65,46 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            onPressed: _showCartDialog,
-            backgroundColor: Color(0xFFEF911E),
-            elevation: 1,
-            child: const Icon(
-              Icons.shopping_cart,
-              color: Colors.white,
-              size: 30,
-            ),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              FloatingActionButton(
+                onPressed: _showCartDialog,
+                backgroundColor: Color(0xFFEF911E),
+                elevation: 1,
+                heroTag: 'cartButton',
+                tooltip: 'Check out cart',
+                child: const Icon(
+                  Icons.shopping_cart,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              if (widget.cartItems.length > 0)
+                Positioned(
+                  right: 1,
+                  top: 1,
+                  child: Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 20,
+                      minHeight: 20,
+                    ),
+                    child: Text(
+                      widget.cartItems.length > 99 ? '99+' : '${widget.cartItems.length}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 10),
           FloatingActionButton(
@@ -56,6 +116,8 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               color: Colors.white,
               size: 30,
             ),
+            heroTag: 'addButton',
+            tooltip: 'Add an item',
           ),
         ],
       ),
@@ -69,21 +131,25 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           ),
           textAlign: TextAlign.center,
         )
-            : ListView.builder(
-          itemCount: widget.productCatalog.length + 1,
-          itemBuilder: (context, index) {
-            if (index == widget.productCatalog.length) {
-              return Container(height: kFloatingActionButtonMargin + 120);
-            }
-            final item = widget.productCatalog.elementAt(index);
-            return ProductTile(
-              item: item,
-              onProductEdit: _onProductEdit,
-              onProductDelete: _onProductDelete,
-              onAddToCart: _addToCart,
-            );
-          },
-        ),
+            : Scrollbar(
+              thickness: 3,
+              interactive: true,
+            child: ListView.builder(
+              itemCount: widget.productCatalog.length + 1,
+              itemBuilder: (context, index) {
+                if (index == widget.productCatalog.length) {
+                  return Container(height: kFloatingActionButtonMargin + 120);
+                }
+                final item = widget.productCatalog.elementAt(index);
+                return ProductTile(
+                  item: item,
+                  onProductEdit: _onProductEdit,
+                  onProductDelete: _onProductDelete,
+                  onAddToCart: _addToCart,
+                );
+              },
+            ),
+        )
       ),
     );
   }

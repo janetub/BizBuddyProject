@@ -52,30 +52,60 @@ class _CartDialogState extends State<CartDialog> {
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                itemCount: widget.cartItems.length,
-                itemBuilder: (context, index) {
-                  final item = widget.cartItems.elementAt(index);
-                  return CartTile(
-                    item: item,
-                    onUpdateQuantity: widget.onUpdateQuantity,
-                    onRemove: () {
-                      setState(() {
-                        widget.cartItems.remove(item);
-                      });
-                    },
-                  );
-                },
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Flexible(
-                  child:
-                  Text('Total Price: ₱${NumberFormat('#,##0.00').format(_totalPrice)}'),
+              child: Scrollbar(
+                thickness: 3,
+                interactive: true,
+                child: ListView.builder(
+                  itemCount: widget.cartItems.length,
+                  itemBuilder: (context, index) {
+                    final item = widget.cartItems.elementAt(index);
+                    return CartTile(
+                      item: item,
+                      onUpdateQuantity: widget.onUpdateQuantity,
+                      onRemove: () {
+                        setState(() {
+                          widget.cartItems.remove(item);
+                        });
+                      },
+                    );
+                  },
                 ),
-              ],
+              )
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 5, 0), // Add padding to the top
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Flexible(
+                    child: RichText(
+                      text: TextSpan(
+                        style: DefaultTextStyle.of(context).style,
+                        children: <TextSpan>[
+                          TextSpan(text: 'Total Price: ',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '₱ ',
+                            style: TextStyle(
+                              color: Color(0xFF38823B),
+                              fontSize: 18,
+                              ),
+                            ),
+                          TextSpan(
+                            text: '${NumberFormat('#,##0.00').format(_totalPrice)}',
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
