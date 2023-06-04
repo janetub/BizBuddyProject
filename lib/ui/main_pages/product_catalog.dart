@@ -8,6 +8,8 @@ import '../input_forms/edit_item.dart';
 /*
 * FIXME: do not move the order to order status page if quantity of orders is zero or do not include items with zero quantity
 *  TODO: updates in product details in product catalog, inform user to remove item from cart
+*   TODO : arrange tiles
+*  TODO: Add a recipient
 * */
 
 class ProductCatalogPage extends StatefulWidget {
@@ -140,7 +142,10 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       // Filter out items with zero quantity
       final nonZeroItems = widget.cartItems.where((item) => item.quantity > 0).toSet();
       // Create order with non-zero quantity items
-      Order order = Order(items: nonZeroItems);
+      Order order = Order(
+          items: nonZeroItems,
+        customers: [],
+      );
       widget.onPlaceOrder(order);
       _showSuccessDialog(order);
       widget.cartItems.clear();
@@ -321,7 +326,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 primary: Colors.grey,
               ),
               onPressed: () {
-                Navigator.of(dialogContext).pop();
+                setState(() {
+                  Navigator.of(dialogContext).pop();
+                });
               },
             ),
             TextButton(
@@ -339,7 +346,11 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                       content: Text('An item with the same name exists in the cart.'),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            setState(() {
+                              Navigator.of(dialogContext).pop();
+                            });
+                          },
                           child: Text('OK'),
                         ),
                       ],

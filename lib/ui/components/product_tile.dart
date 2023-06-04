@@ -25,7 +25,7 @@ class _ProductTileState extends State<ProductTile> {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(widget.item.name),
+      key: UniqueKey(),
       confirmDismiss: (direction) {
         if (direction == DismissDirection.startToEnd) {
           return Future.value(false);
@@ -115,9 +115,6 @@ class _ProductTileState extends State<ProductTile> {
                     ],
                   ),
                 ),
-                /*
-                * TODO: remove tags, display during search
-                * */
                 if (widget.item.tags.isNotEmpty)
                   Row(
                     children: [

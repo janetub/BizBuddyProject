@@ -16,12 +16,24 @@ class Order {
   final Set<OrderStatus> statuses;
   int currentStatusIndex;
   DateTime datePlaced;
+  final List<Person> customers;
 
-  Order({required this.items,}) : statuses = {}, currentStatusIndex = -1, orderId = idGenerator(),
-        datePlaced = DateTime.now() {if (items.isEmpty) {throw ArgumentError('An order must have at least one item.');}
+  Order({required this.items, required this.customers}) : statuses = {}, currentStatusIndex = -1, orderId = idGenerator(),
+        datePlaced = DateTime.now() {
+    if (items.isEmpty) {
+      throw ArgumentError('An order must have at least one item.');
+    }
     for (var item in items) {
       item.dateAdded = DateTime.now();
     }
+  }
+
+  double calculateOrderTotalValue() {
+    double totalCost = 0;
+    for (Item item in items) {
+      totalCost += item.calculateTotalValue();
+    }
+    return totalCost;
   }
 
   static String idGenerator() {
