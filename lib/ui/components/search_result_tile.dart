@@ -60,7 +60,7 @@ class _SearchResultTileState extends State<SearchResultTile> {
                                 ),
                               ),
                               TextSpan(
-                                text: '${widget.item.cost}',
+                                text: '${widget.item.cost.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   fontSize: 18,
                                 ),

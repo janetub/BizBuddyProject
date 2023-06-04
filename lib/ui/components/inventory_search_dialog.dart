@@ -46,7 +46,16 @@ class _InventorySearchDialogState extends State<InventorySearchDialog> {
         borderRadius: BorderRadius.circular(30),
       ),
       title: Text('Search Inventory'),
-      content: SizedBox(
+      content: widget.inventory.isEmpty()
+        ? const Text(
+        'The inventory is currently empty.\nYou can add items by going to the inventory page in the sidebar.',
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.grey,
+        ),
+        textAlign: TextAlign.center,
+      )
+      : SizedBox(
         width: double.maxFinite,
         height: MediaQuery.of(context).size.height * 0.6,
         child: Column(
@@ -69,7 +78,7 @@ class _InventorySearchDialogState extends State<InventorySearchDialog> {
                   borderSide: BorderSide(color: Colors.grey),
                 ),
                 prefixIcon: Icon(
-                    Icons.search,
+                  Icons.search,
                   color: Color(0xFFEF911E),
                 ),
               ),
@@ -77,21 +86,21 @@ class _InventorySearchDialogState extends State<InventorySearchDialog> {
             ),
             SizedBox(height: 20),
             Expanded(
-              child: Scrollbar(
-                isAlwaysShown: true,
-                thickness: 3,
-                interactive: true,
-                child: ListView.builder(
-                  itemCount: _searchResults.length,
-                  itemBuilder: (context, index) {
-                    final item = _searchResults.elementAt(index);
-                    return SearchResultTile(
-                      item: item,
-                      onAddToComponents: _addToComponents,
-                    );
-                  },
-                ),
-              )
+                child: Scrollbar(
+                  isAlwaysShown: true,
+                  thickness: 3,
+                  interactive: true,
+                  child: ListView.builder(
+                    itemCount: _searchResults.length,
+                    itemBuilder: (context, index) {
+                      final item = _searchResults.elementAt(index);
+                      return SearchResultTile(
+                        item: item,
+                        onAddToComponents: _addToComponents,
+                      );
+                    },
+                  ),
+                )
             ),
           ],
         ),

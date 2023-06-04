@@ -19,4 +19,8 @@ class Inventory {
       return nameMatch || tagMatch;
     }).toSet();
   }
+
+  bool isEmpty() {
+    return _items.isEmpty;
+  }
 }

@@ -192,22 +192,32 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   }
 
   void _showAddItemPage() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddItemPage(
+          onSubmit: (item) {
+            setState(() {
+              if (widget.productCatalog.any((existingItem) => existingItem.name == item.name)) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Duplicate Item'),
+                    content: Text('An item with the same name already exists in the product catalog.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              widget.productCatalog.add(item);
+            });
+          },
         ),
-      ),
-      builder: (context) => AddItemPage(
-        onSubmit: (item) {
-          setState(() {
-            widget.productCatalog.add(item);
-          });
-        },
-      ),
+      )
     );
   }
 
@@ -308,7 +318,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
             TextButton(
               child: const Text('Cancel'),
               style: TextButton.styleFrom(
-                primary: Color(0xFFEF911E),
+                primary: Colors.grey,
               ),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
@@ -316,11 +326,53 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
             ),
             TextButton(
               child: const Text('Delete'),
+              style: TextButton.styleFrom(
+                primary: Colors.red,
+              ),
               onPressed: () {
-                setState(() {
-                  widget.productCatalog.remove(item);
-                });
-                Navigator.of(dialogContext).pop();
+                // Check if an item with the same name exists in the cart
+                if (widget.cartItems.any((existingItem) => existingItem.name == item.name)) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Item in Cart'),
+                      content: Text('An item with the same name exists in the cart.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  try {
+                    setState(() {
+                      widget.productCatalog.remove(item);
+                    });
+                    Navigator.of(dialogContext).pop();
+                  } catch (e) {
+                    // display a dialog indicating the error
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext errorDialogContext) {
+                        return AlertDialog(
+                          title: const Text('Error'),
+                          content:
+                          Text('An error occurred while deleting the item. Please try again.'),
+                          actions: [
+                            TextButton(
+                              child: const Text('OK'),
+                              onPressed: () {
+                                Navigator.of(errorDialogContext).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                }
               },
             ),
           ],
@@ -482,26 +534,33 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                       ),
                     ),
                   Expanded(
-                      child: Scrollbar(
-                        controller: _scrollController,
-                        isAlwaysShown: true,
-                        thickness: 3,
-                        interactive: true,
-                        child: ListView.builder(
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          scrollbarTheme: ScrollbarThemeData(
+                            thumbColor: MaterialStateProperty.all(Colors.black54),
+                          ),
+                        ),
+                        child: Scrollbar(
                           controller: _scrollController,
-                          itemCount: widget.productCatalog.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == widget.productCatalog.length) {
-                              return Container(height: kFloatingActionButtonMargin + 120);
-                            }
-                            final item = widget.productCatalog.elementAt(index);
-                            return ProductTile(
-                              item: item,
-                              onProductEdit: _onProductEdit,
-                              onProductDelete: _onProductDelete,
-                              onAddToCart: _addToCart,
-                            );
-                          },
+                          isAlwaysShown: true,
+                          thickness: 3,
+                          interactive: true,
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            itemCount: widget.productCatalog.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index == widget.productCatalog.length) {
+                                return Container(height: kFloatingActionButtonMargin + 120);
+                              }
+                              final item = widget.productCatalog.elementAt(index);
+                              return ProductTile(
+                                item: item,
+                                onProductEdit: _onProductEdit,
+                                onProductDelete: _onProductDelete,
+                                onAddToCart: _addToCart,
+                              );
+                            },
+                          ),
                         ),
                       ),
                   ),
