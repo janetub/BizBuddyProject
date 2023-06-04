@@ -35,7 +35,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   final TextEditingController _searchController = TextEditingController();
   Set<Item> filteredItems = {};
   final ScrollController _scrollController = ScrollController();
-  bool _isSearchFieldVisible = true;
+  bool _isSearchFieldVisible = false;
 
   // TODO: for debugging, remove later
   @override
@@ -62,15 +62,16 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         item.tags.add('Animal');
         item.tags.add('Door');
         item.tags.add('Slippers');
-        item.components.add(Item('Mop',''));
-        item.components.add(Item('Tulip',''));
-        item.components.add(Item('Mop',''));
-        item.components.add(Item('Cat',''));
-        item.components.add(Item('Roof',''));item.components.add(Item('Mop',''));
-        item.components.add(Item('Tulip',''));
-        item.components.add(Item('Mop',''));
-        item.components.add(Item('Cat',''));
-        item.components.add(Item('Roof',''));
+        item.addComponent(Item('Mop',''));
+        item.addComponent(Item('Tulip',''));
+        item.addComponent(Item('Mop',''));
+        item.addComponent(Item('Cat',''));
+        item.addComponent(Item('Roof',''));
+        item.addComponent(Item('Mop',''));
+        item.addComponent(Item('Tulip',''));
+        item.addComponent(Item('Mop',''));
+        item.addComponent(Item('Cat',''));
+        item.addComponent(Item('Roof',''));
       }
       widget.productCatalog.add(item);
     }
@@ -147,26 +148,44 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   }
 
   void _showSuccessDialog(Order order) {
+    setState(() {
+    });
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Success'),
-          content: const Text(
-              'The item has been added and moved to the Order Status page for processing.'),
-          actions: [
-            TextButton(
-              child: const Text('Go to Order Status'),
-              style: TextButton.styleFrom(
-                primary: Color(0xFFEF911E),
+        return GestureDetector(
+          onTap: () {
+            Navigator.of(dialogContext).pop();
+            Navigator.of(dialogContext).pop();
+          },
+          child: AlertDialog(
+            title: const Text('Success'),
+            content: const Text(
+                'The item has been added and moved to the Order Status page for processing.'),
+            actions: [
+              TextButton(
+                child: const Text('Ok'),
+                style: TextButton.styleFrom(
+                  primary: Colors.grey,
+                ),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  Navigator.of(dialogContext).pop();
+                },
               ),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                widget.navigateToOrderStatus();
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-          ],
+              TextButton(
+                child: const Text('Go to Order Status'),
+                style: TextButton.styleFrom(
+                  primary: Color(0xFFEF911E),
+                ),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  widget.navigateToOrderStatus();
+                  Navigator.of(dialogContext).pop();
+                },
+              ),
+            ],
+          ),
         );
       },
     );

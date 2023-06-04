@@ -628,7 +628,9 @@ class _AddItemPageState extends State<AddItemPage>
         newItem.dateAdded = DateTime.parse(_dateBoughtController.text);
       }
       newItem.tags.addAll(_tags);
-      newItem.components.addAll(_selectedComponents);
+      for (final component in _selectedComponents) {
+        newItem.addComponent(component);
+      }
       widget.onSubmit(newItem);
 
       Navigator.pop(context);

@@ -252,7 +252,7 @@ class ProductDetailsDialog extends StatelessWidget {
                           .map(
                             (component) => Chip(
                           label: Text(
-                            component.name,
+                            '(${component.quantity}) ${component.name}',
                             style: TextStyle(
                               fontSize: 17,
                               color: Colors.white,

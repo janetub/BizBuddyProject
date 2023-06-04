@@ -1,7 +1,9 @@
 /*
-* This class represents an item in the inventory.
+* This class represents an item in the inventory and product in the product catalog.
 * It can be a product to sell or a raw material.
  */
+
+import 'package:flutter/cupertino.dart';
 
 class Item {
   String name;
@@ -11,22 +13,41 @@ class Item {
   DateTime? _dateAdded;
   Set<String> tags = {};
   String description;
-  Set<Item> components = {};
+  final Set<Item> _components = {};
 
   Item(this.name, this.description) {
     dateAdded = DateTime.now();
   }
 
   double get cost {
-    if (components.isEmpty) {
+    if (_components.isEmpty) {
       return _cost;
     } else {
       double totalCost = 0;
-      for (Item component in components) {
+      for (Item component in _components) {
         totalCost += component.cost;
       }
       return totalCost;
     }
+  }
+
+  void addComponent(Item component) {
+    final itemExists = _components.any((item) => item.name == component.name);
+
+    if (itemExists) {
+      final existingItem = _components.firstWhere((item) => item.name == component.name);
+      existingItem.quantity += component.quantity;
+    } else {
+      _components.add(component);
+    }
+  }
+
+  void removeComponent(Item component) {
+    _components.remove(component);
+  }
+
+  Set<Item> get components {
+    return _components;
   }
 
   set cost(double value) {
@@ -49,7 +70,7 @@ class Item {
 
   double calculateTotalValue() {
     double totalValue = price * _quantity;
-    for (Item component in components) {
+    for (Item component in _components) {
       totalValue += component.calculateTotalValue();
     }
     return totalValue;
@@ -89,7 +110,7 @@ class Item {
     newItem._quantity = 0;
     newItem._dateAdded = _dateAdded;
     newItem.tags.addAll(tags);
-    newItem.components.addAll(components);
+    newItem._components.addAll(_components);
     return newItem;
   }
 }
