@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'all.dart';
 /*
 * This class represents a customer order.
@@ -12,13 +14,13 @@ import 'all.dart';
 
 class Order {
   final String orderId;
-  final Set<Item> items;
-  final Set<OrderStatus> statuses;
+  final LinkedHashSet<Item> items;
+  final List<OrderStatus> statuses;
   int currentStatusIndex;
   DateTime datePlaced;
   final List<Person> customers;
 
-  Order({required this.items, required this.customers}) : statuses = {}, currentStatusIndex = -1, orderId = idGenerator(),
+  Order({required this.items, required this.customers}) : statuses = [], currentStatusIndex = -1, orderId = idGenerator(),
         datePlaced = DateTime.now() {
     if (items.isEmpty) {
       throw ArgumentError('An order must have at least one item.');
@@ -50,6 +52,11 @@ class Order {
     items.remove(item);
   }
 
+  void addStatus(OrderStatus status)
+  {
+    statuses.add(status);
+  }
+
   double calculateTotalCost() {
     double totalCost = 0;
     for (Item item in items) {
@@ -64,11 +71,6 @@ class Order {
       totalPrice += item.price * item.quantity;
     }
     return totalPrice;
-  }
-
-  void addStatus(OrderStatus status)
-  {
-    statuses.add(status);
   }
 
   void nextStatus() {

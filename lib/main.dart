@@ -1,11 +1,13 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
-import 'components/search_dialog.dart';
-import 'components/splash_screen.dart';
-import 'main_pages/product_catalog.dart';
-import 'main_pages/order_status.dart';
-import 'main_pages/inventory_view.dart';
-import '../../classes/all.dart';
-import 'sidebar/sidebar.dart';
+import 'ui/components/search_dialog.dart';
+import 'ui/components/splash_screen.dart';
+import 'ui/main_pages/product_catalog.dart';
+import 'ui/main_pages/order_status.dart';
+import 'ui/main_pages/inventory_view.dart';
+import '../classes/all.dart';
+import 'ui/sidebar/sidebar.dart';
 
 void main() {
   runApp(MaterialApp(home: SplashScreen()));
@@ -19,9 +21,9 @@ class MainCanvas extends StatefulWidget {
 }
 
 class _MainCanvasState extends State<MainCanvas> {
-  Set<Item> myProducts = <Item>{};
-  Set<Order> myOrders = <Order>{};
-  Set<Item> cartItems = <Item>{};
+  LinkedHashSet<Item> myProducts = LinkedHashSet<Item>();
+  LinkedHashSet<Order> myOrders = LinkedHashSet<Order>();
+  LinkedHashSet<Item> cartItems = LinkedHashSet<Item>();
   Widget? _currentPage;
   String _currentPageTitle = 'Product Catalog';
   VoidCallback? _onSearchButtonPressed;

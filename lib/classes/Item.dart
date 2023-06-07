@@ -3,7 +3,7 @@
 * It can be a product to sell or a raw material.
  */
 
-import 'package:flutter/cupertino.dart';
+import 'dart:collection';
 
 class Item {
   String name;
@@ -11,9 +11,9 @@ class Item {
   double _markup = 0;
   int _quantity = 0;
   DateTime? _dateAdded;
-  Set<String> tags = {};
+  LinkedHashSet<String> tags = LinkedHashSet<String>();
   String description;
-  final Set<Item> _components = {};
+  final LinkedHashSet<Item> _components = LinkedHashSet<Item>();
 
   Item(this.name, this.description) {
     dateAdded = DateTime.now();
@@ -46,7 +46,7 @@ class Item {
     _components.remove(component);
   }
 
-  Set<Item> get components {
+  LinkedHashSet<Item> get components {
     return _components;
   }
 

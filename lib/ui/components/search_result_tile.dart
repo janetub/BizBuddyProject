@@ -22,6 +22,8 @@ class _SearchResultTileState extends State<SearchResultTile> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      highlightColor: Colors.green,
+      splashColor: Colors.orange,
       onTap: () {
         showDialog(
           context: context,
@@ -78,6 +80,7 @@ class _SearchResultTileState extends State<SearchResultTile> {
                       width: 60,
                       height: 50,
                       child: TextFormField(
+                        cursorColor: Color(0xFFEF911E),
                         controller: _quantityController,
                         decoration: InputDecoration(
                           labelText: 'Qty',

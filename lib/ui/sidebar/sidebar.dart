@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 import '../main_pages/product_catalog.dart';
@@ -6,9 +8,9 @@ import '../main_pages/inventory_view.dart';
 
 class Sidebar extends StatelessWidget {
   final ValueChanged<Widget> onPageChanged;
-  final Set<Item> myProducts;
-  final Set<Order> myOrders;
-  final Set<Item> cartItems;
+  final LinkedHashSet<Item> myProducts;
+  final LinkedHashSet<Order> myOrders;
+  final LinkedHashSet<Item> cartItems;
   final ValueChanged<VoidCallback> onSearchButtonPressed;
 
   Sidebar({

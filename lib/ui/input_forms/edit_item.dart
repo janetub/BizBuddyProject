@@ -179,6 +179,7 @@ class _EditItemPageState extends State<EditItemPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             controller: _nameController,
                             decoration: InputDecoration(
                               labelText: 'Product Name',
@@ -211,6 +212,7 @@ class _EditItemPageState extends State<EditItemPage> {
                           ),
                           SizedBox(height: 15),
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             focusNode: _costFocusNode,
                             controller: _costController,
                             decoration: InputDecoration(
@@ -277,6 +279,7 @@ class _EditItemPageState extends State<EditItemPage> {
                           ),
                           SizedBox(height: 15),
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             focusNode: _priceFocusNode,
                             controller: _markupController,
                             decoration: InputDecoration(
@@ -346,6 +349,7 @@ class _EditItemPageState extends State<EditItemPage> {
                             children: [
                               Expanded(
                                 child: TextFormField(
+                                  cursorColor: Color(0xFFEF911E),
                                   controller: _quantityController,
                                   decoration: InputDecoration(
                                     labelText: 'Stocks',
@@ -440,6 +444,7 @@ class _EditItemPageState extends State<EditItemPage> {
                           // * FIXME: date bought bug
                           // *
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             controller: _dateBoughtController,
                             keyboardType: TextInputType.none,
                             decoration: InputDecoration(
@@ -486,6 +491,7 @@ class _EditItemPageState extends State<EditItemPage> {
                           SizedBox(height: 10),
                           // TODO: respond to enter key
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             controller: _tagController,
                             decoration: InputDecoration(
                               labelText: 'Tags',
@@ -567,6 +573,7 @@ class _EditItemPageState extends State<EditItemPage> {
                           ),
                           SizedBox(height: 10),
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             controller: _descriptionController,
                             maxLines: null,
                             decoration: InputDecoration(

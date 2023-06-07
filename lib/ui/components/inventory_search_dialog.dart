@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:bizbuddyproject/ui/components/search_result_tile.dart';
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
@@ -18,7 +20,7 @@ class InventorySearchDialog extends StatefulWidget {
 
 class _InventorySearchDialogState extends State<InventorySearchDialog> {
   final TextEditingController _searchController = TextEditingController();
-  Set<Item> _searchResults = {};
+  LinkedHashSet<Item> _searchResults = LinkedHashSet<Item>();
 
   @override
   void initState() {

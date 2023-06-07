@@ -1,5 +1,7 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
-import '../components/cart_dialog.dart';
+import '../components/cart_detail_dialog.dart';
 import '../components/product_tile.dart';
 import '../input_forms/add_item.dart';
 import '../../classes/all.dart';
@@ -13,8 +15,8 @@ import '../input_forms/edit_item.dart';
 * */
 
 class ProductCatalogPage extends StatefulWidget {
-  final Set<Item> productCatalog;
-  final Set<Item> cartItems;
+  final LinkedHashSet<Item> productCatalog;
+  final LinkedHashSet<Item> cartItems;
   final VoidCallback navigateToOrderStatus;
   final ValueChanged<Order> onPlaceOrder;
   final ValueChanged<VoidCallback> onSearchButtonPressed;
@@ -35,9 +37,10 @@ class ProductCatalogPage extends StatefulWidget {
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
 
   final TextEditingController _searchController = TextEditingController();
-  Set<Item> filteredItems = {};
+  LinkedHashSet<Item> _displayedItems = LinkedHashSet<Item>();
   final ScrollController _scrollController = ScrollController();
   bool _isSearchFieldVisible = false;
+  var defaultCatalogSort = {};
 
   // TODO: for debugging, remove later
   @override
@@ -55,7 +58,10 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         item.tags.add('Ipsum');
         item.tags.add('Solem');
         item.tags.add('Lorem');
-        item.tags.add('Animal');
+        item.tags.add('Jollibee');
+        item.tags.add('Bida');
+        item.tags.add('and');
+        item.tags.add('saya');
         item.tags.add('Door');
         item.tags.add('Lorem');
         item.tags.add('Ipsum');
@@ -77,6 +83,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       }
       widget.productCatalog.add(item);
     }
+    _displayedItems = widget.productCatalog;
   }
 
   void _searchButtonPressed() {
@@ -85,24 +92,25 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     });
   }
 
+  LinkedHashSet<Item> searchItems(String query) {
+    return LinkedHashSet<Item>.from(widget.productCatalog.where((item) {
+      final nameMatch = item.name.toLowerCase().contains(query.toLowerCase());
+      final tagMatch = item.tags.any(
+              (tag) => tag.toLowerCase().contains(query.toLowerCase()));
+      return nameMatch || tagMatch;
+    }));
+  }
+
   void _performSearch(String query) {
     setState(() {
-      widget.productCatalog.addAll(filteredItems);
-      filteredItems.clear();
-      filteredItems = widget.productCatalog.where((item) {
-        final nameMatch = item.name.toLowerCase().contains(query.toLowerCase());
-        final tagMatch = item.tags.any((tag) => tag.toLowerCase().contains(query.toLowerCase()));
-        return !nameMatch && !tagMatch;
-      }).toSet();
-      widget.productCatalog.removeAll(filteredItems);
+      _displayedItems = searchItems(query);
     });
   }
 
   void _clearSearchField() {
     setState(() {
-      widget.productCatalog.addAll(filteredItems);
-      filteredItems.clear();
       _searchController.clear();
+      _displayedItems = widget.productCatalog;
     });
   }
 
@@ -140,7 +148,8 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       );
     } else {
       // Filter out items with zero quantity
-      final nonZeroItems = widget.cartItems.where((item) => item.quantity > 0).toSet();
+      final nonZeroItems = LinkedHashSet<Item>.from(
+          widget.cartItems.where((item) => item.quantity > 0));
       // Create order with non-zero quantity items
       Order order = Order(
           items: nonZeroItems,
@@ -502,7 +511,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         ],
       ),
       body: Center(
-          child: widget.productCatalog.isEmpty && filteredItems.isEmpty
+          child: widget.productCatalog.isEmpty
               ? const Text(
             'Ready to sell?\nStart adding products!',
             style: TextStyle(
@@ -539,6 +548,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                           suffixIcon: IconButton(
                             icon: Icon(Icons.clear),
                             onPressed: _clearSearchField,
+                            color: Color(0xFFEF911E),
                           ),
                         ),
                         onChanged: _performSearch,
@@ -558,12 +568,12 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                           interactive: true,
                           child: ListView.builder(
                             controller: _scrollController,
-                            itemCount: widget.productCatalog.length + 1,
+                            itemCount: _displayedItems.length + 1,
                             itemBuilder: (context, index) {
-                              if (index == widget.productCatalog.length) {
+                              if (index == _displayedItems.length) {
                                 return Container(height: kFloatingActionButtonMargin + 120);
                               }
-                              final item = widget.productCatalog.elementAt(index);
+                              final item = _displayedItems.elementAt(index);
                               return ProductTile(
                                 item: item,
                                 onProductEdit: _onProductEdit,

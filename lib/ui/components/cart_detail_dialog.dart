@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 import 'cart_product_tile.dart';
 import 'package:intl/intl.dart';
+import 'dart:collection';
 
 /*
 * TODO: add product details dialog when clicked
 * */
 
 class CartDialog extends StatefulWidget {
-  final Set<Item> cartItems;
+  final LinkedHashSet<Item> cartItems;
   final VoidCallback onClose;
   final VoidCallback onPlaceOrder;
   final void Function(Item, int) onUpdateQuantity;

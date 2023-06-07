@@ -1,13 +1,15 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 import '../components/order_tile.dart';
 
 /*
-*
+* FIXME: catalog items duplicates when order tile is pressed
 * */
 
 class OrderStatusPage extends StatefulWidget {
-  final Set<Order> orders;
+  final LinkedHashSet<Order> orders;
 
   OrderStatusPage({
     Key? key,
@@ -21,36 +23,44 @@ class OrderStatusPage extends StatefulWidget {
 class _OrderStatusPageState extends State<OrderStatusPage> {
 
   final TextEditingController _searchController = TextEditingController();
-  Set<Item> filteredItems = {};
+  LinkedHashSet<Item> filteredItems = LinkedHashSet<Item>();
   final ScrollController _scrollController = ScrollController();
   bool _isSearchFieldVisible = false;
 
   @override
   void initState() {
     super.initState();
+
     for (int i = 0; i < 15; i++) {
-      // Create a new Item with varying values
       Item item = Item('Item $i', 'Item description $i');
       item.cost = i + 1;
       item.markup = i + 2;
       item.quantity = i + 3;
 
-      // Create a new Person with varying values
       Person customer = Person('First Name $i', 'Middle Name $i', 'Last Name $i');
       Order order;
-      if(i%2==0) {
-        // Create a new Order with varying values
+      if (i % 2 == 0) {
         Person customer2 = Person('Maya Jade Elise', '', 'Tubigon');
-        order = Order(items: {item}, customers: [customer, customer2]);
+        order = Order(
+          items: LinkedHashSet<Item>.from({item}),
+          customers: [customer, customer2],
+        );
+      } else {
+        order = Order(
+          items: LinkedHashSet<Item>.from({item}),
+          customers: [customer],
+        );
       }
-      else {
-        // Create a new Order with varying values
-        order = Order(items: {item}, customers: [customer]);
-      }
-      order.addStatus(OrderStatus(label: 'Status ${i % 4}', details: 'Status details ${i % 4}'));
+      List<OrderStatus> orderStatuses = [
+        OrderStatus(label: 'Pending', details: 'Details 1'),
+        OrderStatus(label: 'Packaging', details: 'Details 2'),
+        OrderStatus(label: 'Waiting for pickup', details: 'Details 3'),
+        OrderStatus(label: 'Received', details: 'Details 4'),
+        OrderStatus(label: 'Paid', details: 'Details 5'),
+      ];
+      order.statuses.addAll(orderStatuses);
       order.nextStatus();
 
-      // Add the new Order to the list of orders
       widget.orders.add(order);
     }
   }

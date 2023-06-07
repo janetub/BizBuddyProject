@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 import '../components/inventory_search_dialog.dart';
@@ -24,7 +26,7 @@ class _AddItemPageState extends State<AddItemPage>
 
   final Inventory inventory = Inventory();
 
-  final Set<Item> _selectedComponents = {};
+  final LinkedHashSet<Item> _selectedComponents = LinkedHashSet<Item>();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
@@ -201,6 +203,7 @@ class _AddItemPageState extends State<AddItemPage>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             controller: _nameController,
                             decoration: InputDecoration(
                               labelText: 'Product Name',
@@ -233,6 +236,7 @@ class _AddItemPageState extends State<AddItemPage>
                           ),
                           SizedBox(height: 15),
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             focusNode: _costFocusNode,
                             controller: _costController,
                             decoration: InputDecoration(
@@ -299,6 +303,7 @@ class _AddItemPageState extends State<AddItemPage>
                           ),
                           SizedBox(height: 15),
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             focusNode: _priceFocusNode,
                             controller: _markupController,
                             decoration: InputDecoration(
@@ -368,6 +373,7 @@ class _AddItemPageState extends State<AddItemPage>
                             children: [
                               Expanded(
                                 child: TextFormField(
+                                  cursorColor: Color(0xFFEF911E),
                                   controller: _quantityController,
                                   decoration: InputDecoration(
                                     labelText: 'Stocks',
@@ -462,6 +468,7 @@ class _AddItemPageState extends State<AddItemPage>
                           // * FIXME: date bought bug
                           // *
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             controller: _dateBoughtController,
                             keyboardType: TextInputType.none,
                             decoration: InputDecoration(
@@ -508,6 +515,7 @@ class _AddItemPageState extends State<AddItemPage>
                           SizedBox(height: 10),
                           // TODO: respond to enter key
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             controller: _tagController,
                             decoration: InputDecoration(
                               labelText: 'Tags',
@@ -592,6 +600,7 @@ class _AddItemPageState extends State<AddItemPage>
                           ),
                           SizedBox(height: 10),
                           TextFormField(
+                            cursorColor: Color(0xFFEF911E),
                             controller: _descriptionController,
                             maxLines: null,
                             decoration: InputDecoration(
