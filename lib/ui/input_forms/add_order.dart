@@ -7,6 +7,7 @@ import '../../classes/all.dart';
 
 /*
 * TODO: Retain created group of buttons
+*  TODO: allow custom of buttons
 * */
 
 class AddOrderPage extends StatefulWidget {
@@ -464,8 +465,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
         placedOrder.statuses.addAll(_premadeGroups[_selectedPremadeGroup] as Iterable<OrderStatus>);
         placedOrder.datePlaced = DateTime.now();
         widget.onPlaceOrder(placedOrder);
-        Navigator.pop(context);
-        print("order info window should close");
       } catch (e) {
         showDialog(
           context: context,
@@ -480,6 +479,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
             ],
           ),
         );
+        print(e);
       }
     }
   }

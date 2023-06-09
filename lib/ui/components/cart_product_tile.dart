@@ -39,78 +39,88 @@ class _CartTileState extends State<CartTile> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
-        child: ListTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Text(widget.item.name),
-              ),
-              Flexible(
-                child: Text('₱ ${widget.item.price.toStringAsFixed(2)}'),
-              ),
-            ],
-          ),
-          subtitle:
-          Text('Quantity: ${widget.item.quantity}',
-          style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 50,
-                child: TextFormField(
-                  cursorColor: Color(0xFFEF911E),
-                  controller:
-                  _quantityController,
-                  decoration:
-                  InputDecoration(labelText:
-                  'Qty',
-                      labelStyle:
-                      TextStyle(color:
-                      Colors.grey),
-                      fillColor:
-                      Colors.white,
-                      filled:
-                      true,
-                      enabledBorder:
-                      OutlineInputBorder(borderRadius:
-                      BorderRadius.circular(15),
-                          borderSide:
-                          BorderSide(color:
-                          Colors.grey)),
-                      focusedBorder:
-                      OutlineInputBorder(borderRadius:
-                      BorderRadius.circular(15),
-                          borderSide:
-                          BorderSide(color:
-                          Colors.grey)),
-                      ),
-                  keyboardType:
-                  TextInputType.number,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0,5,0,7),
+          child: ListTile(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      child: Text(widget.item.name),
+                    ),
+                  ],
                 ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.remove,
-                  color: Color(0xFFEF911E),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child:
+                  Text('₱ ${widget.item.price.toStringAsFixed(2)}'),
                 ),
-                onPressed: () {
-                  final newQuantity = _quantityController.text == '0'
-                      ? 0
-                      : int.tryParse(_quantityController.text) ?? 1;
-                  widget.onUpdateQuantity(widget.item, newQuantity);
-                  if (widget.item.quantity == 0) {
-                    widget.onRemove();
-                  }
-                  _quantityController.clear();
-                  setState(() {});
-                },
-              ),
-            ],
+              ],
+            ),
+            subtitle:
+            Text('Quantity: ${widget.item.quantity}',
+            style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 50,
+                  child: TextFormField(
+                    cursorColor: Color(0xFFEF911E),
+                    controller:
+                    _quantityController,
+                    decoration:
+                    InputDecoration(labelText:
+                    'Qty',
+                        labelStyle:
+                        TextStyle(color:
+                        Colors.grey),
+                        fillColor:
+                        Colors.white,
+                        filled:
+                        true,
+                        enabledBorder:
+                        OutlineInputBorder(borderRadius:
+                        BorderRadius.circular(15),
+                            borderSide:
+                            BorderSide(color:
+                            Colors.grey)),
+                        focusedBorder:
+                        OutlineInputBorder(borderRadius:
+                        BorderRadius.circular(15),
+                            borderSide:
+                            BorderSide(color:
+                            Colors.grey)),
+                        ),
+                    keyboardType:
+                    TextInputType.number,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.remove,
+                    color: Color(0xFFEF911E),
+                  ),
+                  onPressed: () {
+                    final newQuantity = _quantityController.text == '0'
+                        ? 0
+                        : int.tryParse(_quantityController.text) ?? 1;
+                    widget.onUpdateQuantity(widget.item, newQuantity);
+                    if (widget.item.quantity == 0) {
+                      widget.onRemove();
+                    }
+                    _quantityController.clear();
+                    setState(() {});
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

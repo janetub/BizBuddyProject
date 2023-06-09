@@ -50,42 +50,42 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   void initState() {
     super.initState();
     widget.onSearchButtonPressed(_searchButtonPressed);
-    for (int i = 1; i <= 15; i++) {
-      Item item = Item('Item $i', 'Description for Item $i');
-      item.cost = i * 10;
-      item.markup = i * 5;
-      item.quantity = 100 - (i * 5);
-      if(i%2==0) {
-        item.description = 'The quick brown fox jumps over the lazy dog. The dog found this entertaining and the fox laughs at the dog\'s reaction. The dog realizing this also laughs at himself. After awhile, both became friends.';
-        item.tags.add('Lorem');
-        item.tags.add('Ipsum');
-        item.tags.add('Solem');
-        item.tags.add('Lorem');
-        item.tags.add('Jollibee');
-        item.tags.add('Bida');
-        item.tags.add('and');
-        item.tags.add('saya');
-        item.tags.add('Door');
-        item.tags.add('Lorem');
-        item.tags.add('Ipsum');
-        item.tags.add('Solem');
-        item.tags.add('Lorem');
-        item.tags.add('Animal');
-        item.tags.add('Door');
-        item.tags.add('Slippers');
-        item.addComponent(Item('Mop',''));
-        item.addComponent(Item('Tulip',''));
-        item.addComponent(Item('Mop',''));
-        item.addComponent(Item('Cat',''));
-        item.addComponent(Item('Roof',''));
-        item.addComponent(Item('Mop',''));
-        item.addComponent(Item('Tulip',''));
-        item.addComponent(Item('Mop',''));
-        item.addComponent(Item('Cat',''));
-        item.addComponent(Item('Roof',''));
-      }
-      widget.productCatalog.add(item);
-    }
+    // for (int i = 1; i <= 15; i++) {
+    //   Item item = Item('Item $i', 'Description for Item $i');
+    //   item.cost = i * 10;
+    //   item.markup = i * 5;
+    //   item.quantity = 100 - (i * 5);
+    //   if(i%2==0) {
+    //     item.description = 'The quick brown fox jumps over the lazy dog. The dog found this entertaining and the fox laughs at the dog\'s reaction. The dog realizing this also laughs at himself. After awhile, both became friends.';
+    //     item.tags.add('Lorem');
+    //     item.tags.add('Ipsum');
+    //     item.tags.add('Solem');
+    //     item.tags.add('Lorem');
+    //     item.tags.add('Jollibee');
+    //     item.tags.add('Bida');
+    //     item.tags.add('and');
+    //     item.tags.add('saya');
+    //     item.tags.add('Door');
+    //     item.tags.add('Lorem');
+    //     item.tags.add('Ipsum');
+    //     item.tags.add('Solem');
+    //     item.tags.add('Lorem');
+    //     item.tags.add('Animal');
+    //     item.tags.add('Door');
+    //     item.tags.add('Slippers');
+    //     item.addComponent(Item('Mop',''));
+    //     item.addComponent(Item('Tulip',''));
+    //     item.addComponent(Item('Mop',''));
+    //     item.addComponent(Item('Cat',''));
+    //     item.addComponent(Item('Roof',''));
+    //     item.addComponent(Item('Mop',''));
+    //     item.addComponent(Item('Tulip',''));
+    //     item.addComponent(Item('Mop',''));
+    //     item.addComponent(Item('Cat',''));
+    //     item.addComponent(Item('Roof',''));
+    //   }
+    //   widget.productCatalog.add(item);
+    // }
     _displayedItems = widget.productCatalog;
   }
 
@@ -122,7 +122,6 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       context: context,
       builder: (context) => CartDialog(
         cartItems: widget.cartItems,
-        onClose: () => Navigator.pop(context),
         onCheckoutOrder: _onCheckoutOrder,
         onUpdateQuantity: _onUpdateQuantity,
       ),
@@ -153,7 +152,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       // Filter out items with zero quantity
       final nonZeroItems = LinkedHashSet<Item>.from(
           widget.cartItems.where((item) => item.quantity > 0));
-      // Show AddOrderDialog to allow user to customize order details
+      // Show AddOrderPage to allow user to customize order details
       showDialog(
         context: context,
         builder: (context) => AddOrderPage(
@@ -167,48 +166,42 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   void _onPlaceOrder(Order order) {
     widget.onPlaceOrder(order);
     _showSuccessDialog(order);
-    widget.cartItems.clear();
+    setState(() {
+      widget.cartItems.clear();
+    });
   }
 
   void _showSuccessDialog(Order order) {
-    setState(() {
-    });
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.of(dialogContext).pop();
-            Navigator.of(dialogContext).pop();
-          },
-          child: AlertDialog(
-            title: const Text('Success'),
-            content: const Text(
-                'The item has been added and moved to the Order Status page for processing.'),
-            actions: [
-              TextButton(
-                child: const Text('Ok'),
-                style: TextButton.styleFrom(
-                  primary: Colors.grey,
-                ),
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                  Navigator.of(dialogContext).pop();
-                },
+        return AlertDialog(
+          title: const Text('Success'),
+          content: const Text(
+              'The item has been added and moved to the Order Status page for processing.'),
+          actions: [
+            TextButton(
+              child: const Text('Ok'),
+              style: TextButton.styleFrom(
+                primary: Colors.grey,
               ),
-              TextButton(
-                child: const Text('Go to Order Status'),
-                style: TextButton.styleFrom(
-                  primary: Color(0xFFEF911E),
-                ),
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                  widget.navigateToOrderStatus();
-                  Navigator.of(dialogContext).pop();
-                },
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Go to Order Status'),
+              style: TextButton.styleFrom(
+                primary: Color(0xFFEF911E),
               ),
-            ],
-          ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                widget.navigateToOrderStatus();
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
         );
       },
     );

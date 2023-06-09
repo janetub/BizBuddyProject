@@ -10,14 +10,12 @@ import 'dart:collection';
 
 class CartDialog extends StatefulWidget {
   final LinkedHashSet<Item> cartItems;
-  final VoidCallback onClose;
   final VoidCallback onCheckoutOrder;
   final void Function(Item, int) onUpdateQuantity;
 
   CartDialog({
     Key? key,
     required this.cartItems,
-    required this.onClose,
     required this.onCheckoutOrder,
     required this.onUpdateQuantity,
   }) : super(key: key);
@@ -117,12 +115,17 @@ class _CartDialogState extends State<CartDialog> {
           style: TextButton.styleFrom(
             primary: Colors.grey,
           ),
-          onPressed: widget.onClose,
+          onPressed: () => Navigator.pop(context),
           child: const Text('Close'),
         ),
         if (widget.cartItems.isNotEmpty)
           ElevatedButton(
-            onPressed: widget.onCheckoutOrder,
+            onPressed: () {
+              // Close CartDialog
+              Navigator.pop(context);
+              // Call onCheckoutOrder callback
+              widget.onCheckoutOrder();
+            },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),

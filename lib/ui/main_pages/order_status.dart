@@ -31,38 +31,38 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
   void initState() {
     super.initState();
 
-    for (int i = 0; i < 15; i++) {
-      Item item = Item('Item $i', 'Item description $i');
-      item.cost = i + 1;
-      item.markup = i + 2;
-      item.quantity = i + 3;
-
-      Person customer = Person('Name $i');
-      Order order;
-      if (i % 2 == 0) {
-        Person customer2 = Person('Maya Jade Elise Tubigon');
-        order = Order(
-          items: LinkedHashSet<Item>.from({item}),
-          customers: LinkedHashSet<Person>.from([customer, customer2]),
-        );
-      } else {
-        order = Order(
-          items: LinkedHashSet<Item>.from({item}),
-          customers: LinkedHashSet<Person>.from([customer]),
-        );
-      }
-      List<OrderStatus> orderStatuses = [
-        OrderStatus(label: 'Pending', description: 'Details 1'),
-        OrderStatus(label: 'Packaging', description: 'Details 2'),
-        OrderStatus(label: 'Waiting for pickup', description: 'Details 3'),
-        OrderStatus(label: 'Received', description: 'Details 4'),
-        OrderStatus(label: 'Paid', description: 'Details 5'),
-      ];
-      order.statuses.addAll(orderStatuses);
-      order.nextStatus();
-
-      widget.orders.add(order);
-    }
+    // for (int i = 0; i < 15; i++) {
+    //   Item item = Item('Item $i', 'Item description $i');
+    //   item.cost = i + 1;
+    //   item.markup = i + 2;
+    //   item.quantity = i + 3;
+    //
+    //   Person customer = Person('Name $i');
+    //   Order order;
+    //   if (i % 2 == 0) {
+    //     Person customer2 = Person('Maya Jade Elise Tubigon');
+    //     order = Order(
+    //       items: LinkedHashSet<Item>.from({item}),
+    //       customers: LinkedHashSet<Person>.from([customer, customer2]),
+    //     );
+    //   } else {
+    //     order = Order(
+    //       items: LinkedHashSet<Item>.from({item}),
+    //       customers: LinkedHashSet<Person>.from([customer]),
+    //     );
+    //   }
+    //   List<OrderStatus> orderStatuses = [
+    //     OrderStatus(label: 'Pending', description: 'Details 1'),
+    //     OrderStatus(label: 'Packaging', description: 'Details 2'),
+    //     OrderStatus(label: 'Waiting for pickup', description: 'Details 3'),
+    //     OrderStatus(label: 'Received', description: 'Details 4'),
+    //     OrderStatus(label: 'Paid', description: 'Details 5'),
+    //   ];
+    //   order.statuses.addAll(orderStatuses);
+    //   order.nextStatus();
+    //
+    //   widget.orders.add(order);
+    // }
   }
 
   void _clearSearchField () {

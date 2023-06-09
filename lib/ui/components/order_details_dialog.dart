@@ -134,7 +134,7 @@ class OrderDetailsDialog extends StatelessWidget {
                           .map(
                             (item) => Chip(
                           label: Text(
-                            '${item.quantity}x ${item.name}',
+                            '(${item.quantity}) ${item.name}',
                             style: TextStyle(
                               fontSize: 17,
                               color: Colors.white,
