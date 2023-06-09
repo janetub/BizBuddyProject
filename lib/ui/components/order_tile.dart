@@ -2,6 +2,10 @@ import 'package:bizbuddyproject/ui/components/order_details_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 
+/*
+* TODO: order phase details and other order details
+* */
+
 class OrderTile extends StatefulWidget {
   final Order order;
   final void Function(Order) onOrderCancel;
@@ -22,7 +26,7 @@ class _OrderTileState extends State<OrderTile> {
   @override
   Widget build(BuildContext context) {
     String customerNames = widget.order.customers
-        .map((customer) => '${customer.firstName} ${customer.lastName}')
+        .map((customer) => customer.name)
         .join(', ');
     return InkWell(
       highlightColor: Colors.green,
@@ -119,7 +123,7 @@ class _OrderTileState extends State<OrderTile> {
                     child: Wrap(
                       spacing: 5,
                       alignment: WrapAlignment.start,
-                      children: widget.order.statuses.asMap().entries.map((entry) {
+                      children: widget.order.statuses.toList().asMap().entries.map((entry) {
                         int index = entry.key;
                         OrderStatus orderStatus = entry.value;
                         bool isActive = index == widget.order.currentStatusIndex;

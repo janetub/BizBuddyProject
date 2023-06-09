@@ -43,8 +43,12 @@ class _CartTileState extends State<CartTile> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(widget.item.name),
-              Text('₱ ${widget.item.price.toStringAsFixed(2)}'),
+              Flexible(
+                child: Text(widget.item.name),
+              ),
+              Flexible(
+                child: Text('₱ ${widget.item.price.toStringAsFixed(2)}'),
+              ),
             ],
           ),
           subtitle:

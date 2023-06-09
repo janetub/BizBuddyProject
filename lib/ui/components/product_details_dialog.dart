@@ -83,7 +83,7 @@ class ProductDetailsDialog extends StatelessWidget {
                       'Cost: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 29,),
+                    SizedBox(width: 30,),
                     Expanded(
                       child: Text(
                         '${item.cost.toStringAsFixed(2)}',
@@ -105,7 +105,7 @@ class ProductDetailsDialog extends StatelessWidget {
                       'Markup: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4,),
+                    SizedBox(width: 6,),
                     Expanded(
                       child: Text(
                         '${(item.price - item.cost).toStringAsFixed(2)}',
@@ -127,7 +127,7 @@ class ProductDetailsDialog extends StatelessWidget {
                       'Price: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 24,),
+                    SizedBox(width: 26,),
                     Expanded(
                       child: Text(
                         '${item.price.toStringAsFixed(2)}',

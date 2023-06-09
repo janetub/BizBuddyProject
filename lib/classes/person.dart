@@ -2,15 +2,13 @@
 class Person
 {
   final String _id = idGenerator();
-  String firstName;
-  String? middleName;
-  String lastName;
+  String name;
   Map<String, List<String>> contacts = {};
 
   String get id => _id;
 
 
-  Person(this.firstName, String this.middleName, this.lastName);
+  Person(this.name);
 
   int addContact(String type, String contact) {
     int flag = 0;

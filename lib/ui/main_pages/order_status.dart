@@ -37,26 +37,26 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
       item.markup = i + 2;
       item.quantity = i + 3;
 
-      Person customer = Person('First Name $i', 'Middle Name $i', 'Last Name $i');
+      Person customer = Person('Name $i');
       Order order;
       if (i % 2 == 0) {
-        Person customer2 = Person('Maya Jade Elise', '', 'Tubigon');
+        Person customer2 = Person('Maya Jade Elise Tubigon');
         order = Order(
           items: LinkedHashSet<Item>.from({item}),
-          customers: [customer, customer2],
+          customers: LinkedHashSet<Person>.from([customer, customer2]),
         );
       } else {
         order = Order(
           items: LinkedHashSet<Item>.from({item}),
-          customers: [customer],
+          customers: LinkedHashSet<Person>.from([customer]),
         );
       }
       List<OrderStatus> orderStatuses = [
-        OrderStatus(label: 'Pending', details: 'Details 1'),
-        OrderStatus(label: 'Packaging', details: 'Details 2'),
-        OrderStatus(label: 'Waiting for pickup', details: 'Details 3'),
-        OrderStatus(label: 'Received', details: 'Details 4'),
-        OrderStatus(label: 'Paid', details: 'Details 5'),
+        OrderStatus(label: 'Pending', description: 'Details 1'),
+        OrderStatus(label: 'Packaging', description: 'Details 2'),
+        OrderStatus(label: 'Waiting for pickup', description: 'Details 3'),
+        OrderStatus(label: 'Received', description: 'Details 4'),
+        OrderStatus(label: 'Paid', description: 'Details 5'),
       ];
       order.statuses.addAll(orderStatuses);
       order.nextStatus();

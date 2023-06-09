@@ -62,7 +62,7 @@ class OrderDetailsDialog extends StatelessWidget {
                       'Total Cost: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         '${order.calculateTotalCost().toStringAsFixed(2)}',

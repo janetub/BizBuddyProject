@@ -4,8 +4,8 @@
 * */
 
 class OrderStatus {
-  final String label;
-  final String details;
+  String label;
+  String description;
 
-  OrderStatus({required this.label, required this.details});
+  OrderStatus({required this.label, required this.description});
 }

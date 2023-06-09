@@ -14,7 +14,7 @@ class EditItemPage extends StatefulWidget {
 
   EditItemPage({
     required this.onSubmit,
-    required this.item
+    required this.item,
   });
 
   @override
@@ -66,10 +66,13 @@ class _EditItemPageState extends State<EditItemPage> {
   void _onConfirm() {
     if (_formKey.currentState!.validate()) {
       try {
+        String costText = _costController.text.replaceAll(',', '');
+        String markupText = _markupController.text.replaceAll(',', '');
+        String quantityText = _quantityController.text.replaceAll(',', '');
         final newItem = Item(_nameController.text, _descriptionController.text);
-        newItem.cost = double.parse(_costController.text);
-        newItem.markup = double.parse(_markupController.text);
-        newItem.quantity += (int.parse(_quantityController.text));
+        newItem.cost = double.parse(costText);
+        newItem.markup = double.parse(markupText);
+        newItem.quantity += (int.parse(quantityText));
         if (_dateBoughtController.text.isNotEmpty) {
           final dateParts = _dateBoughtController.text.split('/');
           final formattedDate = '${dateParts[2]}-${dateParts[0].padLeft(2, '0')}-${dateParts[1].padLeft(2, '0')}';
@@ -87,8 +90,8 @@ class _EditItemPageState extends State<EditItemPage> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            content: Text('Invalid entries:\n$e'),
+            title: const Text('Invalid entries:\n'),
+            content: Text('$e'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -99,6 +102,84 @@ class _EditItemPageState extends State<EditItemPage> {
         );
       }
     }
+  }
+
+  // FIXME: validations
+  String? validateWholeIntegers(value) {
+    if (value == null || value.isEmpty) {
+      return 'Field cannot be left blank';
+    }
+
+    // List<String> parts = value.split('.');
+    // if (true) {
+    //   showDialog(
+    //     context: context,
+    //     builder: (BuildContext context) {
+    //       return AlertDialog(
+    //         contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Customize the padding
+    //         title: Text('TEST'),
+    //         content: Text('${parts[0][3-1]}'),
+    //         actions: [
+    //           TextButton(
+    //             onPressed: () {
+    //               Navigator.of(context).pop();
+    //             },
+    //             child: Text('OO'),
+    //           ),
+    //         ],
+    //       );
+    //     },
+    //   );
+    // }
+
+    // Check for properly placed commas
+
+    // if(value.contains(',')) {
+    //   if(parts[0].length > 3) {
+    //     int commaIndex = parts[0].length - 3;
+    //     while (commaIndex > 0) {
+    //       if (parts[0][commaIndex - 1] != ',') {
+    //         return 'Invalid input';
+    //       }
+    //       commaIndex -= 3;
+    //     }
+    //   }
+    // }
+
+    // Remove commas
+    // String newValue = value.replaceAll(',', '');
+    // Check for non-digits
+    if (!RegExp(r'^\d+$').hasMatch(value)) {
+      return 'Please input valid whole numbers';
+    }
+    return null;
+  }
+
+  String? validateIntegersAndDecimal(value) {
+    if (value == null || value.isEmpty) {
+      return 'Field cannot be left blank';
+    }
+    // // Remove commas
+    // String newValue = value.replaceAll(',', '');
+    // // Check for non-digits and decimal point
+    if (!RegExp(r'^\d*\.?\d*$').hasMatch(value)) {
+      return 'Invalid input';
+    }
+    // // Check for properly placed commas
+    // List<String> parts = value.split('.');
+    // if (parts.length == 2 && parts[1].contains(',')) {
+    //   return 'Invalid input2';
+    // }
+    // if (parts[0].length > 3) {
+    //   int commaIndex = parts[0].length - 3;
+    //   while (commaIndex > 0) {
+    //     if (parts[0][commaIndex - 1] != ',') {
+    //       return 'Invalid input3';
+    //     }
+    //     commaIndex -= 3;
+    //   }
+    // }
+    return null;
   }
 
   void onDeleteTag(String tag) {
@@ -270,12 +351,7 @@ class _EditItemPageState extends State<EditItemPage> {
                               ),
                             ),
                             keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Field cannot be left blank';
-                              }
-                              return null;
-                            },
+                            validator: validateIntegersAndDecimal,
                           ),
                           SizedBox(height: 15),
                           TextFormField(
@@ -337,12 +413,7 @@ class _EditItemPageState extends State<EditItemPage> {
                               ),
                             ),
                             keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Field cannot be left blank';
-                              }
-                              return null;
-                            },
+                            validator: validateIntegersAndDecimal,
                           ),
                           SizedBox(height: 15),
                           Row(
@@ -374,12 +445,7 @@ class _EditItemPageState extends State<EditItemPage> {
                                     ),
                                   ),
                                   keyboardType: TextInputType.number,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter a quantity';
-                                    }
-                                    return null;
-                                  },
+                                  validator: validateWholeIntegers,
                                 ),
                               ),
                               Column(

@@ -2,6 +2,10 @@ import 'package:bizbuddyproject/ui/components/product_details_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 
+/*
+* TODO: limit number of chars
+* */
+
 class ProductTile extends StatefulWidget {
   final Item item;
   final void Function(Item) onProductEdit;
@@ -91,16 +95,32 @@ class _ProductTileState extends State<ProductTile> {
                       highlightColor: Colors.transparent,
                     ),
                     child: ListTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.item.name),
-                          Text('₱ ${widget.item.price.toStringAsFixed(2)}'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                flex: 7,
+                                child: Text(widget.item.name),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            alignment: Alignment.centerRight,
+                            child:
+                            Text('₱ ${widget.item.price.toStringAsFixed(2)}'),
+                          ),
                         ],
                       ),
                       subtitle:
-                      Text('Stocks: ${widget.item.quantity}\n${widget.item.description}',
-                      maxLines: 2,
+                      Text(
+                        'Stocks: ${widget.item.quantity}' +
+                            (widget.item.description.isNotEmpty
+                                ? '\n${widget.item.description}'
+                                : ''),
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       trailing: Row(

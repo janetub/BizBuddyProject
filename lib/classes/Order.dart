@@ -14,13 +14,14 @@ import 'all.dart';
 
 class Order {
   final String orderId;
+  String description;
   final LinkedHashSet<Item> items;
-  final List<OrderStatus> statuses;
+  final LinkedHashSet<OrderStatus> statuses;
   int currentStatusIndex;
   DateTime datePlaced;
-  final List<Person> customers;
+  final LinkedHashSet<Person> customers;
 
-  Order({required this.items, required this.customers}) : statuses = [], currentStatusIndex = -1, orderId = idGenerator(),
+  Order({required this.items, required this.customers}) : description = '', statuses = LinkedHashSet<OrderStatus>(), currentStatusIndex = -1, orderId = idGenerator(),
         datePlaced = DateTime.now() {
     if (items.isEmpty) {
       throw ArgumentError('An order must have at least one item.');

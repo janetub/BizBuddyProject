@@ -1,10 +1,11 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import '../components/cart_detail_dialog.dart';
+import '../components/cart_dialog.dart';
 import '../components/product_tile.dart';
 import '../input_forms/add_item.dart';
 import '../../classes/all.dart';
+import '../input_forms/add_order.dart';
 import '../input_forms/edit_item.dart';
 
 /*
@@ -41,8 +42,10 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   final ScrollController _scrollController = ScrollController();
   bool _isSearchFieldVisible = false;
   var defaultCatalogSort = {};
+  String _selectedSortOption = 'Default';
+  List<String> _sortOptions = ['default', 'name', 'price', 'date added', 'stocks'];
 
-  // TODO: for debugging, remove later
+ // TODO: for debugging, remove later
   @override
   void initState() {
     super.initState();
@@ -120,13 +123,13 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       builder: (context) => CartDialog(
         cartItems: widget.cartItems,
         onClose: () => Navigator.pop(context),
-        onPlaceOrder: _onPlaceOrder,
+        onCheckoutOrder: _onCheckoutOrder,
         onUpdateQuantity: _onUpdateQuantity,
       ),
     );
   }
 
-  void _onPlaceOrder() {
+  void _onCheckoutOrder() {
     // Check if all items have zero quantity
     if (widget.cartItems.every((item) => item.quantity == 0)) {
       // Show dialog to notify user that their cart is empty
@@ -137,11 +140,11 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           content: const Text('All items in your cart have zero quantity.'),
           actions: [
             TextButton(
-              child: const Text('OK'),
               style: TextButton.styleFrom(
-                primary: Color(0xFFEF911E),
+                primary: const Color(0xFFEF911E),
               ),
               onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
             ),
           ],
         ),
@@ -150,15 +153,21 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       // Filter out items with zero quantity
       final nonZeroItems = LinkedHashSet<Item>.from(
           widget.cartItems.where((item) => item.quantity > 0));
-      // Create order with non-zero quantity items
-      Order order = Order(
+      // Show AddOrderDialog to allow user to customize order details
+      showDialog(
+        context: context,
+        builder: (context) => AddOrderPage(
+          onPlaceOrder: (order) => _onPlaceOrder(order),
           items: nonZeroItems,
-        customers: [],
+        ),
       );
-      widget.onPlaceOrder(order);
-      _showSuccessDialog(order);
-      widget.cartItems.clear();
     }
+  }
+
+  void _onPlaceOrder(Order order) {
+    widget.onPlaceOrder(order);
+    _showSuccessDialog(order);
+    widget.cartItems.clear();
   }
 
   void _showSuccessDialog(Order order) {

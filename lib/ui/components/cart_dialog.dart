@@ -11,14 +11,14 @@ import 'dart:collection';
 class CartDialog extends StatefulWidget {
   final LinkedHashSet<Item> cartItems;
   final VoidCallback onClose;
-  final VoidCallback onPlaceOrder;
+  final VoidCallback onCheckoutOrder;
   final void Function(Item, int) onUpdateQuantity;
 
   CartDialog({
     Key? key,
     required this.cartItems,
     required this.onClose,
-    required this.onPlaceOrder,
+    required this.onCheckoutOrder,
     required this.onUpdateQuantity,
   }) : super(key: key);
 
@@ -122,7 +122,7 @@ class _CartDialogState extends State<CartDialog> {
         ),
         if (widget.cartItems.isNotEmpty)
           ElevatedButton(
-            onPressed: widget.onPlaceOrder,
+            onPressed: widget.onCheckoutOrder,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
@@ -132,7 +132,7 @@ class _CartDialogState extends State<CartDialog> {
             child: const Column(
               children: [
                 SizedBox(width: 4),
-                Text('Place Order'),
+                Text('Checkout Order'),
               ],
             ),
           ),
