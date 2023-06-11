@@ -19,9 +19,10 @@ class Order {
   int currentStatusIndex;
   final LinkedHashSet<OrderStatus> statuses;
   final LinkedHashSet<Item> items;
-  final LinkedHashSet<Person> customers;
+  final Person recipient;
+  String deliveryMethod;
 
-  Order({required this.items, required this.customers}) : description = '', statuses = LinkedHashSet<OrderStatus>(), currentStatusIndex = -1, orderId = idGenerator(),
+  Order({required this.items, required this.recipient}) : description = '', deliveryMethod = '', statuses = LinkedHashSet<OrderStatus>(), currentStatusIndex = -1, orderId = idGenerator(),
         datePlaced = DateTime.now() {
     if (items.isEmpty) {
       throw ArgumentError('An order must have at least one item.');
@@ -103,10 +104,8 @@ class Order {
     for (Item item in items) {
       result += ' - ${item}\n';
     }
-    result += 'Customers:\n';
-    for (Person customer in customers) {
-      result += ' - ${customer}\n';
-    }
+    result += 'Recipient: ${recipient}\n';
+    result += 'Delivery method: ${deliveryMethod}\n';
     return result;
   }
 }

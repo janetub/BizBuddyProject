@@ -24,7 +24,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
   final ScrollController controller = ScrollController();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _msgController = TextEditingController();
-  List<TextEditingController> _nameControllers = [TextEditingController()];
+  final TextEditingController _nameController = TextEditingController();
   List<TextEditingController> _contactsControllers = [TextEditingController()];
   final Map<String, LinkedHashSet<OrderStatus>> _premadeGroups = {
     'Default': LinkedHashSet.from([
@@ -39,18 +39,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
   String _selectedPremadeGroup = 'Default';
   String _selectedDeliveryMethod = 'Pickup';
 
-  void _addRecipient() {
-    setState(() {
-      _nameControllers.add(TextEditingController());
-    });
-  }
-
-  void _removeRecipient(int index) {
-    setState(() {
-      _nameControllers.removeAt(index);
-    });
-  }
-
   void _addContact() {
     setState(() {
       _contactsControllers.add(TextEditingController());
@@ -63,12 +51,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
     });
   }
 
-  LinkedHashSet<Person> _getRecipients() {
-    return LinkedHashSet.from(
-      _nameControllers.map((controller) => Person(controller.text)),
-    );
-  }
-
   Future<void> _onAddStatusButton() async {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     final TextEditingController labelController = TextEditingController();
@@ -78,8 +60,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add custom button',
-            style: TextStyle(fontSize: 24),
+          title: Text('Add custom order status',
+            style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
           shape: RoundedRectangleBorder(
@@ -125,6 +107,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 SizedBox(height: 15),
                 TextFormField(
                   cursorColor: Color(0xFFEF911E),
+                  maxLines: null,
                   controller: descriptionController,
                   decoration: InputDecoration(
                     labelText: 'Description',
@@ -200,8 +183,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add custom button',
-            style: TextStyle(fontSize: 24),
+          title: Text('Edit order status',
+            style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
           shape: RoundedRectangleBorder(
@@ -247,6 +230,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 SizedBox(height: 15),
                 TextFormField(
                   cursorColor: Color(0xFFEF911E),
+                  maxLines: null,
                   controller: descriptionController,
                   decoration: InputDecoration(
                     labelText: 'Description',
@@ -321,7 +305,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
       builder: (context) {
         return AlertDialog(
           title: Text('Add new order status group',
-            style: TextStyle(fontSize: 24),
+            style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
           shape: RoundedRectangleBorder(
@@ -416,9 +400,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
 
   void _onReset() {
     setState(() {
-      for (final controller in _nameControllers) {
-        controller.clear();
-      }
       for (final controller in _contactsControllers) {
         controller.clear();
       }
@@ -433,8 +414,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
       ]);
       _selectedPremadeGroup = 'Default';
       _selectedDeliveryMethod = 'Pickup';
-      _nameControllers.clear();
-      _nameControllers.add(TextEditingController());
+      _nameController.clear();
       _contactsControllers.clear();
       _contactsControllers.add(TextEditingController());
       _msgController.clear();
@@ -442,13 +422,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   void _onPlaceOrder() {
-    if (_nameControllers.length > 1) {
-      for (int i = _nameControllers.length - 1; i >= 0; i--) {
-        if (_nameControllers[i].text.isEmpty) {
-          _removeRecipient(i);
-        }
-      }
-    }
     if (_contactsControllers.length > 1) {
       for (int i = _contactsControllers.length - 1; i >= 0; i--) {
         if (_contactsControllers[i].text.isEmpty) {
@@ -458,22 +431,22 @@ class _AddOrderPageState extends State<AddOrderPage> {
     }
     if(_formKey.currentState!.validate()) {
       try{
-        List<Person> customers = [];
-        for (int i = 0; i < _nameControllers.length; i++) {
-          String name = _nameControllers[i].text;
+        Person person = Person(_nameController.text);
+        for (int i = 0; i < _contactsControllers.length; i++) {
           String contact = _contactsControllers[i].text;
-          Person person = Person(name);
           person.addContact(_selectedDeliveryMethod, contact);
-          customers.add(person);
         }
+
         final placedOrder = Order(
           items: widget.items,
-          customers: LinkedHashSet.from(customers),);
-        placedOrder.statuses.addAll(_premadeGroups[_selectedPremadeGroup] as Iterable<OrderStatus>);
+          recipient: person,
+        );
+        placedOrder.statuses.addAll(
+            _premadeGroups[_selectedPremadeGroup] as Iterable<OrderStatus>);
         placedOrder.datePlaced = DateTime.now();
+        placedOrder.deliveryMethod = _selectedDeliveryMethod;
         placedOrder.currentStatusIndex = 0;
         placedOrder.description = _msgController.text;
-        print("AddOrderPage has sent the order.\n${placedOrder.orderId}\n____________\n");
         widget.onPlaceOrder(placedOrder);
       } catch (e) {
         showDialog(
@@ -529,67 +502,51 @@ class _AddOrderPageState extends State<AddOrderPage> {
                       key: _formKey,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: [..._nameControllers
-                            .asMap()
-                            .entries
-                            .map((entry) {
-                          int index = entry.key;
-                          TextEditingController controller = entry.value;
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              bottom: index == _nameControllers.length - 1 ? 0.0 : 16.0,
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    cursorColor: Color(0xFFEF911E),
-                                    controller: controller,
-                                    decoration: InputDecoration(
-                                      labelText: 'Customer/Recipient Name',
-                                      labelStyle: TextStyle(color: Colors.grey),
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.grey),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.grey),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.red),
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(color: Colors.red),
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter at least one recipient';
-                                      }
-                                      return null;
-                                    },
-                                  ),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 0.0),
+                            child: TextFormField(
+                              cursorColor: Color(0xFFEF911E),
+                              controller: _nameController,
+                              decoration: InputDecoration(
+                                labelText: 'Name',
+                                labelStyle: TextStyle(color: Colors.grey),
+                                fillColor: Colors.white,
+                                filled: true,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(10),
+                                  borderSide: BorderSide(color: Colors.grey),
                                 ),
-                                if (_nameControllers.length > 1)
-                                  IconButton(
-                                    padding: EdgeInsets.all(0),
-                                    constraints: BoxConstraints.tight(Size(24, 24)),
-                                    onPressed: () => _removeRecipient(index),
-                                    icon: Icon(Icons.close, color: Color(0xFFEF911E)),
-                                  ),
-                              ],
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(10),
+                                  borderSide:
+                                  BorderSide(color: Colors.grey),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(10),
+                                  borderSide:
+                                  BorderSide(color: Colors.red),
+                                ),
+                                focusedErrorBorder:
+                                OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(10),
+                                  borderSide:
+                                  BorderSide(color: Colors.red),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter at least one recipient';
+                                }
+                                return null;
+                              },
                             ),
-                          );
-                        }),
-                          TextButton(
-                            onPressed: _addRecipient,
-                            child: Text('Add another recipient'),
                           ),
+                          SizedBox(height: 8,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -718,7 +675,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
                           }),
                           TextButton(
                             onPressed: _addContact,
-                            child: Text('Add another contact information'),
+                            child: Text('Add another contact information',
+                              style: TextStyle(color: Color(0xFFEF911E)),
+                            ),
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -814,6 +773,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                           Padding(
                             padding: EdgeInsets.only(top: 0.0),
                             child: TextFormField(
+                              cursorColor: Color(0xFFEF911E),
                               controller: _msgController,
                               maxLines: null, // Set maxLines to null to allow for infinite lines
                               decoration: InputDecoration(

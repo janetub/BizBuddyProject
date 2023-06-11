@@ -185,6 +185,10 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
 
   }
 
+  void _onOrderEdit(Order order) {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -275,6 +279,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                     return OrderTile(
                       order: order,
                       onOrderCancel: _onOrderCancel,
+                      onProductEdit: _onOrderEdit,
                     );
                   },
                 ),
