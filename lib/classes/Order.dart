@@ -15,10 +15,10 @@ import 'all.dart';
 class Order {
   final String orderId;
   String description;
-  final LinkedHashSet<Item> items;
-  final LinkedHashSet<OrderStatus> statuses;
-  int currentStatusIndex;
   DateTime datePlaced;
+  int currentStatusIndex;
+  final LinkedHashSet<OrderStatus> statuses;
+  final LinkedHashSet<Item> items;
   final LinkedHashSet<Person> customers;
 
   Order({required this.items, required this.customers}) : description = '', statuses = LinkedHashSet<OrderStatus>(), currentStatusIndex = -1, orderId = idGenerator(),
@@ -91,5 +91,22 @@ class Order {
       return statuses.elementAt(currentStatusIndex);
     }
     return null;
+  }
+
+  @override
+  String toString() {
+    String result = 'Order Id: ${orderId}\nDescription: ${description}\nDateplace: ${datePlaced}, Current Status Index: ${currentStatusIndex}\nStatuses:\n';
+    for (OrderStatus status in statuses) {
+      result += ' - ${status}\n';
+    }
+    result += 'Items:\n';
+    for (Item item in items) {
+      result += ' - ${item}\n';
+    }
+    result += 'Customers:\n';
+    for (Person customer in customers) {
+      result += ' - ${customer}\n';
+    }
+    return result;
   }
 }

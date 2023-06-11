@@ -26,7 +26,8 @@ class _MainCanvasState extends State<MainCanvas> {
   LinkedHashSet<Item> cartItems = LinkedHashSet<Item>();
   Widget? _currentPage;
   String _currentPageTitle = 'Product Catalog';
-  VoidCallback? _onSearchButtonPressed;
+  VoidCallback? _onPCSearchButtonPressed;
+  VoidCallback? _onOSSearchButtonPressed;
 
   @override
   void initState() {
@@ -34,17 +35,43 @@ class _MainCanvasState extends State<MainCanvas> {
     _currentPage = ProductCatalogPage(
       productCatalog: myProducts,
       cartItems: cartItems,
-      navigateToOrderStatus: _navigateToOrderStatus,
-      onPlaceOrder: (Order value) {},
-      onSearchButtonPressed: (void Function() value) => _onSearchButtonPressed = value,
+      navigateToOrderStatus: () {
+        _onPageChanged(
+            OrderStatusPage(
+                orders: myOrders,
+              onSearchButtonPressed: (void Function() value) {  },
+            ));
+      },
+      onMoveOrder: (order) {
+        myOrders.add(order);
+      },
+      onSearchButtonPressed: (void Function() value) => _onPCSearchButtonPressed = value,
     );
   }
 
-  void _navigateToOrderStatus() {
-    setState(() {
-      _currentPage = OrderStatusPage(orders: myOrders);
-      _currentPageTitle = 'Order Status';
-    });
+
+  void _onProductCatalogSelected() {
+    _onPageChanged(ProductCatalogPage(
+      productCatalog: myProducts,
+      cartItems: cartItems,
+      navigateToOrderStatus: _onOrderStatusSelected,
+      onMoveOrder: (order) {
+        myOrders.add(order);
+      },
+      onSearchButtonPressed: (void Function() value) => _onPCSearchButtonPressed = value,
+    ));
+  }
+
+  void _onOrderStatusSelected() {
+    _onPageChanged(
+        OrderStatusPage(
+            orders: myOrders,
+          onSearchButtonPressed: (void Function() value) => _onOSSearchButtonPressed = value,
+        ));
+  }
+
+  void _onInventorySelected() {
+    _onPageChanged(InventoryPage());
   }
 
   void _onPageChanged(Widget page) {
@@ -67,11 +94,9 @@ class _MainCanvasState extends State<MainCanvas> {
     return MaterialApp(
         home: Scaffold(
             drawer: Sidebar(
-              onPageChanged: _onPageChanged,
-              myProducts: myProducts,
-              myOrders: myOrders,
-              cartItems: cartItems,
-              onSearchButtonPressed: (void Function() value) => _onSearchButtonPressed = value,
+              onProductCatalogSelected: _onProductCatalogSelected,
+              onOrderStatusSelected: _onOrderStatusSelected,
+              onInventorySelected: _onInventorySelected,
             ),
             appBar: AppBar(
               elevation: 0,
@@ -87,9 +112,9 @@ class _MainCanvasState extends State<MainCanvas> {
                   icon: Icon(Icons.search),
                   onPressed: () async {
                     if(_currentPage is ProductCatalogPage) {
-                      _onSearchButtonPressed?.call();
+                      _onPCSearchButtonPressed?.call();
                     } else if (_currentPage is OrderStatusPage) {
-                      // TODO
+                      _onOSSearchButtonPressed?.call();
                     } else if (_currentPage is InventoryPage) {
                       // TODO
                     }

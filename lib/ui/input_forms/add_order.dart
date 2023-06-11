@@ -1,8 +1,5 @@
 import 'dart:collection';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../classes/all.dart';
 
 /*
@@ -26,6 +23,7 @@ class AddOrderPage extends StatefulWidget {
 class _AddOrderPageState extends State<AddOrderPage> {
   final ScrollController controller = ScrollController();
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _msgController = TextEditingController();
   List<TextEditingController> _nameControllers = [TextEditingController()];
   List<TextEditingController> _contactsControllers = [TextEditingController()];
   final Map<String, LinkedHashSet<OrderStatus>> _premadeGroups = {
@@ -83,10 +81,10 @@ class _AddOrderPageState extends State<AddOrderPage> {
           title: Text('Add custom button',
             style: TextStyle(fontSize: 24),
             textAlign: TextAlign.center,),
-            backgroundColor: const  Color(0xFFF9F9F9),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
+          backgroundColor: const  Color(0xFFF9F9F9),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           content: Form(
             key: _formKey,
             child: Column(
@@ -96,7 +94,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                   cursorColor: Color(0xFFEF911E),
                   controller: labelController,
                   decoration: InputDecoration(
-                      labelText: 'Label',
+                    labelText: 'Label',
                     labelStyle: TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
@@ -129,7 +127,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                   cursorColor: Color(0xFFEF911E),
                   controller: descriptionController,
                   decoration: InputDecoration(
-                      labelText: 'Description',
+                    labelText: 'Description',
                     labelStyle: TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
@@ -157,6 +155,13 @@ class _AddOrderPageState extends State<AddOrderPage> {
           actions: [
             TextButton(
               onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel',
+                style: TextStyle(color: Colors.grey),),
+            ),
+            TextButton(
+              onPressed: () {
                 if (_formKey.currentState != null && _formKey.currentState!.validate()) {
                   Navigator.of(context).pop({
                     'label': labelController.text,
@@ -164,13 +169,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
                   });
                 }
               },
-              child: Text('OK'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
+              child: Text('OK',
+                style: TextStyle(color: Color(0xFFEF911E)),),
             ),
           ],
         );
@@ -277,6 +277,14 @@ class _AddOrderPageState extends State<AddOrderPage> {
           actions: [
             TextButton(
               onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
                 if (_formKey.currentState != null && _formKey.currentState!.validate()) {
                   Navigator.of(context).pop({
                     'label': labelController.text,
@@ -284,13 +292,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
                   });
                 }
               },
-              child: Text('OK'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
+              child: Text('OK',
+                style: TextStyle(color: Color(0xFFEF911E)),
+              ),
             ),
           ],
         );
@@ -366,18 +370,20 @@ class _AddOrderPageState extends State<AddOrderPage> {
           actions: [
             TextButton(
               onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel',
+                style: TextStyle(color: Colors.grey),),
+            ),
+            TextButton(
+              onPressed: () {
                 if (_formKey.currentState != null &&
                     _formKey.currentState!.validate()) {
                   Navigator.of(context).pop(labelController.text);
                 }
               },
-              child: Text('OK'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
+              child: Text('OK',
+                style: TextStyle(color: Color(0xFFEF911E)),),
             ),
           ],
         );
@@ -416,7 +422,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
       for (final controller in _contactsControllers) {
         controller.clear();
       }
-      _premadeGroups.clear();
+      _premadeGroups.clear(); //
       _premadeGroups['Default'] = LinkedHashSet.from([
         OrderStatus(label: 'Pending', description: ''),
         OrderStatus(label: 'Processing', description: ''),
@@ -431,6 +437,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
       _nameControllers.add(TextEditingController());
       _contactsControllers.clear();
       _contactsControllers.add(TextEditingController());
+      _msgController.clear();
     });
   }
 
@@ -460,10 +467,13 @@ class _AddOrderPageState extends State<AddOrderPage> {
           customers.add(person);
         }
         final placedOrder = Order(
-            items: widget.items,
-            customers: LinkedHashSet.from(customers),);
+          items: widget.items,
+          customers: LinkedHashSet.from(customers),);
         placedOrder.statuses.addAll(_premadeGroups[_selectedPremadeGroup] as Iterable<OrderStatus>);
         placedOrder.datePlaced = DateTime.now();
+        placedOrder.currentStatusIndex = 0;
+        placedOrder.description = _msgController.text;
+        print("AddOrderPage has sent the order.\n${placedOrder.orderId}\n____________\n");
         widget.onPlaceOrder(placedOrder);
       } catch (e) {
         showDialog(
@@ -474,7 +484,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Ok'),
+                child: const Text('OK',
+                style: TextStyle(color: Color(0xFFEF911E)),),
               ),
             ],
           ),
@@ -507,7 +518,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
               ),
               SliverToBoxAdapter(
                 child: Card(
-                  margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                  margin: EdgeInsets.fromLTRB(30, 0, 30, 30),
                   color: Color(0xFFF9F9F9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -584,27 +595,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
                             children: [
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  primary: _selectedDeliveryMethod == 'Deliver'
-                                      ? Colors.white : Color(0xFF1AB428),
-                                  side: BorderSide(
-                                    color: Colors.grey,
-                                  ),
-                                  backgroundColor: _selectedDeliveryMethod == 'Deliver'
-                        ? Color(0xFF1AB428) : Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _selectedDeliveryMethod = 'Deliver';
-                                  });
-                                },
-                                child: Text('Deliver'),
-                              ),
-                              SizedBox(width: 8),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
                                   primary: _selectedDeliveryMethod == 'Pickup'
                                       ? Colors.white : Color(0xFF1AB428),
                                   side: BorderSide(
@@ -622,6 +612,27 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                   });
                                 },
                                 child: Text('Pickup'),
+                              ),
+                              SizedBox(width: 8),
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  primary: _selectedDeliveryMethod == 'Deliver'
+                                      ? Colors.white : Color(0xFF1AB428),
+                                  side: BorderSide(
+                                    color: Colors.grey,
+                                  ),
+                                  backgroundColor: _selectedDeliveryMethod == 'Deliver'
+                                      ? Color(0xFF1AB428) : Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedDeliveryMethod = 'Deliver';
+                                  });
+                                },
+                                child: Text('Deliver'),
                               ),
                               SizedBox(width: 8),
                               OutlinedButton(
@@ -723,7 +734,10 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                 items: _premadeGroups.keys.map<DropdownMenuItem<String>>((String key) {
                                   return DropdownMenuItem<String>(
                                     value: key,
-                                    child: Text(key),
+                                    child: Text(
+                                      key.length > 10 ? key.substring(0, 10) + '...' : key,
+                                      textAlign: TextAlign.center,
+                                    )
                                   );
                                 }).toList(),
                               ),
@@ -777,16 +791,16 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   TextButton(
-                                    onPressed: _onRemoveSelectedGroup,
+                                      onPressed: _onRemoveSelectedGroup,
                                       child:
                                       Text(
-                                          'Remove group', 
+                                          'Remove group',
                                           style: TextStyle(color:
-                                      _selectedPremadeGroup == 'Default' ? Colors.black12 : Colors.grey))
+                                          _selectedPremadeGroup == 'Default' ? Colors.black12 : Colors.grey))
                                   ),
                                   TextButton(
                                     onPressed: _onAddGroupStatusButton,
-                                    child: 
+                                    child:
                                     Text(
                                       'Add order status group',
                                       style: TextStyle(color: Color(0xFFEF911E)),
@@ -796,9 +810,11 @@ class _AddOrderPageState extends State<AddOrderPage> {
                               )
                             ],
                           ),
+                          SizedBox(height: 8,),
                           Padding(
                             padding: EdgeInsets.only(top: 0.0),
                             child: TextFormField(
+                              controller: _msgController,
                               maxLines: null, // Set maxLines to null to allow for infinite lines
                               decoration: InputDecoration(
                                 labelText: 'Additional Message',

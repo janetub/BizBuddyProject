@@ -24,4 +24,13 @@ class Inventory {
   bool isEmpty() {
     return _items.isEmpty;
   }
+
+  @override
+  String toString() {
+    String result = 'Inventory Items:\n';
+    for (Item item in _items) {
+      result += ' - $item\n';
+    }
+    return result;
+  }
 }

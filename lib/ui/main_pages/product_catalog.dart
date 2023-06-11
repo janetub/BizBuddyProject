@@ -19,7 +19,7 @@ class ProductCatalogPage extends StatefulWidget {
   final LinkedHashSet<Item> productCatalog;
   final LinkedHashSet<Item> cartItems;
   final VoidCallback navigateToOrderStatus;
-  final ValueChanged<Order> onPlaceOrder;
+  final Function(Order) onMoveOrder;
   final ValueChanged<VoidCallback> onSearchButtonPressed;
 
   ProductCatalogPage({
@@ -27,7 +27,7 @@ class ProductCatalogPage extends StatefulWidget {
     required this.productCatalog,
     required this.cartItems,
     required this.navigateToOrderStatus,
-    required this.onPlaceOrder,
+    required this.onMoveOrder,
     required this.onSearchButtonPressed,
   }) : super(key: key);
 
@@ -45,47 +45,47 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   String _selectedSortOption = 'Default';
   List<String> _sortOptions = ['default', 'name', 'price', 'date added', 'stocks'];
 
- // TODO: for debugging, remove later
+  // TODO: for debugging, remove later
   @override
   void initState() {
     super.initState();
     widget.onSearchButtonPressed(_searchButtonPressed);
-    // for (int i = 1; i <= 15; i++) {
-    //   Item item = Item('Item $i', 'Description for Item $i');
-    //   item.cost = i * 10;
-    //   item.markup = i * 5;
-    //   item.quantity = 100 - (i * 5);
-    //   if(i%2==0) {
-    //     item.description = 'The quick brown fox jumps over the lazy dog. The dog found this entertaining and the fox laughs at the dog\'s reaction. The dog realizing this also laughs at himself. After awhile, both became friends.';
-    //     item.tags.add('Lorem');
-    //     item.tags.add('Ipsum');
-    //     item.tags.add('Solem');
-    //     item.tags.add('Lorem');
-    //     item.tags.add('Jollibee');
-    //     item.tags.add('Bida');
-    //     item.tags.add('and');
-    //     item.tags.add('saya');
-    //     item.tags.add('Door');
-    //     item.tags.add('Lorem');
-    //     item.tags.add('Ipsum');
-    //     item.tags.add('Solem');
-    //     item.tags.add('Lorem');
-    //     item.tags.add('Animal');
-    //     item.tags.add('Door');
-    //     item.tags.add('Slippers');
-    //     item.addComponent(Item('Mop',''));
-    //     item.addComponent(Item('Tulip',''));
-    //     item.addComponent(Item('Mop',''));
-    //     item.addComponent(Item('Cat',''));
-    //     item.addComponent(Item('Roof',''));
-    //     item.addComponent(Item('Mop',''));
-    //     item.addComponent(Item('Tulip',''));
-    //     item.addComponent(Item('Mop',''));
-    //     item.addComponent(Item('Cat',''));
-    //     item.addComponent(Item('Roof',''));
-    //   }
-    //   widget.productCatalog.add(item);
-    // }
+    for (int i = 1; i <= 15; i++) {
+      Item item = Item('Item $i', 'Description for Item $i');
+      item.cost = i * 10;
+      item.markup = i * 5;
+      item.quantity = 100 - (i * 5);
+      if(i%2==0) {
+        item.description = 'The quick brown fox jumps over the lazy dog. The dog found this entertaining and the fox laughs at the dog\'s reaction. The dog realizing this also laughs at himself. After awhile, both became friends.';
+        item.tags.add('Lorem');
+        item.tags.add('Ipsum');
+        item.tags.add('Solem');
+        item.tags.add('Lorem');
+        item.tags.add('Jollibee');
+        item.tags.add('Bida');
+        item.tags.add('and');
+        item.tags.add('saya');
+        item.tags.add('Door');
+        item.tags.add('Lorem');
+        item.tags.add('Ipsum');
+        item.tags.add('Solem');
+        item.tags.add('Lorem');
+        item.tags.add('Animal');
+        item.tags.add('Door');
+        item.tags.add('Slippers');
+        item.addComponent(Item('Mop',''));
+        item.addComponent(Item('Tulip',''));
+        item.addComponent(Item('Mop',''));
+        item.addComponent(Item('Cat',''));
+        item.addComponent(Item('Roof',''));
+        item.addComponent(Item('Mop',''));
+        item.addComponent(Item('Tulip',''));
+        item.addComponent(Item('Mop',''));
+        item.addComponent(Item('Cat',''));
+        item.addComponent(Item('Roof',''));
+      }
+      widget.productCatalog.add(item);
+    }
     _displayedItems = widget.productCatalog;
   }
 
@@ -156,19 +156,14 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       showDialog(
         context: context,
         builder: (context) => AddOrderPage(
-          onPlaceOrder: (order) => _onPlaceOrder(order),
+          onPlaceOrder: (order) {
+            print("ProductCatalog has received the order:\n${order.orderId}\n__________________\n");
+            _showSuccessDialog(order);
+          },
           items: nonZeroItems,
         ),
       );
     }
-  }
-
-  void _onPlaceOrder(Order order) {
-    widget.onPlaceOrder(order);
-    _showSuccessDialog(order);
-    setState(() {
-      widget.cartItems.clear();
-    });
   }
 
   void _showSuccessDialog(Order order) {
@@ -176,9 +171,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Success'),
+          title: const Text('Press any button to confirm'),
           content: const Text(
-              'The item has been added and moved to the Order Status page for processing.'),
+              'The item will be added and moved to the Order Status page for processing.'),
           actions: [
             TextButton(
               child: const Text('Ok'),
@@ -186,6 +181,12 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 primary: Colors.grey,
               ),
               onPressed: () {
+                Order orderToMove = order;
+                widget.onMoveOrder(orderToMove);
+                print("ProductCatalog has sent the order.\n${order.orderId}\n__________________\n");
+                widget.cartItems.clear();
+                setState(() {
+                });
                 Navigator.of(dialogContext).pop();
                 Navigator.of(dialogContext).pop();
               },
@@ -196,8 +197,12 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 primary: Color(0xFFEF911E),
               ),
               onPressed: () {
-                Navigator.of(dialogContext).pop();
+                Order orderToMove = order;
+                widget.onMoveOrder(orderToMove);
+                print("ProductCatalog has sent the order.\n${order.orderId}\n__________________\n");
+                widget.cartItems.clear();
                 widget.navigateToOrderStatus();
+                Navigator.of(dialogContext).pop();
                 Navigator.of(dialogContext).pop();
               },
             ),
@@ -209,31 +214,31 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
 
   void _showAddItemPage() {
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddItemPage(
-          onSubmit: (item) {
-            setState(() {
-              if (widget.productCatalog.any((existingItem) => existingItem.name == item.name)) {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('Duplicate Item'),
-                    content: Text('An item with the same name already exists in the product catalog.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('OK'),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              widget.productCatalog.add(item);
-            });
-          },
-        ),
-      )
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddItemPage(
+            onSubmit: (item) {
+              setState(() {
+                if (widget.productCatalog.any((existingItem) => existingItem.name == item.name)) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Duplicate Item'),
+                      content: Text('An item with the same name already exists in the product catalog.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                widget.productCatalog.add(item);
+              });
+            },
+          ),
+        )
     );
   }
 
@@ -415,9 +420,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           // update productCatalog
           bool containsItem = widget.productCatalog.any((cartItem) => cartItem.name == item.name);
           if(containsItem) {
-              Item catalogItem = widget.productCatalog.firstWhere((cartItem) => cartItem.name == item.name);
-              catalogItem.quantity += quantity;
-            } else {
+            Item catalogItem = widget.productCatalog.firstWhere((cartItem) => cartItem.name == item.name);
+            catalogItem.quantity += quantity;
+          } else {
             Item newItem = item.duplicate();
             newItem.quantity = item.quantity;
             widget.productCatalog.add(newItem);
@@ -513,82 +518,82 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         ],
       ),
       body: Center(
-          child: widget.productCatalog.isEmpty
-              ? const Text(
-            'Ready to sell?\nStart adding products!',
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.grey,
-            ),
-            textAlign: TextAlign.center,
-          )
-              : Column(
-                  children: [
-                  if(_isSearchFieldVisible)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        cursorColor: Color(0xFFEF911E),
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          labelText: 'Search',
-                          labelStyle: TextStyle(color: Colors.grey),
-                          fillColor: Colors.white,
-                          filled: true,
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: Color(0xFFEF911E),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.clear),
-                            onPressed: _clearSearchField,
-                            color: Color(0xFFEF911E),
-                          ),
-                        ),
-                        onChanged: _performSearch,
-                      ),
+        child: widget.productCatalog.isEmpty
+            ? const Text(
+          'Ready to sell?\nStart adding products!',
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.grey,
+          ),
+          textAlign: TextAlign.center,
+        )
+            : Column(
+          children: [
+            if(_isSearchFieldVisible)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  cursorColor: Color(0xFFEF911E),
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    labelText: 'Search',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    fillColor: Colors.white,
+                    filled: true,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: Colors.grey),
                     ),
-                  Expanded(
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          scrollbarTheme: ScrollbarThemeData(
-                            thumbColor: MaterialStateProperty.all(Colors.black54),
-                          ),
-                        ),
-                        child: Scrollbar(
-                          controller: _scrollController,
-                          isAlwaysShown: true,
-                          thickness: 3,
-                          interactive: true,
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            itemCount: _displayedItems.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index == _displayedItems.length) {
-                                return Container(height: kFloatingActionButtonMargin + 120);
-                              }
-                              final item = _displayedItems.elementAt(index);
-                              return ProductTile(
-                                item: item,
-                                onProductEdit: _onProductEdit,
-                                onProductDelete: _onProductDelete,
-                                onAddToCart: _addToCart,
-                              );
-                            },
-                          ),
-                        ),
-                      ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Color(0xFFEF911E),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: _clearSearchField,
+                      color: Color(0xFFEF911E),
+                    ),
                   ),
-                ],
+                  onChanged: _performSearch,
+                ),
               ),
+            Expanded(
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  scrollbarTheme: ScrollbarThemeData(
+                    thumbColor: MaterialStateProperty.all(Colors.black54),
+                  ),
+                ),
+                child: Scrollbar(
+                  controller: _scrollController,
+                  isAlwaysShown: true,
+                  thickness: 3,
+                  interactive: true,
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: _displayedItems.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == _displayedItems.length) {
+                        return Container(height: kFloatingActionButtonMargin + 120);
+                      }
+                      final item = _displayedItems.elementAt(index);
+                      return ProductTile(
+                        item: item,
+                        onProductEdit: _onProductEdit,
+                        onProductDelete: _onProductDelete,
+                        onAddToCart: _addToCart,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

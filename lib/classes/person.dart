@@ -43,4 +43,12 @@ class Person
     final now = DateTime.now();
     return now.microsecondsSinceEpoch.toString();
   }
+
+  String toString() {
+    String result = 'Name: ${name}\nID: ${_id}\n';
+    for (var entry in contacts.entries) {
+      result += '${entry.key}: ${entry.value.join(", ")}\n';
+    }
+    return result;
+  }
 }

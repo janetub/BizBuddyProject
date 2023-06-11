@@ -51,26 +51,26 @@ class _CartDialogState extends State<CartDialog> {
         child: Column(
           children: [
             Expanded(
-              child: Scrollbar(
-                isAlwaysShown: true,
-                thickness: 3.0,
-                interactive: true,
-                child: ListView.builder(
-                  itemCount: widget.cartItems.length,
-                  itemBuilder: (context, index) {
-                    final item = widget.cartItems.elementAt(index);
-                    return CartTile(
-                      item: item,
-                      onUpdateQuantity: widget.onUpdateQuantity,
-                      onRemove: () {
-                        setState(() {
-                          widget.cartItems.remove(item);
-                        });
-                      },
-                    );
-                  },
-                ),
-              )
+                child: Scrollbar(
+                  isAlwaysShown: true,
+                  thickness: 3.0,
+                  interactive: true,
+                  child: ListView.builder(
+                    itemCount: widget.cartItems.length,
+                    itemBuilder: (context, index) {
+                      final item = widget.cartItems.elementAt(index);
+                      return CartTile(
+                        item: item,
+                        onUpdateQuantity: widget.onUpdateQuantity,
+                        onRemove: () {
+                          setState(() {
+                            widget.cartItems.remove(item);
+                          });
+                        },
+                      );
+                    },
+                  ),
+                )
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(0, 10, 5, 0), // Add padding to the top
@@ -92,8 +92,8 @@ class _CartDialogState extends State<CartDialog> {
                             style: TextStyle(
                               color: Color(0xFF38823B),
                               fontSize: 18,
-                              ),
                             ),
+                          ),
                           TextSpan(
                             text: '${NumberFormat('#,##0.00').format(_totalPrice)}',
                             style: TextStyle(
@@ -121,9 +121,7 @@ class _CartDialogState extends State<CartDialog> {
         if (widget.cartItems.isNotEmpty)
           ElevatedButton(
             onPressed: () {
-              // Close CartDialog
               Navigator.pop(context);
-              // Call onCheckoutOrder callback
               widget.onCheckoutOrder();
             },
             style: ElevatedButton.styleFrom(

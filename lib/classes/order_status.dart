@@ -8,4 +8,9 @@ class OrderStatus {
   String description;
 
   OrderStatus({required this.label, required this.description});
+
+  @override
+  String toString() {
+    return 'Label: ${label}, Description: ${description}\n';
+  }
 }

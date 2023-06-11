@@ -113,4 +113,13 @@ class Item {
     newItem._components.addAll(_components);
     return newItem;
   }
+
+  @override
+  String toString() {
+    String result = 'Name: $name\nCost: $cost\nMarkup: $_markup\nQuantity: $_quantity\nDate Added: $_dateAdded\nTags: ${tags.join(", ")}\nDescription: $description\nComponents:\n';
+    for (Item component in _components) {
+      result += ' - $component\n';
+    }
+    return result;
+  }
 }
