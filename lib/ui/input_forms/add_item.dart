@@ -89,10 +89,13 @@ class _AddItemPageState extends State<AddItemPage>
   void _onConfirm() {
     if (_formKey.currentState!.validate()) {
       try {
+        String costText = _costController.text.replaceAll(',', '');
+        String markupText = _markupController.text.replaceAll(',', '');
+        String quantityText = _quantityController.text.replaceAll(',', '');
         final newItem = Item(_nameController.text, _descriptionController.text);
-        newItem.cost = double.parse(_costController.text);
-        newItem.markup = double.parse(_markupController.text);
-        newItem.quantity += (int.parse(_quantityController.text));
+        newItem.cost = double.parse(costText);
+        newItem.markup = double.parse(markupText);
+        newItem.quantity += (int.parse(quantityText));
         if (_dateBoughtController.text.isNotEmpty) {
           final dateParts = _dateBoughtController.text.split('/');
           final formattedDate = '${dateParts[2]}-${dateParts[0].padLeft(2, '0')}-${dateParts[1].padLeft(2, '0')}';
@@ -122,6 +125,26 @@ class _AddItemPageState extends State<AddItemPage>
         );
       }
     }
+  }
+
+  String? validateWholeIntegers(value) {
+    if (value == null || value.isEmpty) {
+      return 'Field cannot be left blank';
+    }
+    if (!RegExp(r'^\d{1,3}(,\d{3})*$').hasMatch(value)) {
+      return 'Please input valid whole numbers';
+    }
+    return null;
+  }
+
+  String? validateIntegersAndDecimal(value) {
+    if (value == null || value.isEmpty) {
+      return 'Field cannot be left blank';
+    }
+    if (!RegExp(r'^\d{1,3}(,\d{3})*(\.\d+)?$').hasMatch(value)) {
+      return 'Invalid input';
+    }
+    return null;
   }
 
   void onDeleteTag(String tag) {
@@ -294,12 +317,7 @@ class _AddItemPageState extends State<AddItemPage>
                               ),
                             ),
                             keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Field cannot be left blank';
-                              }
-                              return null;
-                            },
+                            validator: validateIntegersAndDecimal,
                           ),
                           SizedBox(height: 15),
                           TextFormField(
@@ -361,12 +379,7 @@ class _AddItemPageState extends State<AddItemPage>
                               ),
                             ),
                             keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Field cannot be left blank';
-                              }
-                              return null;
-                            },
+                            validator: validateIntegersAndDecimal,
                           ),
                           SizedBox(height: 15),
                           Row(
@@ -398,12 +411,7 @@ class _AddItemPageState extends State<AddItemPage>
                                     ),
                                   ),
                                   keyboardType: TextInputType.number,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter a quantity';
-                                    }
-                                    return null;
-                                  },
+                                  validator: validateWholeIntegers,
                                 ),
                               ),
                               Column(

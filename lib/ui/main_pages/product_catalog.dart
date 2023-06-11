@@ -43,7 +43,15 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   bool _isSearchFieldVisible = false;
   var defaultCatalogSort = {};
   String _selectedSortOption = 'Default';
-  List<String> _sortOptions = ['default', 'name', 'price', 'date added', 'stocks'];
+  final List<String> _sortOptions = ['Default', 'Name', 'Price', 'Date added', 'Stocks'];
+  final List<IconData> _sortOptionIcons = [
+    Icons.sort,
+    Icons.sort_by_alpha,
+    Icons.money,
+    Icons.date_range,
+    Icons.inventory,
+  ];
+  bool _isAscending = true;
 
   // TODO: for debugging, remove later
   @override
@@ -114,6 +122,40 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     setState(() {
       _searchController.clear();
       _displayedItems = widget.productCatalog;
+    });
+  }
+
+  LinkedHashSet<Item> sortItems(String sortOption, bool isAscending) {
+    List<Item> sortedItems = _displayedItems.toList();
+    if (sortOption == 'Name') {
+      int extractNumber(String str) {
+        return int.parse(str.replaceAll(RegExp(r'\D'), ''));
+      }
+
+      sortedItems.sort((a, b) {
+        int aNumber = extractNumber(a.name);
+        int bNumber = extractNumber(b.name);
+        return isAscending ? aNumber.compareTo(bNumber) : bNumber.compareTo(aNumber);
+      });
+    } else if (sortOption == 'Price') {
+      sortedItems.sort((a, b) => isAscending ? a.price.compareTo(b.price) : b.price.compareTo(a.price));
+    } else if (sortOption == 'Date added') {
+      sortedItems.sort((a, b) => isAscending ? a.dateAdded!.compareTo(b.dateAdded!) : b.dateAdded!.compareTo(a.dateAdded!));
+    } else if (sortOption == 'Stocks') {
+      sortedItems.sort((a, b) => isAscending ? a.quantity.compareTo(b.quantity) : b.quantity.compareTo(a.quantity));
+    } else {
+      if (!isAscending) {
+        sortedItems = (widget.productCatalog.toList()).reversed.toList();
+      } else {
+        sortedItems = widget.productCatalog.toList();
+      }
+    }
+    return LinkedHashSet.from(sortedItems);
+  }
+
+  void _performSort(String sortOption, bool isAscending) {
+    setState(() {
+      _displayedItems = sortItems(sortOption, isAscending);
     });
   }
 
@@ -529,6 +571,50 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         )
             : Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(_isAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                  onPressed: () {
+                    setState(() {
+                      _isAscending = !_isAscending;
+                      _performSort(_selectedSortOption, _isAscending);
+                    });
+                  },
+                ),
+                DropdownButton<String>(
+                  dropdownColor: Colors.white,
+                  value: _selectedSortOption,
+                  items: _sortOptions.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    String item = entry.value;
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(item),
+                          Icon(
+                            _sortOptionIcons[index],
+                            color: Colors.black38,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedSortOption = newValue!;
+                      _performSort(newValue, _isAscending);
+                    });
+                  },
+                  underline: SizedBox(),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ],
+            ),
             if(_isSearchFieldVisible)
               Padding(
                 padding: const EdgeInsets.all(8.0),

@@ -104,81 +104,24 @@ class _EditItemPageState extends State<EditItemPage> {
     }
   }
 
-  // FIXME: validations
   String? validateWholeIntegers(value) {
     if (value == null || value.isEmpty) {
       return 'Field cannot be left blank';
     }
-
-    // List<String> parts = value.split('.');
-    // if (true) {
-    //   showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return AlertDialog(
-    //         contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Customize the padding
-    //         title: Text('TEST'),
-    //         content: Text('${parts[0][3-1]}'),
-    //         actions: [
-    //           TextButton(
-    //             onPressed: () {
-    //               Navigator.of(context).pop();
-    //             },
-    //             child: Text('OO'),
-    //           ),
-    //         ],
-    //       );
-    //     },
-    //   );
-    // }
-
-    // Check for properly placed commas
-
-    // if(value.contains(',')) {
-    //   if(parts[0].length > 3) {
-    //     int commaIndex = parts[0].length - 3;
-    //     while (commaIndex > 0) {
-    //       if (parts[0][commaIndex - 1] != ',') {
-    //         return 'Invalid input';
-    //       }
-    //       commaIndex -= 3;
-    //     }
-    //   }
-    // }
-
-    // Remove commas
-    // String newValue = value.replaceAll(',', '');
-    // Check for non-digits
-    if (!RegExp(r'^\d+$').hasMatch(value)) {
+    if (!RegExp(r'^\d{1,3}(,\d{3})*$').hasMatch(value)) {
       return 'Please input valid whole numbers';
     }
     return null;
   }
 
+
   String? validateIntegersAndDecimal(value) {
     if (value == null || value.isEmpty) {
       return 'Field cannot be left blank';
     }
-    // // Remove commas
-    // String newValue = value.replaceAll(',', '');
-    // // Check for non-digits and decimal point
-    if (!RegExp(r'^\d*\.?\d*$').hasMatch(value)) {
+    if (!RegExp(r'^\d{1,3}(,\d{3})*(\.\d+)?$').hasMatch(value)) {
       return 'Invalid input';
     }
-    // // Check for properly placed commas
-    // List<String> parts = value.split('.');
-    // if (parts.length == 2 && parts[1].contains(',')) {
-    //   return 'Invalid input2';
-    // }
-    // if (parts[0].length > 3) {
-    //   int commaIndex = parts[0].length - 3;
-    //   while (commaIndex > 0) {
-    //     if (parts[0][commaIndex - 1] != ',') {
-    //       return 'Invalid input3';
-    //     }
-    //     commaIndex -= 3;
-    //   }
-    // }
     return null;
   }
 

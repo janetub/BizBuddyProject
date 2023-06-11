@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:bizbuddyproject/ui/input_forms/edit_order.dart';
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 import '../components/order_tile.dart';
@@ -25,7 +26,7 @@ class OrderStatusPage extends StatefulWidget {
 class _OrderStatusPageState extends State<OrderStatusPage> {
 
   final TextEditingController _searchController = TextEditingController();
-  LinkedHashSet<Item> filteredItems = LinkedHashSet<Item>();
+  LinkedHashSet<Order> _displayedOrders = LinkedHashSet<Order>();
   final ScrollController _scrollController = ScrollController();
   bool _isSearchFieldVisible = false;
 
@@ -44,112 +45,13 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
     //   if (i % 2 == 0) {
     //     Person customer2 = Person('Maya Jade Elise Tubigon');
     //     order = Order(
-    //     import 'dart:collection';
-    //
-    // import 'all.dart';
-    // /*
-    // * This class represents a customer order.
-    // * It can be pre-made or customized at the time the order is placed.
-    // * Add attributes and methods to this class to manage the order’s status and other details.
-    // * add feature typing number of quantity to order
-    // * */
-    //
-    // /*
-    // *
-    // * */
-    //
-    // class Order {
-    //   final String orderId;
-    //   String description;
-    //   final LinkedHashSet<Item> items;
-    //   final LinkedHashSet<OrderStatus> statuses;
-    //   int currentStatusIndex;
-    //   DateTime datePlaced;
-    //   final LinkedHashSet<Person> customers;
-    //
-    //   Order({required this.items, required this.customers}) : description = '', statuses = LinkedHashSet<OrderStatus>(), currentStatusIndex = -1, orderId = idGenerator(),
-    //         datePlaced = DateTime.now() {
-    //     if (items.isEmpty) {
-    //       throw ArgumentError('An order must have at least one item.');
-    //     }
-    //     for (var item in items) {
-    //       item.dateAdded = DateTime.now();
-    //     }
-    //   }
-    //
-    //   double calculateOrderTotalValue() {
-    //     double totalCost = 0;
-    //     for (Item item in items) {
-    //       totalCost += item.calculateTotalValue();
-    //     }
-    //     return totalCost;
-    //   }
-    //
-    //   static String idGenerator() {
-    //     final now = DateTime.now();
-    //     return now.microsecondsSinceEpoch.toString();
-    //   }
-    //
-    //   void addItem(Item item) {
-    //     items.add(item);
-    //     item.dateAdded = DateTime.now();
-    //   }
-    //
-    //   void removeItem(Item item) {
-    //     items.remove(item);
-    //   }
-    //
-    //   void addStatus(OrderStatus status)
-    //   {
-    //     statuses.add(status);
-    //   }
-    //
-    //   double calculateTotalCost() {
-    //     double totalCost = 0;
-    //     for (Item item in items) {
-    //       totalCost += item.cost * item.quantity;
-    //     }
-    //     return totalCost;
-    //   }
-    //
-    //   double calculateTotalPrice() {
-    //     double totalPrice = 0;
-    //     for (Item item in items) {
-    //       totalPrice += item.price * item.quantity;
-    //     }
-    //     return totalPrice;
-    //   }
-    //
-    //   void nextStatus() {
-    //     if (currentStatusIndex < statuses.length - 1) {
-    //       currentStatusIndex++;
-    //     }
-    //   }
-    //
-    //   void previousStatus() {
-    //     if (currentStatusIndex > 0) {
-    //       currentStatusIndex--;
-    //     }
-    //   }
-    //
-    //   OrderStatus? getCurrentStatus() {
-    //     if (currentStatusIndex >= 0 && currentStatusIndex < statuses.length) {
-    //       return statuses.elementAt(currentStatusIndex);
-    //     }
-    //     return null;
-    //   }
-    //
-    //   @override
-    //   String toString() {
-    //     return 'Order(orderId: ${orderId}, description: ${description}, items: ${items}, statuses: ${statuses}, currentStatusIndex: ${currentStatusIndex}, datePlaced: ${datePlaced}, customers: ${customers})\n------------------------\n';
-    //   }
-    // }  items: LinkedHashSet<Item>.from({item}),
-    //       customers: LinkedHashSet<Person>.from([customer, customer2]),
+    //       items: LinkedHashSet<Item>.from({item}),
+    //       recipient: customer2,
     //     );
     //   } else {
     //     order = Order(
     //       items: LinkedHashSet<Item>.from({item}),
-    //       customers: LinkedHashSet<Person>.from([customer]),
+    //       recipient: customer,
     //     );
     //   }
     //   List<OrderStatus> orderStatuses = [
@@ -164,21 +66,37 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
     //
     //   widget.orders.add(order);
     // }
+    _displayedOrders = widget.orders;
   }
 
   void _searchButtonPressed() {
     setState(() {
       _isSearchFieldVisible = !_isSearchFieldVisible;
-      print('invisible');
+    });
+  }
+
+  LinkedHashSet<Order> searchOrders(String query) {
+    return LinkedHashSet<Order>.from(widget.orders.where((order) {
+      final nameMatch = order.recipient.name.toLowerCase().contains(query.toLowerCase());
+      final idMatch = order.orderId.toLowerCase().contains(query.toLowerCase());
+      final contactMatch = order.recipient.contacts[order.deliveryMethod]?.any(
+              (contact) => contact.toLowerCase().contains(query.toLowerCase()));
+      final descriptionMatch = order.description.toLowerCase().contains(query.toLowerCase());
+      return nameMatch || contactMatch! || idMatch || descriptionMatch;
+    }));
+  }
+
+  void _performSearch(String query) {
+    setState(() {
+      _displayedOrders = searchOrders(query);
     });
   }
 
   void _clearSearchField () {
-
-  }
-
-  void _performSearch(String query) {
-
+    setState(() {
+      _searchController.clear();
+      _displayedOrders = widget.orders;
+    });
   }
 
   void _onOrderCancel(Order order) {
@@ -186,31 +104,45 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
   }
 
   void _onOrderEdit(Order order) {
-
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditOrderPage(
+          order: order,
+          onSubmit: (editedOrder) {
+            setState(() {
+              print('$order\n-----------\n$editedOrder');
+              widget.orders.remove(order);
+              widget.orders.add(editedOrder);
+            });
+          },
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFEEEDF1),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            onPressed: () {},
-            backgroundColor: Color(0xFF1AB428),
-            elevation: 1,
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 30,
-            ),
-            heroTag: 'addLabelButton',
-            tooltip: 'Add order process phase',
-          ),
-        ],
-      ),
+      // floatingActionButton: Column(
+      //   mainAxisAlignment: MainAxisAlignment.end,
+      //   children: [
+      //     const SizedBox(height: 10),
+      //     FloatingActionButton(
+      //       onPressed: () {},
+      //       backgroundColor: Color(0xFF1AB428),
+      //       elevation: 1,
+      //       child: const Icon(
+      //         Icons.add,
+      //         color: Colors.white,
+      //         size: 30,
+      //       ),
+      //       heroTag: 'addLabelButton',
+      //       tooltip: 'Add order process phase',
+      //     ),
+      //   ],
+      // ),
       body: widget.orders == null || widget.orders!.isEmpty
           ? const Center(
         child: Text(
@@ -269,12 +201,12 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                 interactive: true,
                 child: ListView.builder(
                   controller: _scrollController,
-                  itemCount: widget.orders.length + 1,
+                  itemCount: _displayedOrders.length + 1,
                   itemBuilder: (context, index) {
-                    if (index == widget.orders.length) {
+                    if (index == _displayedOrders.length) {
                       return Container(height: kFloatingActionButtonMargin + 100);
                     }
-                    final order = widget.orders.elementAt(index);
+                    final order = _displayedOrders.elementAt(index);
                     // TODO: return tile
                     return OrderTile(
                       order: order,
