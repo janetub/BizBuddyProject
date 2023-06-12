@@ -107,6 +107,17 @@ class _MainCanvasState extends State<MainCanvas> {
                 style: TextStyle(color: Color(0xFF545454)),
               ),
               iconTheme: IconThemeData(color: Color(0xFF545454)),
+              leading: Builder(
+                builder: (BuildContext context) {
+                  return IconButton(
+                    icon: Icon(Icons.menu),
+                    splashRadius: 25, // custom splash radius
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                  );
+                },
+              ),
               actions: [
                 IconButton(
                   icon: Icon(Icons.search),
@@ -119,6 +130,7 @@ class _MainCanvasState extends State<MainCanvas> {
                       // TODO
                     }
                   },
+                  splashRadius: 25,
                 ),
               ],
             ),

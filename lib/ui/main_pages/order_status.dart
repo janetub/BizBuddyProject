@@ -29,6 +29,16 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
   LinkedHashSet<Order> _displayedOrders = LinkedHashSet<Order>();
   final ScrollController _scrollController = ScrollController();
   bool _isSearchFieldVisible = false;
+  String _selectedSortOption = 'Default';
+  final List<String> _sortOptions = ['Default', 'Order Id', 'Price', 'Date placed', 'Status'];
+  final List<IconData> _sortOptionIcons = [
+    Icons.sort,
+    Icons.format_list_numbered,
+    Icons.attach_money,
+    Icons.date_range,
+    Icons.assignment_turned_in,
+  ];
+  bool _isAscending = true;
 
   @override
   void initState() {
@@ -82,7 +92,8 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
       final contactMatch = order.recipient.contacts[order.deliveryMethod]?.any(
               (contact) => contact.toLowerCase().contains(query.toLowerCase()));
       final descriptionMatch = order.description.toLowerCase().contains(query.toLowerCase());
-      return nameMatch || contactMatch! || idMatch || descriptionMatch;
+      final deliveryMethod = order.deliveryMethod.toLowerCase().contains(query.toLowerCase());
+      return nameMatch || contactMatch! || idMatch || descriptionMatch || deliveryMethod;
     }));
   }
 
@@ -98,6 +109,34 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
       _displayedOrders = widget.orders;
     });
   }
+
+  LinkedHashSet<Order> sortOrders(String sortOption, bool isAscending) {
+    List<Order> sortedOrders = _displayedOrders.toList();
+    if (sortOption == 'Order Id') {
+      sortedOrders.sort((a, b) => isAscending ? a.orderId.compareTo(b.orderId) : b.orderId.compareTo(a.orderId));
+    } else if (sortOption == 'Price') {
+      sortedOrders.sort((a, b) => isAscending ? a.calculateOrderTotalValue().compareTo(b.calculateOrderTotalValue()) : b.calculateOrderTotalValue().compareTo(a.calculateOrderTotalValue()));
+    } else if (sortOption == 'Date placed') {
+      sortedOrders.sort((a, b) => isAscending ? a.datePlaced.compareTo(b.datePlaced) : b.datePlaced.compareTo(a.datePlaced));
+    } else if (sortOption == 'Status') {
+      sortedOrders.sort((a, b) => isAscending ? a.currentStatusIndex.compareTo(b.currentStatusIndex) : b.currentStatusIndex.compareTo(a.currentStatusIndex));
+    } else {
+      // Default sort option
+      if (!isAscending) {
+        sortedOrders = (widget.orders.toList()).reversed.toList();
+      } else {
+        sortedOrders = widget.orders.toList();
+      }
+    }
+    return LinkedHashSet.from(sortedOrders);
+  }
+
+  void _performSort(String sortOption, bool isAscending) {
+    setState(() {
+      _displayedOrders = sortOrders(sortOption, isAscending);
+    });
+  }
+
 
   void _onOrderCancel(Order order) {
 
@@ -156,6 +195,62 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
       )
           : Column(
         children: [
+          SizedBox(
+            height: 30,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    _isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                    size: 16,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isAscending = !_isAscending;
+                      _performSort(_selectedSortOption, _isAscending);
+                    });
+                  },
+                  splashRadius: 15,
+                ),
+                DropdownButton<String>(
+                  dropdownColor: Colors.white,
+                  value: _selectedSortOption,
+                  items: _sortOptions.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    String item = entry.value;
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            item,
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                          Icon(
+                            _sortOptionIcons[index],
+                            color: Colors.black38,
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedSortOption = newValue!;
+                      _performSort(newValue, _isAscending);
+                    });
+                  },
+                  underline: SizedBox(),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ],
+            ),
+          ),
           if(_isSearchFieldVisible)
             Padding(
               padding: const EdgeInsets.all(8.0),

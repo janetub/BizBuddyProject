@@ -41,7 +41,6 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   LinkedHashSet<Item> _displayedItems = LinkedHashSet<Item>();
   final ScrollController _scrollController = ScrollController();
   bool _isSearchFieldVisible = false;
-  var defaultCatalogSort = {};
   String _selectedSortOption = 'Default';
   final List<String> _sortOptions = ['Default', 'Name', 'Price', 'Date added', 'Stocks'];
   final List<IconData> _sortOptionIcons = [
@@ -215,7 +214,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         return AlertDialog(
           title: const Text('Press any button to confirm'),
           content: const Text(
-              'The item will be added and moved to the Order Status page for processing.'),
+              'The item will be added and moved to the Order Status page for processing.',
+            style: TextStyle(fontSize: 20),
+          ),
           actions: [
             TextButton(
               child: const Text('Ok'),
@@ -571,49 +572,61 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         )
             : Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(_isAscending ? Icons.arrow_upward : Icons.arrow_downward),
-                  onPressed: () {
-                    setState(() {
-                      _isAscending = !_isAscending;
-                      _performSort(_selectedSortOption, _isAscending);
-                    });
-                  },
-                ),
-                DropdownButton<String>(
-                  dropdownColor: Colors.white,
-                  value: _selectedSortOption,
-                  items: _sortOptions.asMap().entries.map((entry) {
-                    int index = entry.key;
-                    String item = entry.value;
-                    return DropdownMenuItem<String>(
-                      value: item,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(item),
-                          Icon(
-                            _sortOptionIcons[index],
-                            color: Colors.black38,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedSortOption = newValue!;
-                      _performSort(newValue, _isAscending);
-                    });
-                  },
-                  underline: SizedBox(),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ],
+            SizedBox(
+              height: 30,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      _isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                      size: 16,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isAscending = !_isAscending;
+                        _performSort(_selectedSortOption, _isAscending);
+                      });
+                    },
+                    splashRadius: 15,
+                  ),
+                  DropdownButton<String>(
+                    dropdownColor: Colors.white,
+                    value: _selectedSortOption,
+                    items: _sortOptions.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      String item = entry.value;
+                      return DropdownMenuItem<String>(
+                        value: item,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                                item,
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                            Icon(
+                              _sortOptionIcons[index],
+                              color: Colors.black38,
+                              size: 18,
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedSortOption = newValue!;
+                        _performSort(newValue, _isAscending);
+                      });
+                    },
+                    underline: SizedBox(),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ],
+              ),
             ),
             if(_isSearchFieldVisible)
               Padding(
