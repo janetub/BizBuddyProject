@@ -6,22 +6,22 @@ import 'package:intl/intl.dart';
 import '../../classes/all.dart';
 import '../components/inventory_search_dialog.dart';
 
-class EditItemPage extends StatefulWidget {
+class EditProductPage extends StatefulWidget {
   final Function(Item) onSubmit;
   final Item item;
   final Inventory inventory;
 
-  EditItemPage({
+  EditProductPage({
     required this.onSubmit,
     required this.item,
     required this.inventory,
   });
 
   @override
-  _EditItemPageState createState() => _EditItemPageState();
+  _EditProductPageState createState() => _EditProductPageState();
 }
 
-class _EditItemPageState extends State<EditItemPage> {
+class _EditProductPageState extends State<EditProductPage> {
 
   final _costFocusNode = FocusNode();
   final _markupFocusNode = FocusNode();
@@ -237,7 +237,7 @@ class _EditItemPageState extends State<EditItemPage> {
             slivers: [
               const SliverAppBar(
                 backgroundColor: Colors.transparent,
-                title: Text('Edit item'),
+                title: Text('Edit product'),
                 elevation: 0,
                 floating: true,
                 snap: true,
@@ -368,14 +368,6 @@ class _EditItemPageState extends State<EditItemPage> {
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(color: Colors.grey),
                               ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.red),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.red),
-                              ),
                               suffixIcon: IconButton(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
@@ -407,6 +399,14 @@ class _EditItemPageState extends State<EditItemPage> {
                                     },
                                   );
                                 },
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.red),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.red),
                               ),
                             ),
                             keyboardType: TextInputType.number,
@@ -692,7 +692,7 @@ class _EditItemPageState extends State<EditItemPage> {
                               TextButton(
                                 onPressed: _onCancel,
                                 style: TextButton.styleFrom(
-                                  primary: Colors.red, // Set text color to red
+                                  primary: Colors.red,
                                 ),
                                 child: const Row(
                                   children: [

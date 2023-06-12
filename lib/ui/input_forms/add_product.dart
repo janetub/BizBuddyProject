@@ -1,28 +1,23 @@
 import 'dart:collection';
 
-import 'package:bizbuddyproject/ui/input_forms/add_item.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../classes/all.dart';
 import '../components/inventory_search_dialog.dart';
 
-class EditItemPage extends StatefulWidget {
+class AddProductPage extends StatefulWidget {
   final Function(Item) onSubmit;
-  final Item item;
   final Inventory inventory;
 
-  EditItemPage({
+  AddProductPage({
     required this.onSubmit,
-    required this.item,
     required this.inventory,
   });
 
   @override
-  _EditItemPageState createState() => _EditItemPageState();
+  _AddProductPageState createState() => _AddProductPageState();
 }
-
-class _EditItemPageState extends State<EditItemPage> {
-
+class _AddProductPageState extends State<AddProductPage>
+{
   final _costFocusNode = FocusNode();
   final _markupFocusNode = FocusNode();
   final _stocksFocusNode = FocusNode();
@@ -32,7 +27,7 @@ class _EditItemPageState extends State<EditItemPage> {
   final _markupInfoButton = GlobalKey<FormState>();
   final _stocksInfoButton = GlobalKey<FormState>();
 
-  LinkedHashSet<Item> _selectedComponents = LinkedHashSet<Item>();
+  final LinkedHashSet<Item> _selectedComponents = LinkedHashSet<Item>();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
@@ -41,19 +36,21 @@ class _EditItemPageState extends State<EditItemPage> {
   final TextEditingController _dateBoughtController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
-  List<String> _tags = [];
+
+  final List<String> _tags = [];
 
   @override
   void initState() {
     super.initState();
-    _nameController.text = widget.item.name;
-    _costController.text = widget.item.cost.toString();
-    _markupController.text = (widget.item.price - widget.item.cost).toString();
-    _quantityController.text = widget.item.quantity.toString();
-    _dateBoughtController.text = DateFormat('MM/dd/yyyy').format(widget.item.dateAdded!);
-    _descriptionController.text = widget.item.description;
-    _tags.addAll(widget.item.tags);
-    _selectedComponents = widget.item.components;
+    _costFocusNode.addListener(() {
+      setState(() {});
+    });
+    _markupFocusNode.addListener(() {
+      setState(() {});
+    });
+    _stocksFocusNode.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -236,8 +233,9 @@ class _EditItemPageState extends State<EditItemPage> {
           child: CustomScrollView(
             slivers: [
               const SliverAppBar(
+                //expandedHeight: 100,
                 backgroundColor: Colors.transparent,
-                title: Text('Edit item'),
+                title: Text('Add a product'),
                 elevation: 0,
                 floating: true,
                 snap: true,
@@ -260,7 +258,7 @@ class _EditItemPageState extends State<EditItemPage> {
                             cursorColor: Color(0xFFEF911E),
                             controller: _nameController,
                             decoration: InputDecoration(
-                              labelText: 'Product Name',
+                              labelText: 'Item Name',
                               labelStyle: TextStyle(color: Colors.grey),
                               fillColor: Colors.white,
                               filled: true,
@@ -643,6 +641,9 @@ class _EditItemPageState extends State<EditItemPage> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               backgroundColor: Color(0xFFEF911E),
+                              // Color(0xFF00B894) represents the color #00B894
+                              // Color(0xFF808080) represents the color #808080
+                              // Color(0xFFFFC107) represents the color #FFC107
                             ),
                             child: const Column(
                               children: [
@@ -692,7 +693,7 @@ class _EditItemPageState extends State<EditItemPage> {
                               TextButton(
                                 onPressed: _onCancel,
                                 style: TextButton.styleFrom(
-                                  primary: Colors.red, // Set text color to red
+                                  primary: Colors.red,
                                 ),
                                 child: const Row(
                                   children: [
@@ -748,6 +749,23 @@ class _EditItemPageState extends State<EditItemPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class TagTile extends StatelessWidget {
+  final String tag;
+  final Function(String) onDeleteTag;
+
+  TagTile(this.tag, this.onDeleteTag);
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      labelPadding: const EdgeInsets.symmetric(horizontal: 5.0),
+      label: Text(tag),
+      deleteIcon: const Icon(Icons.close),
+      onDeleted: () => onDeleteTag(tag),
     );
   }
 }

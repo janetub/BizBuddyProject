@@ -3,14 +3,15 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 import '../components/inventory_search_dialog.dart';
-/*
-* TODO: products must not have the same names
-* TODO: limit name input
-* */
+
 class AddItemPage extends StatefulWidget {
   final Function(Item) onSubmit;
+  final Inventory inventory;
 
-  AddItemPage({required this.onSubmit});
+  AddItemPage({
+    required this.onSubmit,
+    required this.inventory,
+  });
 
   @override
   _AddItemPageState createState() => _AddItemPageState();
@@ -18,13 +19,13 @@ class AddItemPage extends StatefulWidget {
 class _AddItemPageState extends State<AddItemPage>
 {
   final _costFocusNode = FocusNode();
-  final _priceFocusNode = FocusNode();
+  final _markupFocusNode = FocusNode();
+  final _stocksFocusNode = FocusNode();
 
   final _formKey = GlobalKey<FormState>();
   final _costInfoButton = GlobalKey<FormState>();
-  final _priceInfoButton = GlobalKey<FormState>();
-
-  final Inventory inventory = Inventory();
+  final _markupInfoButton = GlobalKey<FormState>();
+  final _stocksInfoButton = GlobalKey<FormState>();
 
   final LinkedHashSet<Item> _selectedComponents = LinkedHashSet<Item>();
 
@@ -35,6 +36,7 @@ class _AddItemPageState extends State<AddItemPage>
   final TextEditingController _dateBoughtController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
+
   final List<String> _tags = [];
 
   @override
@@ -43,46 +45,19 @@ class _AddItemPageState extends State<AddItemPage>
     _costFocusNode.addListener(() {
       setState(() {});
     });
-    _priceFocusNode.addListener(() {
+    _markupFocusNode.addListener(() {
       setState(() {});
     });
-    // TODO: for testing
-    Item samp = Item('Flour', 'A powdery substance used for baking');
-    inventory.addItem(samp);
-    Item samp2 = Item('Sugar', 'A sweet crystalline substance');
-    samp2.tags.add("brown");
-    samp2.tags.add("sweet");
-    samp2.tags.add("ingredients");
-    samp2.tags.add("fats");
-    samp2.tags.add("fats");
-    samp2.tags.add("fats");
-    samp2.tags.add("fats");
-    samp2.tags.add("fats2");
-    samp2.tags.add("fats3");
-    samp2.tags.add("fats4");
-    samp2.tags.add("fats5");
-    samp2.tags.add("fats6");
-    samp2.tags.add("fats7");
-    samp2.tags.add("fats8");
-    samp2.tags.add("fats9");
-    samp2.quantity = 3;
-    inventory.addItem(samp2);
-    Item samp3 = Item('Eggs', 'A nutritious food produced by chickens');
-    samp3.tags.add("white");
-    inventory.addItem(samp3);
-    Item samp4 = Item('Berry Berry Berry Berry Berry Berry The quick brown fox', '');
-    inventory.addItem(samp4);
-    Item samp5 = Item('Straw', '');
-    inventory.addItem(samp5);
-    Item samp6 = Item('Bag', '');
-    inventory.addItem(samp6);
-    Item samp7 = Item('Paper', '');
-    inventory.addItem(samp7);
+    _stocksFocusNode.addListener(() {
+      setState(() {});
+    });
   }
+
   @override
   void dispose() {
     _costFocusNode.dispose();
-    _priceFocusNode.dispose();
+    _markupFocusNode.dispose();
+    _stocksFocusNode.dispose();
     super.dispose();
   }
 
@@ -113,8 +88,8 @@ class _AddItemPageState extends State<AddItemPage>
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            content: Text('Invalid entries:\n$e'),
+            title: const Text('Invalid entries:\n'),
+            content: Text('$e'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -169,6 +144,16 @@ class _AddItemPageState extends State<AddItemPage>
         });
       }
     }
+    _updateCostController();
+  }
+
+  void _updateCostController() {
+    if (_selectedComponents.isNotEmpty) {
+      final costSum = _selectedComponents.fold(0.00, (sum, component) => sum + component.cost);
+      _costController.text = costSum.toStringAsFixed(2);
+    } else {
+      _costController.clear();
+    }
   }
 
   void _onCancel() {
@@ -206,7 +191,7 @@ class _AddItemPageState extends State<AddItemPage>
               const SliverAppBar(
                 //expandedHeight: 100,
                 backgroundColor: Colors.transparent,
-                title: Text('Add a product'),
+                title: Text('Add an item'),
                 elevation: 0,
                 floating: true,
                 snap: true,
@@ -229,7 +214,7 @@ class _AddItemPageState extends State<AddItemPage>
                             cursorColor: Color(0xFFEF911E),
                             controller: _nameController,
                             decoration: InputDecoration(
-                              labelText: 'Product Name',
+                              labelText: 'Item Name',
                               labelStyle: TextStyle(color: Colors.grey),
                               fillColor: Colors.white,
                               filled: true,
@@ -290,7 +275,7 @@ class _AddItemPageState extends State<AddItemPage>
                                       return AlertDialog(
                                         contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                         title: const Text('Cost'),
-                                        content: const Text('Money spent to buy the product.\nOriginal cost.'),
+                                        content: const Text('Money spent to buy the product, the original cost. If an item has components, its cost will be the sum of the cost of its components.'),
                                         actions: [
                                           TextButton(
                                             onPressed: () {
@@ -316,13 +301,13 @@ class _AddItemPageState extends State<AddItemPage>
                                 borderSide: BorderSide(color: Colors.red),
                               ),
                             ),
-                            keyboardType: TextInputType.number,
+                            keyboardType: _selectedComponents.isEmpty? TextInputType.number : TextInputType.none,
                             validator: validateIntegersAndDecimal,
                           ),
                           SizedBox(height: 15),
                           TextFormField(
                             cursorColor: Color(0xFFEF911E),
-                            focusNode: _priceFocusNode,
+                            focusNode: _markupFocusNode,
                             controller: _markupController,
                             decoration: InputDecoration(
                               labelText: 'Markup',
@@ -340,10 +325,10 @@ class _AddItemPageState extends State<AddItemPage>
                               suffixIcon: IconButton(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
-                                key: _priceInfoButton,
+                                key: _markupInfoButton,
                                 icon: Icon(
                                   Icons.info_outline,
-                                  color: _priceFocusNode.hasFocus ? Color(0xFFEF911E) : Colors.grey,
+                                  color: _markupFocusNode.hasFocus ? Color(0xFFEF911E) : Colors.grey,
                                 ),
                                 onPressed: () {
                                   showDialog(
@@ -387,6 +372,7 @@ class _AddItemPageState extends State<AddItemPage>
                               Expanded(
                                 child: TextFormField(
                                   cursorColor: Color(0xFFEF911E),
+                                  focusNode: _stocksFocusNode,
                                   controller: _quantityController,
                                   decoration: InputDecoration(
                                     labelText: 'Stocks',
@@ -408,6 +394,38 @@ class _AddItemPageState extends State<AddItemPage>
                                     focusedErrorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       borderSide: BorderSide(color: Colors.red),
+                                    ),
+                                    suffixIcon: IconButton(
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      key: _stocksInfoButton,
+                                      icon: Icon(
+                                        Icons.info_outline,
+                                        color: _stocksFocusNode.hasFocus ? Color(0xFFEF911E) : Colors.grey,
+                                      ),
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                                              title: Text('Stocks'),
+                                              content: Text('The quantity entered will be automatically added to the inventory for tracking.'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text('OK'),
+                                                  style: TextButton.styleFrom(
+                                                    primary: Color(0xFFEF911E),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
                                     ),
                                   ),
                                   keyboardType: TextInputType.number,
@@ -472,9 +490,6 @@ class _AddItemPageState extends State<AddItemPage>
                             ],
                           ),
                           SizedBox(height: 10),
-
-                          // * FIXME: date bought bug
-                          // *
                           TextFormField(
                             cursorColor: Color(0xFFEF911E),
                             controller: _dateBoughtController,
@@ -557,8 +572,8 @@ class _AddItemPageState extends State<AddItemPage>
                             onChanged: (value){},
                           ),
                           Wrap(
-                            spacing: 8,
-                            runSpacing: 4,
+                            spacing: 4,
+                            runSpacing: 0,
                             children: _tags.map((tag) {
                               return TagTile(
                                 tag,
@@ -572,7 +587,7 @@ class _AddItemPageState extends State<AddItemPage>
                               await showDialog<Item>(
                                 context: context,
                                 builder: (context) => InventorySearchDialog(
-                                  inventory: inventory,
+                                  inventory: widget.inventory,
                                   onAddToComponent: _addToComponents,
                                 ),
                               );
@@ -601,6 +616,7 @@ class _AddItemPageState extends State<AddItemPage>
                                 onDeleted: () {
                                   setState(() {
                                     _selectedComponents.remove(rawMaterial);
+                                    _updateCostController();
                                   });
                                 },
                               );
@@ -633,7 +649,7 @@ class _AddItemPageState extends State<AddItemPage>
                               TextButton(
                                 onPressed: _onCancel,
                                 style: TextButton.styleFrom(
-                                  primary: Colors.red, // Set text color to red
+                                  primary: Colors.red,
                                 ),
                                 child: const Row(
                                   children: [
@@ -647,7 +663,7 @@ class _AddItemPageState extends State<AddItemPage>
                               TextButton(
                                 onPressed: _onReset,
                                 style: TextButton.styleFrom(
-                                  primary: Colors.grey, // Set text color to red
+                                  primary: Colors.grey,
                                 ),
                                 child: const Row(
                                   children: [

@@ -73,6 +73,7 @@ class _SearchResultTileState extends State<SearchResultTile> {
                     ),
                   ],
                 ),
+                subtitle: Text('Stocks: ${widget.item.quantity.toString()}'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

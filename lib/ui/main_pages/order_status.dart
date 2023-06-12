@@ -139,7 +139,8 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
 
 
   void _onOrderCancel(Order order) {
-
+    widget.orders.remove(order);
+  // TODO: cancel
   }
 
   void _onOrderEdit(Order order) {

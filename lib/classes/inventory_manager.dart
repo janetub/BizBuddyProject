@@ -8,6 +8,41 @@ import 'dart:collection';
 class Inventory {
   final LinkedHashSet<Item> _items = LinkedHashSet<Item>();
 
+  bool updateItemQuantity(Item item, int quantity) {
+    bool containsItem = _items.any((findItem) => findItem.name == item.name);
+    if(containsItem) {
+      Item foundItem = _items.firstWhere((cartItem) => cartItem.name == item.name);
+      foundItem.quantity += quantity;
+    }
+    // else {
+    //   Item newItem = item.duplicate();
+    //   newItem.quantity = item.quantity;
+    //   _items.add(newItem);
+    // }
+    return containsItem;
+  }
+
+  // void updateItem(Item item, {int? quantity, double? cost, double? markup}) {
+  //   // Find the item in the set
+  //   Item? foundItem = _items.firstWhere((i) => i.name == item.name, orElse: () => null);
+  //   if (foundItem != null) {
+  //     // Update the item's attributes
+  //     if (quantity != null) {
+  //       foundItem.quantity = quantity;
+  //     }
+  //     if (cost != null) {
+  //       foundItem.cost = cost;
+  //     }
+  //     if (markup != null) {
+  //       foundItem.markup = markup;
+  //     }
+  //   }
+  // }
+
+  void removeItem(Item item) {
+    _items.remove(item);
+  }
+
   void addItem(Item item) {
     _items.add(item);
   }
@@ -23,6 +58,10 @@ class Inventory {
 
   bool isEmpty() {
     return _items.isEmpty;
+  }
+
+  LinkedHashSet<Item> getItems() {
+    return LinkedHashSet<Item>.from(_items);
   }
 
   @override

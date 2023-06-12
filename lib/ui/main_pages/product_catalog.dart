@@ -1,12 +1,12 @@
 import 'dart:collection';
 
+import 'package:bizbuddyproject/ui/input_forms/add_product.dart';
 import 'package:flutter/material.dart';
 import '../components/cart_dialog.dart';
 import '../components/product_tile.dart';
-import '../input_forms/add_item.dart';
 import '../../classes/all.dart';
 import '../input_forms/add_order.dart';
-import '../input_forms/edit_item.dart';
+import '../input_forms/edit_product.dart';
 
 /*
 * FIXME: do not move the order to order status page if quantity of orders is zero or do not include items with zero quantity
@@ -21,6 +21,7 @@ class ProductCatalogPage extends StatefulWidget {
   final VoidCallback navigateToOrderStatus;
   final Function(Order) onMoveOrder;
   final ValueChanged<VoidCallback> onSearchButtonPressed;
+  final Inventory inventory;
 
   ProductCatalogPage({
     Key? key,
@@ -29,6 +30,7 @@ class ProductCatalogPage extends StatefulWidget {
     required this.navigateToOrderStatus,
     required this.onMoveOrder,
     required this.onSearchButtonPressed,
+    required this.inventory,
   }) : super(key: key);
 
   @override
@@ -57,42 +59,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   void initState() {
     super.initState();
     widget.onSearchButtonPressed(_searchButtonPressed);
-    for (int i = 1; i <= 15; i++) {
-      Item item = Item('Item $i', 'Description for Item $i');
-      item.cost = i * 10;
-      item.markup = i * 5;
-      item.quantity = 100 - (i * 5);
-      if(i%2==0) {
-        item.description = 'The quick brown fox jumps over the lazy dog. The dog found this entertaining and the fox laughs at the dog\'s reaction. The dog realizing this also laughs at himself. After awhile, both became friends.';
-        item.tags.add('Lorem');
-        item.tags.add('Ipsum');
-        item.tags.add('Solem');
-        item.tags.add('Lorem');
-        item.tags.add('Jollibee');
-        item.tags.add('Bida');
-        item.tags.add('and');
-        item.tags.add('saya');
-        item.tags.add('Door');
-        item.tags.add('Lorem');
-        item.tags.add('Ipsum');
-        item.tags.add('Solem');
-        item.tags.add('Lorem');
-        item.tags.add('Animal');
-        item.tags.add('Door');
-        item.tags.add('Slippers');
-        item.addComponent(Item('Mop',''));
-        item.addComponent(Item('Tulip',''));
-        item.addComponent(Item('Mop',''));
-        item.addComponent(Item('Cat',''));
-        item.addComponent(Item('Roof',''));
-        item.addComponent(Item('Mop',''));
-        item.addComponent(Item('Tulip',''));
-        item.addComponent(Item('Mop',''));
-        item.addComponent(Item('Cat',''));
-        item.addComponent(Item('Roof',''));
-      }
-      widget.productCatalog.add(item);
-    }
+
     _displayedItems = widget.productCatalog;
   }
 
@@ -130,7 +97,6 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       int extractNumber(String str) {
         return int.parse(str.replaceAll(RegExp(r'\D'), ''));
       }
-
       sortedItems.sort((a, b) {
         int aNumber = extractNumber(a.name);
         int bNumber = extractNumber(b.name);
@@ -198,7 +164,6 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         context: context,
         builder: (context) => AddOrderPage(
           onPlaceOrder: (order) {
-            print("ProductCatalog has received the order:\n${order.orderId}\n__________________\n");
             _showSuccessDialog(order);
           },
           items: nonZeroItems,
@@ -226,7 +191,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               onPressed: () {
                 Order orderToMove = order;
                 widget.onMoveOrder(orderToMove);
-                print("ProductCatalog has sent the order.\n${order.orderId}\n__________________\n");
+                //
                 widget.cartItems.clear();
                 setState(() {
                 });
@@ -242,7 +207,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               onPressed: () {
                 Order orderToMove = order;
                 widget.onMoveOrder(orderToMove);
-                print("ProductCatalog has sent the order.\n${order.orderId}\n__________________\n");
+                //
                 widget.cartItems.clear();
                 widget.navigateToOrderStatus();
                 Navigator.of(dialogContext).pop();
@@ -255,11 +220,11 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     );
   }
 
-  void _showAddItemPage() {
+  void _showAddProductPage() {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => AddItemPage(
+          builder: (context) => AddProductPage(
             onSubmit: (item) {
               setState(() {
                 if (widget.productCatalog.any((existingItem) => existingItem.name == item.name)) {
@@ -278,8 +243,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                   );
                 }
                 widget.productCatalog.add(item);
+                //
               });
-            },
+            }, inventory: widget.inventory,
           ),
         )
     );
@@ -289,86 +255,19 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditItemPage(
+        builder: (context) => EditProductPage(
           item: item,
           onSubmit: (editedItem) {
             setState(() {
               // Update the item in the product catalog
               widget.productCatalog.remove(item);
               widget.productCatalog.add(editedItem);
+              //
             });
-          },
+          }, inventory: widget.inventory,
         ),
       ),
     );
-  }
-
-  void _addToCart(Item item, int quantity) {
-    if(quantity>0) {
-      bool containsItem = widget.cartItems.any((cartItem) => cartItem.name == item.name);
-      if (containsItem) {
-        // product already exists in cart
-        if (item.quantity >= quantity) {
-          setState(() {
-            Item cartItem = widget.cartItems.firstWhere((cartItem) => cartItem.name == item.name);
-            cartItem.quantity += quantity;
-            item.quantity -= quantity;
-          });
-        } else {
-          showDialog(
-            context: context,
-            builder: (BuildContext dialogContext) {
-              return AlertDialog(
-                title: const Text('Insufficient Stock'),
-                content: const Text('The requested quantity is not available.'),
-                actions: [
-                  TextButton(
-                    child: const Text('OK'),
-                    style: TextButton.styleFrom(
-                      primary: Color(0xFFEF911E),
-                    ),
-                    onPressed: () {
-                      Navigator.of(dialogContext).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        }
-      } else {
-        // new product in cart
-        if (item.quantity >= quantity) {
-          setState(() {
-            Item movProd = item.duplicate();
-            movProd.quantity = quantity;
-            widget.cartItems.add(movProd);
-            item.quantity -= quantity;
-          });
-        } else {
-          showDialog(
-            context: context,
-            builder: (BuildContext dialogContext) {
-              return AlertDialog(
-                title: const Text('Insufficient Stock'),
-                content: const Text('The requested quantity is not available.'),
-                actions: [
-                  TextButton(
-                    child: const Text('OK'),
-                    style: TextButton.styleFrom(
-                      primary: Color(0xFFEF911E),
-                    ),
-                    onPressed: () {
-                      Navigator.of(dialogContext).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        }
-      }
-    }
   }
 
   void _onProductDelete(Item item) {
@@ -497,6 +396,74 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
     }
   }
 
+  void _addToCart(Item item, int quantity) {
+    if(quantity>0) {
+      bool containsItem = widget.cartItems.any((cartItem) => cartItem.name == item.name);
+      if (containsItem) {
+        // product already exists in cart
+        if (item.quantity >= quantity) {
+          setState(() {
+            Item cartItem = widget.cartItems.firstWhere((cartItem) => cartItem.name == item.name);
+            cartItem.quantity += quantity;
+            item.quantity -= quantity;
+          });
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext dialogContext) {
+              return AlertDialog(
+                title: const Text('Insufficient Stock'),
+                content: const Text('The requested quantity is not available.'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    style: TextButton.styleFrom(
+                      primary: Color(0xFFEF911E),
+                    ),
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        // new product in cart
+        if (item.quantity >= quantity) {
+          setState(() {
+            Item movProd = item.duplicate();
+            movProd.quantity = quantity;
+            widget.cartItems.add(movProd);
+            item.quantity -= quantity;
+          });
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext dialogContext) {
+              return AlertDialog(
+                title: const Text('Insufficient Stock'),
+                content: const Text('The requested quantity is not available.'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    style: TextButton.styleFrom(
+                      primary: Color(0xFFEF911E),
+                    ),
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -547,7 +514,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           ),
           const SizedBox(height: 10),
           FloatingActionButton(
-            onPressed: _showAddItemPage,
+            onPressed: _showAddProductPage,
             backgroundColor: Color(0xFF1AB428),
             elevation: 1,
             child: const Icon(

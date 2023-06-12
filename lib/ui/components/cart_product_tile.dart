@@ -70,7 +70,7 @@ class _CartTileState extends State<CartTile> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  width: 50,
+                  width: 60,
                   child: TextFormField(
                     cursorColor: Color(0xFFEF911E),
                     controller:

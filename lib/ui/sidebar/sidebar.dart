@@ -68,14 +68,14 @@ class _SidebarState extends State<Sidebar> {
               Navigator.pop(context);
             },
           ),
-          // ListTile(
-          //   leading: const Icon(Icons.inventory_2_outlined),
-          //   title: const Text('Inventory'),
-          //   onTap: () {
-          //     widget.onInventorySelected();
-          //     Navigator.pop(context);
-          //   },
-          // ),
+          ListTile(
+            leading: const Icon(Icons.inventory_2_outlined),
+            title: const Text('Inventory'),
+            onTap: () {
+              widget.onInventorySelected();
+              Navigator.pop(context);
+            },
+          ),
           // const Divider(
           //   thickness: .8,
           //   indent: 10,

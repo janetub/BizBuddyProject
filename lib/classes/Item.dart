@@ -25,7 +25,7 @@ class Item {
     } else {
       double totalCost = 0;
       for (Item component in _components) {
-        totalCost += component.cost;
+        totalCost += component.cost * component.quantity;
       }
       return totalCost;
     }
@@ -68,10 +68,10 @@ class Item {
     }
   }
 
-  double calculateTotalValue() {
+  double calculateTotalPriceValue() {
     double totalValue = price * _quantity;
     for (Item component in _components) {
-      totalValue += component.calculateTotalValue();
+      totalValue += component.calculateTotalPriceValue();
     }
     return totalValue;
   }
@@ -107,7 +107,7 @@ class Item {
     Item newItem = Item(name, description);
     newItem._cost = _cost;
     newItem._markup = _markup;
-    newItem._quantity = 0;
+    newItem._quantity = _quantity;
     newItem._dateAdded = _dateAdded;
     newItem.tags.addAll(tags);
     newItem._components.addAll(_components);

@@ -35,7 +35,7 @@ class Order {
   double calculateOrderTotalValue() {
     double totalCost = 0;
     for (Item item in items) {
-      totalCost += item.calculateTotalValue();
+      totalCost += item.calculateTotalPriceValue();
     }
     return totalCost;
   }

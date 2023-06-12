@@ -1,26 +1,27 @@
 import 'package:bizbuddyproject/ui/components/product_details_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
+import 'item_details_dialog.dart';
 
-class ProductTile extends StatefulWidget {
+class ItemTile extends StatefulWidget {
   final Item item;
-  final void Function(Item) onProductEdit;
-  final void Function(Item) onProductDelete;
-  final void Function(Item, int) onAddToCart;
+  final void Function(Item) onItemEdit;
+  final void Function(Item) onItemDelete;
+  final void Function(Item, int, bool) onQuantityChanged;
 
-  const ProductTile({
+  const ItemTile({
     Key? key,
     required this.item,
-    required this.onProductEdit,
-    required this.onProductDelete,
-    required this.onAddToCart,
+    required this.onItemEdit,
+    required this.onItemDelete,
+    required this.onQuantityChanged,
   }) : super(key: key);
 
   @override
-  _ProductTileState createState() => _ProductTileState();
+  _ItemTileState createState() => _ItemTileState();
 }
 
-class _ProductTileState extends State<ProductTile> {
+class _ItemTileState extends State<ItemTile> {
   final TextEditingController _quantityController = TextEditingController();
 
   @override
@@ -31,7 +32,7 @@ class _ProductTileState extends State<ProductTile> {
       onTap: () {
         showDialog(
           context: context,
-          builder: (context) => ProductDetailsDialog(
+          builder: (context) => ItemDetailsDialog(
               item: widget.item
           ),
         );
@@ -40,7 +41,7 @@ class _ProductTileState extends State<ProductTile> {
         key: UniqueKey(),
         confirmDismiss: (direction) {
           if (direction == DismissDirection.startToEnd) {
-            widget.onProductEdit(widget.item);
+            widget.onItemEdit(widget.item);
             return Future.value(false);
           }
           return Future.value(true);
@@ -73,7 +74,7 @@ class _ProductTileState extends State<ProductTile> {
         ),
         onDismissed: (direction) {
           if (direction == DismissDirection.endToStart) {
-            widget.onProductDelete(widget.item);
+            widget.onItemDelete(widget.item);
           }
         },
         child: Card(
@@ -81,7 +82,7 @@ class _ProductTileState extends State<ProductTile> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-            child: Padding(
+          child: Padding(
               padding: EdgeInsets.fromLTRB(5,10,0,10),
               child: Column(
                 children: [
@@ -106,7 +107,7 @@ class _ProductTileState extends State<ProductTile> {
                           Container(
                             alignment: Alignment.centerRight,
                             child:
-                            Text('Price: ₱ ${widget.item.price.toStringAsFixed(2)}'),
+                            Text('Cost: ₱ ${widget.item.cost.toStringAsFixed(2)}'),
                           ),
                         ],
                       ),
@@ -123,7 +124,27 @@ class _ProductTileState extends State<ProductTile> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(
-                            width: 70,
+                            width: 40,
+                            height: 40,
+                            child: IconButton(
+                              //padding: EdgeInsets.zero,
+                              tooltip: 'Remove quantity',
+                              icon: Icon(
+                                Icons.remove,
+                                color: Color(0xFFEF911E),
+                              ),
+                              onPressed: () {
+                                int qty = int.tryParse(_quantityController.text) ?? 1;
+                                widget.onQuantityChanged(widget.item, qty, false);
+                                // if (qty <= widget.item.quantity) {
+                                //   _quantityController.clear();
+                                // }
+                                _quantityController.clear();
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 60,
                             height: 50,
                             child: TextFormField(
                               cursorColor: Color(0xFFEF911E),
@@ -150,20 +171,22 @@ class _ProductTileState extends State<ProductTile> {
                               TextInputType.number,
                             ),
                           ),
-                          IconButton(
-                            //padding: EdgeInsets.zero,
-                            tooltip: "Add product to cart",
-                            icon: Icon(
-                              Icons.add_shopping_cart,
-                              color: Color(0xFFEF911E),
-                            ),
-                            onPressed: () {
-                              widget.onAddToCart(widget.item, int.tryParse(_quantityController.text) ?? 1);
-                              int qty = int.tryParse(_quantityController.text) ?? 1;
-                              if(qty <= widget.item.quantity) {
+                          SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: IconButton(
+                              //padding: EdgeInsets.zero,
+                              tooltip: 'Add quantity',
+                              icon: Icon(
+                                Icons.add,
+                                color: Color(0xFFEF911E),
+                              ),
+                              onPressed: () {
+                                int qty = int.tryParse(_quantityController.text) ?? 1;
+                                widget.onQuantityChanged(widget.item, qty, true);
                                 _quantityController.clear();
-                              }
-                            }
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -188,7 +211,7 @@ class _ProductTileState extends State<ProductTile> {
                     ),
                 ],
               )
-            ),
+          ),
         ),
       ),
     );

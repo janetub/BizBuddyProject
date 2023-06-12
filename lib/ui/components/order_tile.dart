@@ -232,7 +232,7 @@ class _OrderTileState extends State<OrderTile> {
                             '${widget.order.datePlaced.toLocal().toString().split(' ')[0]}',
                             style: TextStyle(fontSize: 18),
                           ),
-                          Text('₱ ${widget.order.calculateOrderTotalValue().toStringAsFixed(2)}',
+                          Text('Total: ₱ ${widget.order.calculateOrderTotalValue().toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                         ],

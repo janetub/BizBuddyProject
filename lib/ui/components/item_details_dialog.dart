@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../classes/all.dart';
 
-class ProductDetailsDialog extends StatelessWidget {
+class ItemDetailsDialog extends StatelessWidget {
   final Item item;
   final ScrollController controller = ScrollController();
 
-  ProductDetailsDialog({Key? key, required this.item}) : super(key: key);
+  ItemDetailsDialog({Key? key, required this.item}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        'Product Details',
+        'Item Details',
         style: TextStyle(fontSize: 24),
         textAlign: TextAlign.center,
       ),
