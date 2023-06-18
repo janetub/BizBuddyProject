@@ -1,28 +1,12 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import '../../classes/all.dart';
-import '../main_pages/product_catalog.dart';
-import '../main_pages/order_status.dart';
-import '../main_pages/inventory_view.dart';
 
 class Sidebar extends StatefulWidget {
-  // final ValueChanged<Widget> onPageChanged;
-  // final LinkedHashSet<Item> myProducts;
-  // final LinkedHashSet<Order> myOrders;
-  // final LinkedHashSet<Item> cartItems;
-  // final ValueChanged<Widget> onSearchButtonPressed;
   final VoidCallback onProductCatalogSelected;
   final VoidCallback  onOrderStatusSelected;
   final VoidCallback  onInventorySelected;
 
   Sidebar({
     Key? key,
-    // required this.onPageChanged,
-    // required this.myProducts,
-    // required this.myOrders,
-    // required this.cartItems,
-    // required this.onSearchButtonPressed,
     required this.onProductCatalogSelected,
     required this.onOrderStatusSelected,
     required this.onInventorySelected,

@@ -1,23 +1,26 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
-import '../../classes/all.dart';
+import '../../classes/all_classes.dart';
 
 /*
-* TODO: Retain created group of buttons
-*  TODO: allow custom of buttons
 * */
 
 class AddOrderPage extends StatefulWidget {
   final Function(Order) onPlaceOrder;
+  final Function(LinkedHashSet<Item>) onOrderCancel;
   final LinkedHashSet<Item> items;
 
-  AddOrderPage({
+  const AddOrderPage({
+  Key? key,
     required this.onPlaceOrder,
     required this.items,
-  });
+    required this.onOrderCancel,
+  }) : super(key: key);
 
   @override
-  _AddOrderPageState createState() => _AddOrderPageState();
+  State<AddOrderPage> createState() {
+    return _AddOrderPageState();
+  }
 }
 
 class _AddOrderPageState extends State<AddOrderPage> {
@@ -25,9 +28,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _msgController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  List<TextEditingController> _contactsControllers = [TextEditingController()];
+  final List<TextEditingController> _contactsControllers = [TextEditingController()];
   final Map<String, LinkedHashSet<OrderStatus>> _premadeGroups = {
-    'Default': LinkedHashSet.from([
+    'Default': LinkedHashSet.of([
       OrderStatus(label: 'Pending', description: ''),
       OrderStatus(label: 'Processing', description: ''),
       OrderStatus(label: 'Ready', description: ''),
@@ -52,7 +55,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   Future<void> _onAddStatusButton() async {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController labelController = TextEditingController();
     final TextEditingController descriptionController = TextEditingController();
 
@@ -60,7 +63,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add custom order status',
+          title: const Text('Add custom order status',
             style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
@@ -68,33 +71,33 @@ class _AddOrderPageState extends State<AddOrderPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           content: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   controller: labelController,
                   decoration: InputDecoration(
                     labelText: 'Label',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                   validator: (value) {
@@ -104,31 +107,31 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   maxLines: null,
                   controller: descriptionController,
                   decoration: InputDecoration(
                     labelText: 'Description',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                 ),
@@ -140,19 +143,19 @@ class _AddOrderPageState extends State<AddOrderPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel',
+              child: const Text('Cancel',
                 style: TextStyle(color: Colors.grey),),
             ),
             TextButton(
               onPressed: () {
-                if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+                if (formKey.currentState != null && formKey.currentState!.validate()) {
                   Navigator.of(context).pop({
                     'label': labelController.text,
                     'description': descriptionController.text,
                   });
                 }
               },
-              child: Text('OK',
+              child: const Text('OK',
                 style: TextStyle(color: Color(0xFFEF911E)),),
             ),
           ],
@@ -175,7 +178,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   Future<void> _onEditCustomButton(OrderStatus orderStatus) async {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController labelController = TextEditingController(text: orderStatus.label);
     final TextEditingController descriptionController = TextEditingController(text: orderStatus.description);
 
@@ -183,7 +186,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit order status',
+          title: const Text('Edit order status',
             style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
@@ -191,33 +194,33 @@ class _AddOrderPageState extends State<AddOrderPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           content: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   controller: labelController,
                   decoration: InputDecoration(
                     labelText: 'Label',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                   validator: (value) {
@@ -227,31 +230,31 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   maxLines: null,
                   controller: descriptionController,
                   decoration: InputDecoration(
                     labelText: 'Description',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                 ),
@@ -263,20 +266,20 @@ class _AddOrderPageState extends State<AddOrderPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel',
+              child: const Text('Cancel',
                 style: TextStyle(color: Colors.grey),
               ),
             ),
             TextButton(
               onPressed: () {
-                if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+                if (formKey.currentState != null && formKey.currentState!.validate()) {
                   Navigator.of(context).pop({
                     'label': labelController.text,
                     'description': descriptionController.text,
                   });
                 }
               },
-              child: Text('OK',
+              child: const Text('OK',
                 style: TextStyle(color: Color(0xFFEF911E)),
               ),
             ),
@@ -297,14 +300,14 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   Future<void> _onAddGroupStatusButton() async {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController labelController = TextEditingController();
 
-    final result_groupname = await showDialog<String>(
+    final resultGroupname = await showDialog<String>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add new order status group',
+          title: const Text('Add new order status group',
             style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
@@ -312,33 +315,33 @@ class _AddOrderPageState extends State<AddOrderPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           content: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   controller: labelController,
                   decoration: InputDecoration(
                     labelText: 'Status group name',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                   validator: (value) {
@@ -356,32 +359,30 @@ class _AddOrderPageState extends State<AddOrderPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel',
+              child: const Text('Cancel',
                 style: TextStyle(color: Colors.grey),),
             ),
             TextButton(
               onPressed: () {
-                if (_formKey.currentState != null &&
-                    _formKey.currentState!.validate()) {
+                if (formKey.currentState != null &&
+                    formKey.currentState!.validate()) {
                   Navigator.of(context).pop(labelController.text);
                 }
               },
-              child: Text('OK',
+              child: const Text('OK',
                 style: TextStyle(color: Color(0xFFEF911E)),),
             ),
           ],
         );
       },
     );
-    if (result_groupname != null) {
-      final name = result_groupname;
-      if (name != null) {
-        setState(() {
-          _premadeGroups[name] = LinkedHashSet<OrderStatus>();
-          _premadeGroups[name]!.add(OrderStatus(label: 'Pending', description: ''));
-          _selectedPremadeGroup = name;
-        });
-      }
+    if (resultGroupname != null) {
+      final name = resultGroupname;
+      setState(() {
+        _premadeGroups[name] = LinkedHashSet<OrderStatus>();
+        _premadeGroups[name]!.add(OrderStatus(label: 'Pending', description: ''));
+        _selectedPremadeGroup = name;
+      });
     }
   }
 
@@ -463,7 +464,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
             ],
           ),
         );
-        print(e);
       }
     }
   }
@@ -491,51 +491,51 @@ class _AddOrderPageState extends State<AddOrderPage> {
               ),
               SliverToBoxAdapter(
                 child: Card(
-                  margin: EdgeInsets.fromLTRB(30, 0, 30, 30),
-                  color: Color(0xFFF9F9F9),
+                  margin: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  color: const Color(0xFFF9F9F9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(25),
+                    padding: const EdgeInsets.all(25),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(top: 0.0),
+                            padding: const EdgeInsets.only(top: 0.0),
                             child: TextFormField(
-                              cursorColor: Color(0xFFEF911E),
+                              cursorColor: const Color(0xFFEF911E),
                               controller: _nameController,
                               decoration: InputDecoration(
                                 labelText: 'Name',
-                                labelStyle: TextStyle(color: Colors.grey),
+                                labelStyle: const TextStyle(color: Colors.grey),
                                 fillColor: Colors.white,
                                 filled: true,
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey),
+                                  borderSide: const BorderSide(color: Colors.grey),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.grey),
+                                  const BorderSide(color: Colors.grey),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.red),
+                                  const BorderSide(color: Colors.red),
                                 ),
                                 focusedErrorBorder:
                                 OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.red),
+                                  const BorderSide(color: Colors.red),
                                 ),
                               ),
                               validator: (value) {
@@ -546,19 +546,18 @@ class _AddOrderPageState extends State<AddOrderPage> {
                               },
                             ),
                           ),
-                          SizedBox(height: 8,),
+                          const SizedBox(height: 8,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  primary: _selectedDeliveryMethod == 'Pickup'
-                                      ? Colors.white : Color(0xFF1AB428),
-                                  side: BorderSide(
+                                  foregroundColor: _selectedDeliveryMethod == 'Pickup'
+                                      ? Colors.white : const Color(0xFF1AB428), side: const BorderSide(
                                     color: Colors.grey,
                                   ),
                                   backgroundColor: _selectedDeliveryMethod == 'Pickup'
-                                      ? Color(0xFF1AB428) : Colors.white,
+                                      ? const Color(0xFF1AB428) : Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
                                   ),
@@ -568,18 +567,17 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                     _selectedDeliveryMethod = 'Pickup';
                                   });
                                 },
-                                child: Text('Pickup'),
+                                child: const Text('Pickup'),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  primary: _selectedDeliveryMethod == 'Deliver'
-                                      ? Colors.white : Color(0xFF1AB428),
-                                  side: BorderSide(
+                                  foregroundColor: _selectedDeliveryMethod == 'Deliver'
+                                      ? Colors.white : const Color(0xFF1AB428), side: const BorderSide(
                                     color: Colors.grey,
                                   ),
                                   backgroundColor: _selectedDeliveryMethod == 'Deliver'
-                                      ? Color(0xFF1AB428) : Colors.white,
+                                      ? const Color(0xFF1AB428) : Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
                                   ),
@@ -589,18 +587,17 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                     _selectedDeliveryMethod = 'Deliver';
                                   });
                                 },
-                                child: Text('Deliver'),
+                                child: const Text('Deliver'),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  primary: _selectedDeliveryMethod == 'Digital'
-                                      ? Colors.white : Color(0xFF1AB428),
-                                  side: BorderSide(
+                                  foregroundColor: _selectedDeliveryMethod == 'Digital'
+                                      ? Colors.white : const Color(0xFF1AB428), side: const BorderSide(
                                     color: Colors.grey,
                                   ),
                                   backgroundColor: _selectedDeliveryMethod == 'Digital'
-                                      ? Color(0xFF1AB428) : Colors.white,
+                                      ? const Color(0xFF1AB428) : Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
                                   ),
@@ -610,11 +607,11 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                     _selectedDeliveryMethod = 'Digital';
                                   });
                                 },
-                                child: Text('Digital'),
+                                child: const Text('Digital'),
                               ),
                             ],
                           ),
-                          SizedBox(height: 8,),
+                          const SizedBox(height: 8,),
                           ..._contactsControllers
                               .asMap()
                               .entries
@@ -629,28 +626,28 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                 children: [
                                   Expanded(
                                     child: TextFormField(
-                                      cursorColor: Color(0xFFEF911E),
+                                      cursorColor: const Color(0xFFEF911E),
                                       controller: controller,
                                       decoration: InputDecoration(
                                         labelText: 'Contact Information',
-                                        labelStyle: TextStyle(color: Colors.grey),
+                                        labelStyle: const TextStyle(color: Colors.grey),
                                         fillColor: Colors.white,
                                         filled: true,
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.grey),
+                                          borderSide: const BorderSide(color: Colors.grey),
                                         ),
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.grey),
+                                          borderSide: const BorderSide(color: Colors.grey),
                                         ),
                                         errorBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.red),
+                                          borderSide: const BorderSide(color: Colors.red),
                                         ),
                                         focusedErrorBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.red),
+                                          borderSide: const BorderSide(color: Colors.red),
                                         ),
                                       ),
                                       validator: (value) {
@@ -663,11 +660,11 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                   ),
                                   if (_contactsControllers.length > 1)
                                     IconButton(
-                                      padding: EdgeInsets.all(0),
-                                      constraints: BoxConstraints.tight(Size(24, 24)),
+                                      padding: const EdgeInsets.all(0),
+                                      constraints: BoxConstraints.tight(const Size(24, 24)),
                                       onPressed: () => _removeContact(index),
                                       icon:
-                                      Icon(Icons.close, color: Color(0xFFEF911E)),
+                                      const Icon(Icons.close, color: Color(0xFFEF911E)),
                                     ),
                                 ],
                               ),
@@ -675,7 +672,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                           }),
                           TextButton(
                             onPressed: _addContact,
-                            child: Text('Add another contact information',
+                            child: const Text('Add another contact information',
                               style: TextStyle(color: Color(0xFFEF911E)),
                             ),
                           ),
@@ -689,12 +686,12 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                     _selectedPremadeGroup = newValue!;
                                   });
                                 },
-                                style: TextStyle(fontSize: 15, color: Color(0xFFEF911E)),
+                                style: const TextStyle(fontSize: 15, color: Color(0xFFEF911E)),
                                 items: _premadeGroups.keys.map<DropdownMenuItem<String>>((String key) {
                                   return DropdownMenuItem<String>(
                                     value: key,
                                     child: Text(
-                                      key.length > 10 ? key.substring(0, 10) + '...' : key,
+                                      key.length > 10 ? '${key.substring(0, 10)}...' : key,
                                       textAlign: TextAlign.center,
                                     )
                                   );
@@ -706,8 +703,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                   children: [
                                     OutlinedButton(
                                       style: OutlinedButton.styleFrom(
-                                        primary: Color(0xFF1AB428),
-                                        side: BorderSide(
+                                        foregroundColor: const Color(0xFF1AB428), side: const BorderSide(
                                           color: Color(0xFFEF911E),
                                         ),
                                         backgroundColor: Colors.white,
@@ -717,7 +713,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                       ),
                                       onPressed: () => _onEditCustomButton(status),
                                       child: status.label.length > 25
-                                          ? Container(
+                                          ? SizedBox(
                                         width: 200,
                                         child: Text(
                                           status.label,
@@ -734,14 +730,14 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                         });
                                       },
                                       icon:
-                                      Icon(Icons.close, color: status.label == 'Pending' ? Colors.grey : Color(0xFFEF911E)),
+                                      Icon(Icons.close, color: status.label == 'Pending' ? Colors.grey : const Color(0xFFEF911E)),
                                     ),
                                   ],
                                 );
                               }).toList(),
                               TextButton(
                                 onPressed: _onAddStatusButton,
-                                child: Text(
+                                child: const Text(
                                   'Add order status',
                                   style: TextStyle(color: Color(0xFFEF911E)),
                                 ),
@@ -760,7 +756,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                   TextButton(
                                     onPressed: _onAddGroupStatusButton,
                                     child:
-                                    Text(
+                                    const Text(
                                       'Add order status group',
                                       style: TextStyle(color: Color(0xFFEF911E)),
                                     ),
@@ -769,41 +765,41 @@ class _AddOrderPageState extends State<AddOrderPage> {
                               )
                             ],
                           ),
-                          SizedBox(height: 8,),
+                          const SizedBox(height: 8,),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.0),
+                            padding: const EdgeInsets.only(top: 0.0),
                             child: TextFormField(
-                              cursorColor: Color(0xFFEF911E),
+                              cursorColor: const Color(0xFFEF911E),
                               controller: _msgController,
                               maxLines: null, // Set maxLines to null to allow for infinite lines
                               decoration: InputDecoration(
                                 labelText: 'Additional Message',
-                                labelStyle: TextStyle(color: Colors.grey),
+                                labelStyle: const TextStyle(color: Colors.grey),
                                 fillColor: Colors.white,
                                 filled: true,
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey),
+                                  borderSide: const BorderSide(color: Colors.grey),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.grey),
+                                  const BorderSide(color: Colors.grey),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.red),
+                                  const BorderSide(color: Colors.red),
                                 ),
                                 focusedErrorBorder:
                                 OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.red),
+                                  const BorderSide(color: Colors.red),
                                 ),
                               ),
                             ),
@@ -817,7 +813,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                 TextButton(
                                   onPressed: _onCancel,
                                   style: TextButton.styleFrom(
-                                    primary: Colors.red,
+                                    foregroundColor: Colors.red,
                                   ),
                                   child: const Row(
                                     children: [
@@ -830,7 +826,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                 TextButton(
                                   onPressed: _onReset,
                                   style: TextButton.styleFrom(
-                                    primary: Colors.grey,
+                                    foregroundColor: Colors.grey,
                                   ),
                                   child: const Row(
                                     children: [
@@ -840,13 +836,13 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 ElevatedButton(
                                   onPressed: _onPlaceOrder,
                                   style: ElevatedButton.styleFrom(
                                     shape:
                                     RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                    backgroundColor: Color(0xFF1AB428),
+                                    backgroundColor: const Color(0xFF1AB428),
                                   ),
                                   child: const Row(
                                     children: [

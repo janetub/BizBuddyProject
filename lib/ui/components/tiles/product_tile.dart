@@ -1,27 +1,28 @@
-import 'package:bizbuddyproject/ui/components/product_details_dialog.dart';
+import 'package:bizbuddyproject/ui/components/all_components.dart';
 import 'package:flutter/material.dart';
-import '../../classes/all.dart';
-import 'item_details_dialog.dart';
+import '../../../classes/all_classes.dart';
 
-class ItemTile extends StatefulWidget {
+class ProductTile extends StatefulWidget {
   final Item item;
-  final void Function(Item) onItemEdit;
-  final void Function(Item) onItemDelete;
-  final void Function(Item, int, bool) onQuantityChanged;
+  final void Function(Item) onProductEdit;
+  final void Function(Item) onProductDelete;
+  final void Function(Item, int) onAddToCart;
 
-  const ItemTile({
+  const ProductTile({
     Key? key,
     required this.item,
-    required this.onItemEdit,
-    required this.onItemDelete,
-    required this.onQuantityChanged,
+    required this.onProductEdit,
+    required this.onProductDelete,
+    required this.onAddToCart,
   }) : super(key: key);
 
   @override
-  _ItemTileState createState() => _ItemTileState();
+  State<ProductTile> createState() {
+    return _ProductTileState();
+  }
 }
 
-class _ItemTileState extends State<ItemTile> {
+class _ProductTileState extends State<ProductTile> {
   final TextEditingController _quantityController = TextEditingController();
 
   @override
@@ -32,7 +33,7 @@ class _ItemTileState extends State<ItemTile> {
       onTap: () {
         showDialog(
           context: context,
-          builder: (context) => ItemDetailsDialog(
+          builder: (context) => ProductDetailsDialog(
               item: widget.item
           ),
         );
@@ -41,7 +42,7 @@ class _ItemTileState extends State<ItemTile> {
         key: UniqueKey(),
         confirmDismiss: (direction) {
           if (direction == DismissDirection.startToEnd) {
-            widget.onItemEdit(widget.item);
+            widget.onProductEdit(widget.item);
             return Future.value(false);
           }
           return Future.value(true);
@@ -50,10 +51,10 @@ class _ItemTileState extends State<ItemTile> {
           borderRadius: BorderRadius.circular(20),
           child: Container(
             color: Colors.green,
-            child: Align(
+            child: const Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: EdgeInsets.all(15),
                 child: Icon(Icons.edit),
               ),
             ),
@@ -63,10 +64,10 @@ class _ItemTileState extends State<ItemTile> {
           borderRadius: BorderRadius.circular(20),
           child: Container(
             color: Colors.red,
-            child: Align(
+            child: const Align(
               alignment: Alignment.centerRight,
               child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: EdgeInsets.all(15),
                 child: Icon(Icons.delete),
               ),
             ),
@@ -74,7 +75,7 @@ class _ItemTileState extends State<ItemTile> {
         ),
         onDismissed: (direction) {
           if (direction == DismissDirection.endToStart) {
-            widget.onItemDelete(widget.item);
+            widget.onProductDelete(widget.item);
           }
         },
         child: Card(
@@ -82,8 +83,8 @@ class _ItemTileState extends State<ItemTile> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          child: Padding(
-              padding: EdgeInsets.fromLTRB(5,10,0,10),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(5,10,0,10),
               child: Column(
                 children: [
                   Theme(
@@ -107,16 +108,15 @@ class _ItemTileState extends State<ItemTile> {
                           Container(
                             alignment: Alignment.centerRight,
                             child:
-                            Text('Cost: ₱ ${widget.item.cost.toStringAsFixed(2)}'),
+                            Text('₱ ${widget.item.price.toStringAsFixed(2)}'),
                           ),
                         ],
                       ),
                       subtitle:
                       Text(
-                        'Stocks: ${widget.item.quantity}' +
-                            (widget.item.description.isNotEmpty
+                        'Stocks: ${widget.item.quantity}${widget.item.description.isNotEmpty
                                 ? '\n${widget.item.description}'
-                                : ''),
+                                : ''}',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -124,94 +124,76 @@ class _ItemTileState extends State<ItemTile> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: IconButton(
-                              //padding: EdgeInsets.zero,
-                              tooltip: 'Remove quantity',
-                              icon: Icon(
-                                Icons.remove,
-                                color: Color(0xFFEF911E),
-                              ),
-                              onPressed: () {
-                                int qty = int.tryParse(_quantityController.text) ?? 1;
-                                widget.onQuantityChanged(widget.item, qty, false);
-                                // if (qty <= widget.item.quantity) {
-                                //   _quantityController.clear();
-                                // }
-                                _quantityController.clear();
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            width: 60,
+                            width: 70,
                             height: 50,
                             child: TextFormField(
-                              cursorColor: Color(0xFFEF911E),
+                              cursorColor: const Color(0xFFEF911E),
                               controller: _quantityController,
                               decoration: InputDecoration(
                                 labelText: 'Qty',
-                                labelStyle: TextStyle(color: Colors.grey),
+                                labelStyle: const TextStyle(color: Colors.grey),
                                 fillColor: Colors.white,
                                 filled: true,
                                 enabledBorder:
                                 OutlineInputBorder(borderRadius:
                                 BorderRadius.circular(15),
                                     borderSide:
-                                    BorderSide(color:
+                                    const BorderSide(color:
                                     Colors.grey)),
                                 focusedBorder:
                                 OutlineInputBorder(borderRadius:
                                 BorderRadius.circular(15),
                                     borderSide:
-                                    BorderSide(color:
+                                    const BorderSide(color:
                                     Colors.grey)),
                               ),
                               keyboardType:
                               TextInputType.number,
                             ),
                           ),
-                          SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: IconButton(
-                              //padding: EdgeInsets.zero,
-                              tooltip: 'Add quantity',
-                              icon: Icon(
-                                Icons.add,
-                                color: Color(0xFFEF911E),
-                              ),
-                              onPressed: () {
-                                int qty = int.tryParse(_quantityController.text) ?? 1;
-                                widget.onQuantityChanged(widget.item, qty, true);
-                                _quantityController.clear();
-                              },
+                          IconButton(
+                            //padding: EdgeInsets.zero,
+                            tooltip: "Add product to cart",
+                            icon: const Icon(
+                              Icons.add_shopping_cart,
+                              color: Color(0xFFEF911E),
                             ),
+                            onPressed: () {
+                              widget.onAddToCart(widget.item, int.tryParse(_quantityController.text) ?? 1);
+                              int qty = int.tryParse(_quantityController.text) ?? 1;
+                              if(qty <= widget.item.quantity) {
+                                _quantityController.clear();
+                              }
+                            }
                           ),
                         ],
                       ),
                     ),
                   ),
                   if (widget.item.tags.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 5),
-                      child: Wrap(
-                        spacing: 5,
-                        alignment: WrapAlignment.start,
-                        children: widget.item.tags.map((tag) =>
-                            Text(
-                              '#$tag',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey,
-                              ),
-                            )
-                        ).toList(),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 0, 15, 5),
+                        child: Wrap(
+                          spacing: 5,
+                          alignment: WrapAlignment.start,
+                          children: widget.item.tags.map((tag) =>
+                              Text(
+                                '#$tag',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.start,
+                              )
+                          ).toList(),
+                        ),
                       ),
                     ),
                 ],
               )
-          ),
+            ),
         ),
       ),
     );

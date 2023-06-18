@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import '../../classes/all.dart';
+import '../../../classes/all_classes.dart';
 
-class ItemDetailsDialog extends StatelessWidget {
-  final Item item;
+
+class OrderDetailsDialog extends StatelessWidget {
+  final Order order;
   final ScrollController controller = ScrollController();
 
-  ItemDetailsDialog({Key? key, required this.item}) : super(key: key);
+  OrderDetailsDialog({Key? key, required this.order}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        'Item Details',
+      title: const Text(
+        'Order Details',
         style: TextStyle(fontSize: 24),
         textAlign: TextAlign.center,
       ),
@@ -20,7 +21,7 @@ class ItemDetailsDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       content: Scrollbar(
-        isAlwaysShown: true,
+        thumbVisibility: true,
         thickness: 3.0,
         controller: controller,
         interactive: true,
@@ -35,20 +36,20 @@ class ItemDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Name: ',
+                    const Text(
+                      'Order ID: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4,),
+                    const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        '${item.name}',
-                        style: TextStyle(fontSize: 18),
+                        order.orderId,
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -57,20 +58,20 @@ class ItemDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Desc.: ',
+                    const Text(
+                      'Date Placed: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4,),
+                    const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        '${item.description}',
-                        style: TextStyle(fontSize: 18),
+                        order.datePlaced.toLocal().toString().split(' ')[0],
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -79,20 +80,20 @@ class ItemDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Cost: ',
+                    const Text(
+                      'Delivery method: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 30,),
+                    const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        '${item.cost.toStringAsFixed(2)}',
-                        style: TextStyle(fontSize: 18),
+                        order.deliveryMethod,
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -101,20 +102,50 @@ class ItemDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Markup: ',
+                    const Text(
+                      'Current Status: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 6,),
+                    const SizedBox(width: 4),
                     Expanded(
-                      child: Text(
-                        '${(item.price - item.cost).toStringAsFixed(2)}',
-                        style: TextStyle(fontSize: 18),
+                      child: Builder(
+                        builder: (context) {
+                          try {
+                            return Text(
+                              order.getCurrentStatus()!.description == '' ? order.getCurrentStatus()!.label : '${order
+                                  .getCurrentStatus()!.label} (${order
+                                  .getCurrentStatus()!.description})' ,
+                              style: const TextStyle(fontSize: 18),
+                            );
+                          } catch (e) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("No Status"),
+                                  content: const Text("Please assign a current status to the order."),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text("OK"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                            return const Text(
+                              'No Status',
+                              style: TextStyle(fontSize: 18),
+                            );
+                          }
+                        },
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -123,95 +154,20 @@ class ItemDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Price: ',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    SizedBox(width: 26,),
-                    Expanded(
-                      child: Text(
-                        '${item.price.toStringAsFixed(2)}',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  ],
-                ),
-                Divider(
-                  color: Colors.black12,
-                  thickness: 1,
-                  indent: 10,
-                  endIndent: 10,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Quantity: ',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    SizedBox(width: 0,),
-                    Expanded(
-                      child: Text(
-                        '${item.quantity}',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  ],
-                ),
-                Divider(
-                  color: Colors.black12,
-                  thickness: 1,
-                  indent: 10,
-                  endIndent: 10,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Tags: ',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    SizedBox(width: 4,),
-                    Expanded(
-                      child: Wrap(
-                        spacing: 5,
-                        alignment: WrapAlignment.start,
-                        children: item.tags.map((tag) =>
-                            Text(
-                              '#$tag',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                            )
-                        ).toList(),
-                      ),
-                    ),
-                  ],
-                ),
-                Divider(
-                  color: Colors.black12,
-                  thickness: 1,
-                  indent: 10,
-                  endIndent: 10,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+                    const Text(
                       'Total Price: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        item.calculateTotalPriceValue().toStringAsFixed(2),
-                        style: TextStyle(fontSize: 17),
+                        order.calculateOrderTotalValue().toStringAsFixed(2),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -220,20 +176,97 @@ class ItemDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Date Added: ',
+                    const Text(
+                      'Profit: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4,),
+                    const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        '${item.dateAdded?.toLocal().toString().split(' ')[0]}',
-                        style: TextStyle(fontSize: 18),
+                        (order.calculateTotalPrice()-order.calculateTotalCost()).toStringAsFixed(2),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
+                  color: Colors.black12,
+                  thickness: 1,
+                  indent: 10,
+                  endIndent: 10,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Description: ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        order.description,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(
+                  color: Colors.black12,
+                  thickness: 1,
+                  indent: 10,
+                  endIndent: 10,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Items: ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Wrap(
+                      spacing: 4,
+                      children: order.items
+                          .map(
+                            (item) => Chip(
+                          label: Text(
+                            '(${item.quantity}) ${item.name}',
+                            style: const TextStyle(
+                              fontSize: 17,
+                              color: Colors.white,
+                            ),
+                          ),
+                          labelPadding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
+                          backgroundColor: const Color(0xFFEF911E),
+                        ),
+                      )
+                          .toList(),
+                    ),
+                  ],
+                ),
+                const Divider(
+                  color: Colors.black12,
+                  thickness: 1,
+                  indent: 10,
+                  endIndent: 10,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Recipient:',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        order.recipient.name,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -243,25 +276,22 @@ class ItemDetailsDialog extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Components: ',
-                      style: TextStyle(fontSize: 18),
+                      order.recipient.contacts[order.deliveryMethod]!.length > 1 ? 'Contacts:' : 'Contact:',
+                      style: const TextStyle(fontSize: 18),
                     ),
                     Wrap(
                       spacing: 4,
-                      children: item.components
-                          .map(
-                            (component) => Chip(
-                          label: Text(
-                            '(${component.quantity}) ${component.name}',
-                            style: TextStyle(
+                      children: order.recipient.contacts.entries
+                          .expand((entry) => entry.value.map((contact) => Chip(
+                        label: Text(
+                          '+$contact',
+                          style: const TextStyle(
                               fontSize: 17,
                               color: Colors.white,
-                            ),
                           ),
-                          labelPadding: EdgeInsets.fromLTRB(7, 0, 7, 0),
-                          backgroundColor: Color(0xFFEF911E),
                         ),
-                      )
+                        backgroundColor: const Color(0xFF1AB428),
+                      )))
                           .toList(),
                     ),
                   ],
@@ -271,15 +301,11 @@ class ItemDetailsDialog extends StatelessWidget {
           ),
         ),
       ),
-      actions:[
+      actions: [
         TextButton(
-          style:
-          TextButton.styleFrom(primary:
-          Colors.grey,),
-          onPressed:
-              () => Navigator.of(context).pop(),
-          child:
-          const Text('Close'),
+          style: TextButton.styleFrom(foregroundColor: Colors.grey),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Close'),
         ),
       ],
     );

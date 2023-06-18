@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'all.dart';
+import 'all_classes.dart';
 /*
 * This class represents a customer order.
 * It can be pre-made or customized at the time the order is placed.
@@ -12,14 +12,27 @@ import 'all.dart';
 *
 * */
 
-class Order {
+import 'package:hive/hive.dart';
+
+part 'order.g.dart';
+
+@HiveType(typeId: 1)
+class Order extends HiveObject {
+  @HiveField(0)
   final String orderId;
+  @HiveField(1)
   String description;
+  @HiveField(2)
   DateTime datePlaced;
+  @HiveField(3)
   int currentStatusIndex;
+  @HiveField(4)
   final LinkedHashSet<OrderStatus> statuses;
+  @HiveField(5)
   final LinkedHashSet<Item> items;
-  final Person recipient;
+  @HiveField(6)
+  Person recipient;
+  @HiveField(7)
   String deliveryMethod;
 
   Order({required this.items, required this.recipient}) : description = '', deliveryMethod = '', statuses = LinkedHashSet<OrderStatus>(), currentStatusIndex = -1, orderId = idGenerator(),
@@ -107,5 +120,30 @@ class Order {
     result += 'Recipient: ${recipient}\n';
     result += 'Delivery method: ${deliveryMethod}\n';
     return result;
+  }
+
+  Order copyWith({
+      // LinkedHashSet<Item>? items,
+      Person? recipient,
+      String? description,
+      // DateTime? datePlaced,
+      // int? currentStatusIndex,
+      LinkedHashSet<OrderStatus>? statuses,
+      String? deliveryMethod,
+    }) {
+    this.description = description ?? this.description;
+    // this.datePlaced = datePlaced ?? this.datePlaced;
+    // this.currentStatusIndex = currentStatusIndex ?? this.currentStatusIndex;
+    if (statuses != null) {
+      this.statuses.clear();
+      this.statuses.addAll(statuses);
+    }
+    // if (items != null) {
+    //   this.items.clear();
+    //   this.items.addAll(items);
+    // }
+    this.deliveryMethod = deliveryMethod ?? this.deliveryMethod;
+    this.recipient = recipient ?? this.recipient;
+    return this;
   }
 }

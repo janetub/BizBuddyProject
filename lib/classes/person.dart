@@ -1,11 +1,15 @@
+import 'package:hive/hive.dart';
 
-class Person
-{
+part 'person.g.dart';
+
+@HiveType(typeId: 0)
+class Person extends HiveObject {
+  @HiveField(0)
   final String _id = idGenerator();
+  @HiveField(1)
   String name;
+  @HiveField(2)
   Map<String, List<String>> contacts = {};
-
-  String get id => _id;
 
 
   Person(this.name);

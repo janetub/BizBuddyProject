@@ -1,21 +1,21 @@
-import 'package:bizbuddyproject/ui/components/product_details_dialog.dart';
+import 'package:bizbuddyproject/ui/components/all_components.dart';
 import 'package:flutter/material.dart';
-import '../../classes/all.dart';
+import '../../../classes/all_classes.dart';
 
 class CartTile extends StatefulWidget {
   final Item item;
   final void Function(Item, int) onUpdateQuantity;
-  final VoidCallback onRemove;
 
   const CartTile({
     Key? key,
     required this.item,
     required this.onUpdateQuantity,
-    required this.onRemove,
   }) : super(key: key);
 
   @override
-  _CartTileState createState() => _CartTileState();
+  State<CartTile> createState() {
+    return _CartTileState();
+  }
 }
 
 class _CartTileState extends State<CartTile> {
@@ -40,7 +40,7 @@ class _CartTileState extends State<CartTile> {
           borderRadius: BorderRadius.circular(15),
         ),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(0,5,0,7),
+          padding: const EdgeInsets.fromLTRB(0,5,0,7),
           child: ListTile(
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +62,7 @@ class _CartTileState extends State<CartTile> {
             ),
             subtitle:
             Text('Quantity: ${widget.item.quantity}',
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 14,
                 color: Colors.grey),
             ),
@@ -72,14 +72,14 @@ class _CartTileState extends State<CartTile> {
                 SizedBox(
                   width: 60,
                   child: TextFormField(
-                    cursorColor: Color(0xFFEF911E),
+                    cursorColor: const Color(0xFFEF911E),
                     controller:
                     _quantityController,
                     decoration:
                     InputDecoration(labelText:
                     'Qty',
                         labelStyle:
-                        TextStyle(color:
+                        const TextStyle(color:
                         Colors.grey),
                         fillColor:
                         Colors.white,
@@ -89,13 +89,13 @@ class _CartTileState extends State<CartTile> {
                         OutlineInputBorder(borderRadius:
                         BorderRadius.circular(15),
                             borderSide:
-                            BorderSide(color:
+                            const BorderSide(color:
                             Colors.grey)),
                         focusedBorder:
                         OutlineInputBorder(borderRadius:
                         BorderRadius.circular(15),
                             borderSide:
-                            BorderSide(color:
+                            const BorderSide(color:
                             Colors.grey)),
                         ),
                     keyboardType:
@@ -108,13 +108,10 @@ class _CartTileState extends State<CartTile> {
                     color: Color(0xFFEF911E),
                   ),
                   onPressed: () {
-                    final newQuantity = _quantityController.text == '0'
+                    final qty = _quantityController.text == '0'
                         ? 0
                         : int.tryParse(_quantityController.text) ?? 1;
-                    widget.onUpdateQuantity(widget.item, newQuantity);
-                    if (widget.item.quantity == 0) {
-                      widget.onRemove();
-                    }
+                    widget.onUpdateQuantity(widget.item, qty);
                     _quantityController.clear();
                     setState(() {});
                   },

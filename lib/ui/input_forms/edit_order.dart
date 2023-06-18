@@ -1,18 +1,21 @@
 import 'dart:collection';
+import 'package:bizbuddyproject/models/all_models.dart';
 import 'package:flutter/material.dart';
-import '../../classes/all.dart';
+import 'package:provider/provider.dart';
+import '../../classes/all_classes.dart';
 
 class EditOrderPage extends StatefulWidget {
-  final Function(Order) onSubmit;
   final Order order;
 
-  EditOrderPage({
-    required this.onSubmit,
+  const EditOrderPage({
+    Key? key,
     required this.order,
-  });
+  }) : super(key: key);
 
   @override
-  _EditOrderPageState createState() => _EditOrderPageState();
+  State<EditOrderPage> createState() {
+    return _EditOrderPageState();
+  }
 }
 
 class _EditOrderPageState extends State<EditOrderPage> {
@@ -20,7 +23,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _msgController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  List<TextEditingController> _contactsControllers = [TextEditingController()];
+  final List<TextEditingController> _contactsControllers = [TextEditingController()];
   final Map<String, LinkedHashSet<OrderStatus>> _premadeGroups = {
     'Default': LinkedHashSet.from([
       OrderStatus(label: 'Pending', description: ''),
@@ -54,7 +57,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('No contacts found:\n'),
-          content: Text('Please add at least one contact information from the recipient.'),
+          content: const Text('Please add at least one contact information from the recipient.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -64,7 +67,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
           ],
         ),
       );
-      print(e);
     }
     _selectedPremadeGroup = 'Current';
     _premadeGroups[_selectedPremadeGroup] = LinkedHashSet.from(widget.order.statuses);
@@ -84,7 +86,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
   }
 
   Future<void> _onAddStatusButton() async {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController labelController = TextEditingController();
     final TextEditingController descriptionController = TextEditingController();
 
@@ -92,7 +94,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add custom order status',
+          title: const Text('Add custom order status',
             style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
@@ -100,33 +102,33 @@ class _EditOrderPageState extends State<EditOrderPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           content: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   controller: labelController,
                   decoration: InputDecoration(
                     labelText: 'Label',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                   validator: (value) {
@@ -136,31 +138,31 @@ class _EditOrderPageState extends State<EditOrderPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   maxLines: null,
                   controller: descriptionController,
                   decoration: InputDecoration(
                     labelText: 'Description',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                 ),
@@ -172,19 +174,19 @@ class _EditOrderPageState extends State<EditOrderPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel',
+              child: const Text('Cancel',
                 style: TextStyle(color: Colors.grey),),
             ),
             TextButton(
               onPressed: () {
-                if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+                if (formKey.currentState != null && formKey.currentState!.validate()) {
                   Navigator.of(context).pop({
                     'label': labelController.text,
                     'description': descriptionController.text,
                   });
                 }
               },
-              child: Text('OK',
+              child: const Text('OK',
                 style: TextStyle(color: Color(0xFFEF911E)),),
             ),
           ],
@@ -207,7 +209,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
   }
 
   Future<void> _onEditCustomButton(OrderStatus orderStatus) async {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController labelController = TextEditingController(text: orderStatus.label);
     final TextEditingController descriptionController = TextEditingController(text: orderStatus.description);
 
@@ -215,7 +217,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit order status',
+          title: const Text('Edit order status',
             style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
@@ -223,33 +225,33 @@ class _EditOrderPageState extends State<EditOrderPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           content: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   controller: labelController,
                   decoration: InputDecoration(
                     labelText: 'Label',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                   validator: (value) {
@@ -259,31 +261,31 @@ class _EditOrderPageState extends State<EditOrderPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   maxLines: null,
                   controller: descriptionController,
                   decoration: InputDecoration(
                     labelText: 'Description',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                 ),
@@ -295,20 +297,20 @@ class _EditOrderPageState extends State<EditOrderPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel',
+              child: const Text('Cancel',
                 style: TextStyle(color: Colors.grey),
               ),
             ),
             TextButton(
               onPressed: () {
-                if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+                if (formKey.currentState != null && formKey.currentState!.validate()) {
                   Navigator.of(context).pop({
                     'label': labelController.text,
                     'description': descriptionController.text,
                   });
                 }
               },
-              child: Text('OK',
+              child: const Text('OK',
                 style: TextStyle(color: Color(0xFFEF911E)),
               ),
             ),
@@ -329,14 +331,14 @@ class _EditOrderPageState extends State<EditOrderPage> {
   }
 
   Future<void> _onAddGroupStatusButton() async {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController labelController = TextEditingController();
 
-    final result_groupname = await showDialog<String>(
+    final resultGroupname = await showDialog<String>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add new order status group',
+          title: const Text('Add new order status group',
             style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
@@ -344,33 +346,33 @@ class _EditOrderPageState extends State<EditOrderPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           content: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  cursorColor: Color(0xFFEF911E),
+                  cursorColor: const Color(0xFFEF911E),
                   controller: labelController,
                   decoration: InputDecoration(
                     labelText: 'Status group name',
-                    labelStyle: TextStyle(color: Colors.grey),
+                    labelStyle: const TextStyle(color: Colors.grey),
                     fillColor: Colors.white,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.red),
+                      borderSide: const BorderSide(color: Colors.red),
                     ),
                   ),
                   validator: (value) {
@@ -388,32 +390,30 @@ class _EditOrderPageState extends State<EditOrderPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel',
+              child: const Text('Cancel',
                 style: TextStyle(color: Colors.grey),),
             ),
             TextButton(
               onPressed: () {
-                if (_formKey.currentState != null &&
-                    _formKey.currentState!.validate()) {
+                if (formKey.currentState != null &&
+                    formKey.currentState!.validate()) {
                   Navigator.of(context).pop(labelController.text);
                 }
               },
-              child: Text('OK',
+              child: const Text('OK',
                 style: TextStyle(color: Color(0xFFEF911E)),),
             ),
           ],
         );
       },
     );
-    if (result_groupname != null) {
-      final name = result_groupname;
-      if (name != null) {
-        setState(() {
-          _premadeGroups[name] = LinkedHashSet<OrderStatus>();
-          _premadeGroups[name]!.add(OrderStatus(label: 'Pending', description: ''));
-          _selectedPremadeGroup = name;
-        });
-      }
+    if (resultGroupname != null) {
+      final name = resultGroupname;
+      setState(() {
+        _premadeGroups[name] = LinkedHashSet<OrderStatus>();
+        _premadeGroups[name]!.add(OrderStatus(label: 'Pending', description: ''));
+        _selectedPremadeGroup = name;
+      });
     }
   }
 
@@ -422,6 +422,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
       setState(() {
         _premadeGroups.remove(_selectedPremadeGroup);
         _selectedPremadeGroup = 'Default';
+        widget.order.currentStatusIndex = 0;
       });
     }
   }
@@ -454,10 +455,16 @@ class _EditOrderPageState extends State<EditOrderPage> {
   }
 
   void _onConfirm() {
+    // if at least one contact, remove empty text fields
     if (_contactsControllers.length > 1) {
-      for (int i = _contactsControllers.length - 1; i >= 0; i--) {
-        if (_contactsControllers[i].text.isEmpty) {
-          _removeContact(i);
+      // at least one non-empty controller
+      bool hasNonEmptyContact = _contactsControllers.any((controller) => controller.text.isNotEmpty);
+      // remove empty
+      if (hasNonEmptyContact) {
+        for (int i = _contactsControllers.length - 1; i >= 0; i--) {
+          if (_contactsControllers[i].text.isEmpty) {
+            _removeContact(i);
+          }
         }
       }
     }
@@ -468,19 +475,22 @@ class _EditOrderPageState extends State<EditOrderPage> {
           String contact = _contactsControllers[i].text;
           person.addContact(_selectedDeliveryMethod, contact);
         }
-        final editedOrder = Order(
-          items: widget.order.items,
+        // deep copy
+        // LinkedHashSet<Item> itemsDup = LinkedHashSet<Item>.from(
+        //     widget.order.items.map((item) => item.duplicate()));
+        widget.order.copyWith(
           recipient: person,
+          description: _msgController.text,
+          statuses: LinkedHashSet<OrderStatus>.from(
+              _premadeGroups[_selectedPremadeGroup] as Iterable<OrderStatus>),
+          deliveryMethod: _selectedDeliveryMethod,
         );
-        editedOrder.statuses.addAll(
-            _premadeGroups[_selectedPremadeGroup] as Iterable<OrderStatus>);
-        editedOrder.datePlaced = DateTime.now();
-        editedOrder.deliveryMethod = _selectedDeliveryMethod;
-        editedOrder.currentStatusIndex = 0;
-        editedOrder.description = _msgController.text;
-        print('${widget.order}\n-----------\n${editedOrder}');
-        widget.onSubmit(editedOrder);
+
+        // order is directly edited
+        final orderModel = Provider.of<OrderModel>(context, listen: false);
+        orderModel.updateOrder(widget.order);
         Navigator.pop(context);
+
       } catch (e) {
         showDialog(
           context: context,
@@ -496,7 +506,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
             ],
           ),
         );
-        print(e);
       }
     }
   }
@@ -524,51 +533,51 @@ class _EditOrderPageState extends State<EditOrderPage> {
               ),
               SliverToBoxAdapter(
                 child: Card(
-                  margin: EdgeInsets.fromLTRB(30, 0, 30, 30),
-                  color: Color(0xFFF9F9F9),
+                  margin: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  color: const Color(0xFFF9F9F9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(25),
+                    padding: const EdgeInsets.all(25),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(top: 0.0),
+                            padding: const EdgeInsets.only(top: 0.0),
                             child: TextFormField(
-                              cursorColor: Color(0xFFEF911E),
+                              cursorColor: const Color(0xFFEF911E),
                               controller: _nameController,
                               decoration: InputDecoration(
                                 labelText: 'Name',
-                                labelStyle: TextStyle(color: Colors.grey),
+                                labelStyle: const TextStyle(color: Colors.grey),
                                 fillColor: Colors.white,
                                 filled: true,
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey),
+                                  borderSide: const BorderSide(color: Colors.grey),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.grey),
+                                  const BorderSide(color: Colors.grey),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.red),
+                                  const BorderSide(color: Colors.red),
                                 ),
                                 focusedErrorBorder:
                                 OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.red),
+                                  const BorderSide(color: Colors.red),
                                 ),
                               ),
                               validator: (value) {
@@ -579,19 +588,18 @@ class _EditOrderPageState extends State<EditOrderPage> {
                               },
                             ),
                           ),
-                          SizedBox(height: 8,),
+                          const SizedBox(height: 8,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  primary: _selectedDeliveryMethod == 'Pickup'
-                                      ? Colors.white : Color(0xFF1AB428),
-                                  side: BorderSide(
+                                  foregroundColor: _selectedDeliveryMethod == 'Pickup'
+                                      ? Colors.white : const Color(0xFF1AB428), side: const BorderSide(
                                     color: Colors.grey,
                                   ),
                                   backgroundColor: _selectedDeliveryMethod == 'Pickup'
-                                      ? Color(0xFF1AB428) : Colors.white,
+                                      ? const Color(0xFF1AB428) : Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
                                   ),
@@ -601,18 +609,17 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                     _selectedDeliveryMethod = 'Pickup';
                                   });
                                 },
-                                child: Text('Pickup'),
+                                child: const Text('Pickup'),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  primary: _selectedDeliveryMethod == 'Deliver'
-                                      ? Colors.white : Color(0xFF1AB428),
-                                  side: BorderSide(
+                                  foregroundColor: _selectedDeliveryMethod == 'Deliver'
+                                      ? Colors.white : const Color(0xFF1AB428), side: const BorderSide(
                                     color: Colors.grey,
                                   ),
                                   backgroundColor: _selectedDeliveryMethod == 'Deliver'
-                                      ? Color(0xFF1AB428) : Colors.white,
+                                      ? const Color(0xFF1AB428) : Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
                                   ),
@@ -622,18 +629,17 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                     _selectedDeliveryMethod = 'Deliver';
                                   });
                                 },
-                                child: Text('Deliver'),
+                                child: const Text('Deliver'),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  primary: _selectedDeliveryMethod == 'Digital'
-                                      ? Colors.white : Color(0xFF1AB428),
-                                  side: BorderSide(
+                                  foregroundColor: _selectedDeliveryMethod == 'Digital'
+                                      ? Colors.white : const Color(0xFF1AB428), side: const BorderSide(
                                     color: Colors.grey,
                                   ),
                                   backgroundColor: _selectedDeliveryMethod == 'Digital'
-                                      ? Color(0xFF1AB428) : Colors.white,
+                                      ? const Color(0xFF1AB428) : Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(18.0),
                                   ),
@@ -643,11 +649,11 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                     _selectedDeliveryMethod = 'Digital';
                                   });
                                 },
-                                child: Text('Digital'),
+                                child: const Text('Digital'),
                               ),
                             ],
                           ),
-                          SizedBox(height: 8,),
+                          const SizedBox(height: 8,),
                           ..._contactsControllers
                               .asMap()
                               .entries
@@ -662,28 +668,28 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                 children: [
                                   Expanded(
                                     child: TextFormField(
-                                      cursorColor: Color(0xFFEF911E),
+                                      cursorColor: const Color(0xFFEF911E),
                                       controller: controller,
                                       decoration: InputDecoration(
                                         labelText: 'Contact Information',
-                                        labelStyle: TextStyle(color: Colors.grey),
+                                        labelStyle: const TextStyle(color: Colors.grey),
                                         fillColor: Colors.white,
                                         filled: true,
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.grey),
+                                          borderSide: const BorderSide(color: Colors.grey),
                                         ),
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.grey),
+                                          borderSide: const BorderSide(color: Colors.grey),
                                         ),
                                         errorBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.red),
+                                          borderSide: const BorderSide(color: Colors.red),
                                         ),
                                         focusedErrorBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.red),
+                                          borderSide: const BorderSide(color: Colors.red),
                                         ),
                                       ),
                                       validator: (value) {
@@ -696,11 +702,11 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                   ),
                                   if (_contactsControllers.length > 1)
                                     IconButton(
-                                      padding: EdgeInsets.all(0),
-                                      constraints: BoxConstraints.tight(Size(24, 24)),
+                                      padding: const EdgeInsets.all(0),
+                                      constraints: BoxConstraints.tight(const Size(24, 24)),
                                       onPressed: () => _removeContact(index),
                                       icon:
-                                      Icon(Icons.close, color: Color(0xFFEF911E)),
+                                      const Icon(Icons.close, color: Color(0xFFEF911E)),
                                     ),
                                 ],
                               ),
@@ -708,7 +714,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                           }),
                           TextButton(
                             onPressed: _addContact,
-                            child: Text('Add another contact information',
+                            child: const Text('Add another contact information',
                               style: TextStyle(color: Color(0xFFEF911E)),
                             ),
                           ),
@@ -722,12 +728,12 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                     _selectedPremadeGroup = newValue!;
                                   });
                                 },
-                                style: TextStyle(fontSize: 15, color: Color(0xFFEF911E)),
+                                style: const TextStyle(fontSize: 15, color: Color(0xFFEF911E)),
                                 items: _premadeGroups.keys.map<DropdownMenuItem<String>>((String key) {
                                   return DropdownMenuItem<String>(
                                       value: key,
                                       child: Text(
-                                        key.length > 10 ? key.substring(0, 10) + '...' : key,
+                                        key.length > 10 ? '${key.substring(0, 10)}...' : key,
                                         textAlign: TextAlign.center,
                                       )
                                   );
@@ -739,8 +745,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                   children: [
                                     OutlinedButton(
                                       style: OutlinedButton.styleFrom(
-                                        primary: Color(0xFF1AB428),
-                                        side: BorderSide(
+                                        foregroundColor: const Color(0xFF1AB428), side: const BorderSide(
                                           color: Color(0xFFEF911E),
                                         ),
                                         backgroundColor: Colors.white,
@@ -750,7 +755,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                       ),
                                       onPressed: () => _onEditCustomButton(status),
                                       child: status.label.length > 25
-                                          ? Container(
+                                          ? SizedBox(
                                         width: 200,
                                         child: Text(
                                           status.label,
@@ -760,21 +765,26 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                           : Text(status.label),
                                     ),
                                     IconButton(
-                                      onPressed:
-                                      status.label == 'Pending' ? null : () {
+                                      onPressed: status.label == 'Pending' || status == widget.order.getCurrentStatus()
+                                          ? null
+                                          : () {
                                         setState(() {
                                           _premadeGroups[_selectedPremadeGroup]!.remove(status);
                                         });
                                       },
-                                      icon:
-                                      Icon(Icons.close, color: status.label == 'Pending' ? Colors.grey : Color(0xFFEF911E)),
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: status.label == 'Pending' || status == widget.order.getCurrentStatus()
+                                            ? Colors.black12
+                                            : const Color(0xFFEF911E),
+                                      ),
                                     ),
                                   ],
                                 );
                               }).toList(),
                               TextButton(
                                 onPressed: _onAddStatusButton,
-                                child: Text(
+                                child: const Text(
                                   'Add order status',
                                   style: TextStyle(color: Color(0xFFEF911E)),
                                 ),
@@ -793,7 +803,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                   TextButton(
                                     onPressed: _onAddGroupStatusButton,
                                     child:
-                                    Text(
+                                    const Text(
                                       'Add order status group',
                                       style: TextStyle(color: Color(0xFFEF911E)),
                                     ),
@@ -802,41 +812,41 @@ class _EditOrderPageState extends State<EditOrderPage> {
                               )
                             ],
                           ),
-                          SizedBox(height: 8,),
+                          const SizedBox(height: 8,),
                           Padding(
-                            padding: EdgeInsets.only(top: 0.0),
+                            padding: const EdgeInsets.only(top: 0.0),
                             child: TextFormField(
-                              cursorColor: Color(0xFFEF911E),
+                              cursorColor: const Color(0xFFEF911E),
                               controller: _msgController,
                               maxLines: null, // Set maxLines to null to allow for infinite lines
                               decoration: InputDecoration(
                                 labelText: 'Additional Message',
-                                labelStyle: TextStyle(color: Colors.grey),
+                                labelStyle: const TextStyle(color: Colors.grey),
                                 fillColor: Colors.white,
                                 filled: true,
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey),
+                                  borderSide: const BorderSide(color: Colors.grey),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.grey),
+                                  const BorderSide(color: Colors.grey),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.red),
+                                  const BorderSide(color: Colors.red),
                                 ),
                                 focusedErrorBorder:
                                 OutlineInputBorder(
                                   borderRadius:
                                   BorderRadius.circular(10),
                                   borderSide:
-                                  BorderSide(color: Colors.red),
+                                  const BorderSide(color: Colors.red),
                                 ),
                               ),
                             ),
@@ -850,7 +860,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                 TextButton(
                                   onPressed: _onCancel,
                                   style: TextButton.styleFrom(
-                                    primary: Colors.red,
+                                    foregroundColor: Colors.red,
                                   ),
                                   child: const Row(
                                     children: [
@@ -863,7 +873,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                 TextButton(
                                   onPressed: _onReset,
                                   style: TextButton.styleFrom(
-                                    primary: Colors.grey,
+                                    foregroundColor: Colors.grey,
                                   ),
                                   child: const Row(
                                     children: [
@@ -873,13 +883,13 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 ElevatedButton(
                                   onPressed: _onConfirm,
                                   style: ElevatedButton.styleFrom(
                                     shape:
                                     RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                    backgroundColor: Color(0xFF1AB428),
+                                    backgroundColor: const Color(0xFF1AB428),
                                   ),
                                   child: const Row(
                                     children: [

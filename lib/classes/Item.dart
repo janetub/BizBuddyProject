@@ -5,14 +5,27 @@
 
 import 'dart:collection';
 
-class Item {
+import 'package:hive/hive.dart';
+
+part 'item.g.dart';
+
+@HiveType(typeId: 3)
+class Item extends HiveObject {
+  @HiveField(0)
   String name;
+  @HiveField(1)
   double _cost = 0;
+  @HiveField(2)
   double _markup = 0;
+  @HiveField(3)
   int _quantity = 0;
+  @HiveField(4)
   DateTime? _dateAdded;
+  @HiveField(5)
   LinkedHashSet<String> tags = LinkedHashSet<String>();
+  @HiveField(6)
   String description;
+  @HiveField(7)
   final LinkedHashSet<Item> _components = LinkedHashSet<Item>();
 
   Item(this.name, this.description) {
@@ -74,6 +87,10 @@ class Item {
       totalValue += component.calculateTotalPriceValue();
     }
     return totalValue;
+  }
+
+  double calculateTotalCostValue() {
+    return cost * _quantity;
   }
 
   DateTime? get dateAdded => _dateAdded;

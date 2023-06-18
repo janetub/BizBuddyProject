@@ -1,6 +1,6 @@
-import 'package:bizbuddyproject/ui/components/product_details_dialog.dart';
 import 'package:flutter/material.dart';
-import '../../classes/all.dart';
+import 'package:bizbuddyproject/ui/components/all_components.dart';
+import '../../../classes/all_classes.dart';
 
 class SearchResultTile extends StatefulWidget {
   final Item item;
@@ -13,7 +13,9 @@ class SearchResultTile extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SearchResultTileState createState() => _SearchResultTileState();
+  State<SearchResultTile> createState() {
+    return _SearchResultTileState();
+  }
 }
 
 class _SearchResultTileState extends State<SearchResultTile> {
@@ -36,7 +38,7 @@ class _SearchResultTileState extends State<SearchResultTile> {
           borderRadius: BorderRadius.circular(15),
         ),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(5, 10, 0, 10),
+          padding: const EdgeInsets.fromLTRB(5, 10, 0, 10),
           child: Column(
             children: [
               ListTile(
@@ -49,12 +51,12 @@ class _SearchResultTileState extends State<SearchResultTile> {
                             style: DefaultTextStyle.of(context).style,
                             children: <TextSpan>[
                               TextSpan(text: widget.item.name,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                 ),
                               ),
-                              TextSpan(text: '  '),
-                              TextSpan(
+                              const TextSpan(text: '  '),
+                              const TextSpan(
                                 text: '₱ ',
                                 style: TextStyle(
                                   color: Color(0xFF38823B),
@@ -62,8 +64,8 @@ class _SearchResultTileState extends State<SearchResultTile> {
                                 ),
                               ),
                               TextSpan(
-                                text: '${widget.item.cost.toStringAsFixed(2)}',
-                                style: TextStyle(
+                                text: widget.item.cost.toStringAsFixed(2),
+                                style: const TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
@@ -81,24 +83,24 @@ class _SearchResultTileState extends State<SearchResultTile> {
                       width: 60,
                       height: 50,
                       child: TextFormField(
-                        cursorColor: Color(0xFFEF911E),
+                        cursorColor: const Color(0xFFEF911E),
                         controller: _quantityController,
                         decoration: InputDecoration(
                           labelText: 'Qty',
-                          labelStyle: TextStyle(color: Colors.grey),
+                          labelStyle: const TextStyle(color: Colors.grey),
                           fillColor: Colors.white,
                           filled: true,
                           enabledBorder:
                           OutlineInputBorder(borderRadius:
                           BorderRadius.circular(15),
                               borderSide:
-                              BorderSide(color:
+                              const BorderSide(color:
                               Colors.grey)),
                           focusedBorder:
                           OutlineInputBorder(borderRadius:
                           BorderRadius.circular(15),
                               borderSide:
-                              BorderSide(color:
+                              const BorderSide(color:
                               Colors.grey)),
                         ),
                         keyboardType:
@@ -107,7 +109,7 @@ class _SearchResultTileState extends State<SearchResultTile> {
                     ),
                     IconButton(
                       tooltip: "Add as component of the product",
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.add,
                         color: Color(0xFFEF911E),
                       ),
@@ -128,7 +130,7 @@ class _SearchResultTileState extends State<SearchResultTile> {
                     children: widget.item.tags.map((tag) =>
                         Text(
                           '#$tag',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 13,
                             color: Colors.grey,
                           ),

@@ -3,18 +3,25 @@ import 'package:lottie/lottie.dart';
 import '../../main.dart';
 
 class SplashScreen extends StatefulWidget {
+
+  const SplashScreen({
+    Key? key,
+  }) : super(key: key);
+
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() {
+    return _SplashScreenState();
+  }
 }
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 6), () {
+    Future.delayed(const Duration(seconds: 6), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainCanvas()),
+        MaterialPageRoute(builder: (context) => const MainCanvas()),
       );
     });
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../classes/all.dart';
+import '../../../classes/all_classes.dart';
 
 class ProductDetailsDialog extends StatelessWidget {
   final Item item;
@@ -10,7 +10,7 @@ class ProductDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
+      title: const Text(
         'Product Details',
         style: TextStyle(fontSize: 24),
         textAlign: TextAlign.center,
@@ -20,7 +20,7 @@ class ProductDetailsDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       content: Scrollbar(
-        isAlwaysShown: true,
+        thumbVisibility: true,
         thickness: 3.0,
         controller: controller,
         interactive: true,
@@ -35,20 +35,20 @@ class ProductDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Name: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4,),
+                    const SizedBox(width: 4,),
                     Expanded(
                       child: Text(
-                        '${item.name}',
-                        style: TextStyle(fontSize: 18),
+                        item.name,
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -57,20 +57,20 @@ class ProductDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Desc.: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4,),
+                    const SizedBox(width: 4,),
                     Expanded(
                       child: Text(
-                        '${item.description}',
-                        style: TextStyle(fontSize: 18),
+                        item.description,
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -79,20 +79,20 @@ class ProductDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Cost: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 30,),
+                    const SizedBox(width: 30,),
                     Expanded(
                       child: Text(
-                        '${item.cost.toStringAsFixed(2)}',
-                        style: TextStyle(fontSize: 18),
+                        item.cost.toStringAsFixed(2),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -101,20 +101,20 @@ class ProductDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Markup: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 6,),
+                    const SizedBox(width: 6,),
                     Expanded(
                       child: Text(
-                        '${(item.price - item.cost).toStringAsFixed(2)}',
-                        style: TextStyle(fontSize: 18),
+                        (item.price - item.cost).toStringAsFixed(2),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -123,20 +123,20 @@ class ProductDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Price: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 26,),
+                    const SizedBox(width: 26,),
                     Expanded(
                       child: Text(
-                        '${item.price.toStringAsFixed(2)}',
-                        style: TextStyle(fontSize: 18),
+                        item.price.toStringAsFixed(2),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -145,20 +145,20 @@ class ProductDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Quantity: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 0,),
+                    const SizedBox(width: 0,),
                     Expanded(
                       child: Text(
                         '${item.quantity}',
-                        style: TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -167,11 +167,11 @@ class ProductDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Tags: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4,),
+                    const SizedBox(width: 4,),
                     Expanded(
                       child: Wrap(
                         spacing: 5,
@@ -179,7 +179,7 @@ class ProductDetailsDialog extends StatelessWidget {
                         children: item.tags.map((tag) =>
                             Text(
                               '#$tag',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey,
                               ),
@@ -189,7 +189,7 @@ class ProductDetailsDialog extends StatelessWidget {
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -198,20 +198,20 @@ class ProductDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Total Price: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         item.calculateTotalPriceValue().toStringAsFixed(2),
-                        style: TextStyle(fontSize: 17),
+                        style: const TextStyle(fontSize: 17),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -220,20 +220,20 @@ class ProductDetailsDialog extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Date Added: ',
                       style: TextStyle(fontSize: 18),
                     ),
-                    SizedBox(width: 4,),
+                    const SizedBox(width: 4,),
                     Expanded(
                       child: Text(
                         '${item.dateAdded?.toLocal().toString().split(' ')[0]}',
-                        style: TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ],
                 ),
-                Divider(
+                const Divider(
                   color: Colors.black12,
                   thickness: 1,
                   indent: 10,
@@ -242,7 +242,7 @@ class ProductDetailsDialog extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Components: ',
                       style: TextStyle(fontSize: 18),
                     ),
@@ -253,13 +253,13 @@ class ProductDetailsDialog extends StatelessWidget {
                             (component) => Chip(
                           label: Text(
                             '(${component.quantity}) ${component.name}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 17,
                               color: Colors.white,
                             ),
                           ),
-                          labelPadding: EdgeInsets.fromLTRB(7, 0, 7, 0),
-                          backgroundColor: Color(0xFFEF911E),
+                          labelPadding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
+                          backgroundColor: const Color(0xFFEF911E),
                         ),
                       )
                           .toList(),
@@ -274,8 +274,7 @@ class ProductDetailsDialog extends StatelessWidget {
       actions:[
         TextButton(
           style:
-          TextButton.styleFrom(primary:
-          Colors.grey,),
+          TextButton.styleFrom(foregroundColor: Colors.grey,),
           onPressed:
               () => Navigator.of(context).pop(),
           child:

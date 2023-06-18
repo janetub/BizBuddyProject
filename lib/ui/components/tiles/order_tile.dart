@@ -1,32 +1,35 @@
-import 'package:bizbuddyproject/ui/components/order_details_dialog.dart';
+import 'package:bizbuddyproject/ui/components/all_components.dart';
 import 'package:flutter/material.dart';
-import '../../classes/all.dart';
+import '../../../classes/all_classes.dart';
 
 /*
 * TODO: order phase details and other order details
+* TODO: checkbutton for paid
 * */
 
 class OrderTile extends StatefulWidget {
   final Order order;
   final void Function(Order) onOrderCancel;
-  final void Function(Order) onProductEdit;
+  final void Function(Order) onOrderEdit;
 
   const OrderTile({
     Key? key,
     required this.order,
     required this.onOrderCancel,
-    required this.onProductEdit
+    required this.onOrderEdit,
   }) : super(key: key);
 
   @override
-  _OrderTileState createState() => _OrderTileState();
+  State<OrderTile> createState() {
+    return _OrderTileState();
+  }
 }
 
 
 class _OrderTileState extends State<OrderTile> {
 
   Future<void> _onEditStatusButton(OrderStatus orderStatus) async {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController labelController = TextEditingController(text: orderStatus.label);
     final TextEditingController descriptionController = TextEditingController(text: orderStatus.description);
 
@@ -34,7 +37,7 @@ class _OrderTileState extends State<OrderTile> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit order status',
+          title: const Text('Edit order status',
             style: TextStyle(fontSize: 20),
             textAlign: TextAlign.center,),
           backgroundColor: const  Color(0xFFF9F9F9),
@@ -43,33 +46,33 @@ class _OrderTileState extends State<OrderTile> {
           ),
           content: SingleChildScrollView(
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
-                    cursorColor: Color(0xFFEF911E),
+                    cursorColor: const Color(0xFFEF911E),
                     controller: labelController,
                     decoration: InputDecoration(
                       labelText: 'Label',
-                      labelStyle: TextStyle(color: Colors.grey),
+                      labelStyle: const TextStyle(color: Colors.grey),
                       fillColor: Colors.white,
                       filled: true,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderSide: const BorderSide(color: Colors.grey),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderSide: const BorderSide(color: Colors.grey),
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: const BorderSide(color: Colors.red),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: const BorderSide(color: Colors.red),
                       ),
                     ),
                     validator: (value) {
@@ -79,31 +82,31 @@ class _OrderTileState extends State<OrderTile> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   TextFormField(
-                    cursorColor: Color(0xFFEF911E),
+                    cursorColor: const Color(0xFFEF911E),
                     maxLines: null,
                     controller: descriptionController,
                     decoration: InputDecoration(
                       labelText: 'Description',
-                      labelStyle: TextStyle(color: Colors.grey),
+                      labelStyle: const TextStyle(color: Colors.grey),
                       fillColor: Colors.white,
                       filled: true,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderSide: const BorderSide(color: Colors.grey),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderSide: const BorderSide(color: Colors.grey),
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: const BorderSide(color: Colors.red),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.red),
+                        borderSide: const BorderSide(color: Colors.red),
                       ),
                     ),
                   ),
@@ -116,20 +119,20 @@ class _OrderTileState extends State<OrderTile> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel',
+              child: const Text('Cancel',
                 style: TextStyle(color: Colors.grey),
               ),
             ),
             TextButton(
               onPressed: () {
-                if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+                if (formKey.currentState != null && formKey.currentState!.validate()) {
                   Navigator.of(context).pop({
                     'label': labelController.text,
                     'description': descriptionController.text,
                   });
                 }
               },
-              child: Text('OK',
+              child: const Text('OK',
                 style: TextStyle(color: Color(0xFFEF911E)),
               ),
             ),
@@ -166,7 +169,7 @@ class _OrderTileState extends State<OrderTile> {
         key: UniqueKey(),
         confirmDismiss: (direction) {
           if (direction == DismissDirection.startToEnd) {
-            widget.onProductEdit(widget.order);
+            widget.onOrderEdit(widget.order);
             return Future.value(false);
           }
           return Future.value(true);
@@ -175,10 +178,10 @@ class _OrderTileState extends State<OrderTile> {
           borderRadius: BorderRadius.circular(20),
           child: Container(
             color: Colors.green,
-            child: Align(
+            child: const Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: EdgeInsets.all(15),
                 child: Icon(Icons.edit),
               ),
             ),
@@ -188,10 +191,10 @@ class _OrderTileState extends State<OrderTile> {
           borderRadius: BorderRadius.circular(20),
           child: Container(
             color: Colors.red,
-            child: Align(
+            child: const Align(
               alignment: Alignment.centerRight,
               child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: EdgeInsets.all(15),
                 child: Icon(Icons.delete),
               ),
             ),
@@ -208,7 +211,7 @@ class _OrderTileState extends State<OrderTile> {
             borderRadius: BorderRadius.circular(15),
           ),
           child: Padding(
-              padding: EdgeInsets.fromLTRB(0,0,0,0),
+              padding: const EdgeInsets.fromLTRB(0,0,0,0),
               child: Column(
                 children: [
                   Theme(
@@ -229,16 +232,16 @@ class _OrderTileState extends State<OrderTile> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '${widget.order.datePlaced.toLocal().toString().split(' ')[0]}',
-                            style: TextStyle(fontSize: 18),
+                            widget.order.datePlaced.toLocal().toString().split(' ')[0],
+                            style: const TextStyle(fontSize: 18),
                           ),
                           Text('Total: ₱ ${widget.order.calculateOrderTotalValue().toStringAsFixed(2)}',
-                            style: TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: 18),
                           ),
                         ],
                       ),
                       subtitle:
-                      Text('${widget.order.orderId} - ${widget.order.deliveryMethod}\n${widget.order.recipient.name}: ${(widget.order.recipient.contacts[widget.order.deliveryMethod]!).join('; ')}',
+                      Text('${widget.order.orderId} - ${widget.order.deliveryMethod}\n${widget.order.recipient.name}: ${(widget.order.recipient.contacts[widget.order.deliveryMethod]!).join(', ')}',
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -252,7 +255,7 @@ class _OrderTileState extends State<OrderTile> {
                       // ),
                       isThreeLine: true,
                       dense: true,
-                      contentPadding: EdgeInsets.fromLTRB(18, 10, 18, 0),
+                      contentPadding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
                       onLongPress: () {},
                     ),
                   ),
@@ -273,9 +276,8 @@ class _OrderTileState extends State<OrderTile> {
                           },
                           onLongPress: () => _onEditStatusButton(widget.order.statuses.elementAt(index)),
                           style: OutlinedButton.styleFrom(
-                            primary: isActive ? Colors.white : Color(0xFF1AB428),
-                            backgroundColor: isActive ? Color(0xFF1AB428) : Colors.white,
-                            side: BorderSide(
+                            foregroundColor: isActive ? Colors.white : const Color(0xFF1AB428), backgroundColor: isActive ? const Color(0xFF1AB428) : Colors.white,
+                            side: const BorderSide(
                               color: Color(0xFFEF911E),
                             ),
                             shape: RoundedRectangleBorder(
