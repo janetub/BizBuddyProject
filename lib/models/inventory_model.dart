@@ -11,11 +11,32 @@ class InventoryModel extends ChangeNotifier {
       : _inventoryItems = LinkedHashSet<Item>.from(_inventoryItemBox.values);
 
   LinkedHashSet<Item> get inventoryItems => _inventoryItems;
+  LinkedHashSet<Item> get __inventoryItemBox => LinkedHashSet<Item>.from(_inventoryItemBox.values);
+
+  // void printInventoryItemBox() {
+  //   print('Inventory Item Box contents =============================');
+  //   for (Item item in __inventoryItemBox)
+  //   {
+  //     print('$item--------------------------------------');
+  //   }
+  //   print('================================');
+  // }
+  //
+  // void printInventoryItems() {
+  //   print('Inventory contents =============================');
+  //   for (Item item in _inventoryItems)
+  //   {
+  //     print('$item--------------------------------------');
+  //   }
+  //   print('================================');
+  // }
 
   void addItem(Item item) {
     _inventoryItems.add(item);
     _inventoryItemBox.add(item);
     notifyListeners();
+    // printInventoryItemBox();
+    // printInventoryItems();
   }
 
   bool removeItem(Item item) {
@@ -28,12 +49,14 @@ class InventoryModel extends ChangeNotifier {
         _inventoryItemBox.deleteAt(boxIndex);
       }
       notifyListeners();
+      // printInventoryItemBox();
+      // printInventoryItems();
       return true;
     }
     return false;
   }
 
-  void updateItem(Item originalItem, Item updatedItem) {
+  bool updateItem(Item originalItem, Item updatedItem) {
     bool hasDuplicateItem = _inventoryItems.any((item) => item.name == originalItem.name);
     if (hasDuplicateItem) {
       Item duplicateItem = _inventoryItems.firstWhere((item) => item.name == originalItem.name);
@@ -44,7 +67,11 @@ class InventoryModel extends ChangeNotifier {
         _inventoryItemBox.putAt(boxIndex, updatedItem);
       }
       notifyListeners();
+      // printInventoryItemBox();
+      // printInventoryItems();
+      return true;
     }
+    return false;
   }
 
   void updateForOrder(Order order) {
@@ -58,6 +85,8 @@ class InventoryModel extends ChangeNotifier {
           _inventoryItemBox.putAt(boxIndex, existingItem);
         }
         notifyListeners();
+        // printInventoryItemBox();
+        // printInventoryItems();
       }
     }
   }
@@ -82,6 +111,8 @@ class InventoryModel extends ChangeNotifier {
             _inventoryItemBox.putAt(boxIndex, existingItem);
           }
           notifyListeners();
+          // printInventoryItemBox();
+          // printInventoryItems();
           return true;
         }
       }

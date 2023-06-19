@@ -35,20 +35,37 @@ class CartModel extends ChangeNotifier {
 
   void removeItemQuantity(Item item, int quantity) {
     if (quantity > 0) {
-      if (item.quantity >= quantity) {
-        item.quantity -= quantity;
-        if (item.quantity == 0) {
-          removeItem(item);
-        } else {
-          // Check if the item exists in the _cartItemBox
-          if (_cartItemBox.values.any((element) => element == item)) {
-            // Find the index of the item in the _cartItemBox
-            final boxIndex = _cartItemBox.values.toList().indexWhere((element) => element == item);
-            _cartItemBox.putAt(boxIndex, item);
-          }
-        }
-        notifyListeners();
+      bool containsItem = _cartItems.any((catalogItem) => catalogItem.name == item.name);
+      if (containsItem) {
+        Item catalogItem = _cartItems.firstWhere((catalogItem) => catalogItem.name == item.name);
+        catalogItem.quantity -= quantity;
+        final index = _cartItemBox.values.toList().indexOf(catalogItem);
+        _cartItemBox.putAt(index, catalogItem);
       }
+      notifyListeners();
+    }
+  }
+
+  void addItemQuantity(Item item, int quantity) {
+    if (quantity > 0) {
+      bool containsItem = _cartItems.any((catalogItem) => catalogItem.name == item.name);
+      if (containsItem) {
+        Item catalogItem = _cartItems.firstWhere((catalogItem) => catalogItem.name == item.name);
+        catalogItem.quantity += quantity;
+        final index = _cartItemBox.values.toList().indexOf(catalogItem);
+        _cartItemBox.putAt(index, catalogItem);
+      } else {
+        Item newItem = item.duplicate();
+        newItem.quantity = item.quantity;
+        addItem(newItem);
+        final index = _cartItemBox.values.toList().indexOf(item);
+        if (index < 0) { //not found
+          _cartItemBox.add(item);
+        } else {
+          _cartItemBox.putAt(index, item);
+        }
+      }
+      notifyListeners();
     }
   }
 

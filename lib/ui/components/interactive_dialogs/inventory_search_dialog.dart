@@ -38,7 +38,7 @@ class _InventorySearchDialogState extends State<InventorySearchDialog> {
       final nameMatch = item.name.toLowerCase().contains(query.toLowerCase());
       final tagMatch = item.tags.any(
               (tag) => tag.toLowerCase().contains(query.toLowerCase()));
-      final isNotHideItem = widget.hideItem == null || item != widget.hideItem;
+      final isNotHideItem = widget.hideItem == null || item.name != widget.hideItem?.name;
       return (nameMatch || tagMatch) && isNotHideItem;
     }));
   }
@@ -52,6 +52,21 @@ class _InventorySearchDialogState extends State<InventorySearchDialog> {
   void _addToComponents(Item item, int quantity) {
     setState(() {
       widget.onAddToComponent(item, quantity);
+      if(quantity > 0) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added ($quantity) ${item.name} to components'),
+            backgroundColor: const Color(0xFF616161),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            elevation: 6.0,
+            margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     });
   }
 

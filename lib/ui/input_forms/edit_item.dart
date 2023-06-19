@@ -10,10 +10,12 @@ import '../components/all_components.dart';
 
 class EditItemPage extends StatefulWidget {
   final Item item;
-  final Widget callingPage;
+  final Type callingPage;
+  final bool isAddingToCatalog;
 
   const EditItemPage({
     Key? key,
+    this.isAddingToCatalog = false,
     required this.item,
     required this.callingPage,
   }) : super(key: key);
@@ -64,7 +66,7 @@ class _EditItemPageState extends State<EditItemPage> {
 
     _costController.text = formattedCost;
     _markupController.text = formattedMarkup;
-    _quantityController.text = formattedQuantity;
+    widget.isAddingToCatalog ? _quantityController.clear() : _quantityController.text =  formattedQuantity;
 
     _dateBoughtController.text = DateFormat('MM/dd/yyyy').format(widget.item.dateAdded!);
     _descriptionController.text = widget.item.description;
@@ -110,34 +112,123 @@ class _EditItemPageState extends State<EditItemPage> {
         final productCatalogModel = Provider.of<ProductCatalogModel>(context, listen: false);
         final cartModel = Provider.of<CartModel>(context, listen: false);
 
-        if(widget.callingPage is ProductCatalogPage) { // has validator if stocks from inventory can accomodate new quantity
-          // for (final item in inventoryModel.inventoryItems) {
-          //   print(item);
-          // }
-          bool hasInvItem = inventoryModel.inventoryItems.any((i) => i.name == widget.item.name);
-          if (hasInvItem) {
-            Item invItem = inventoryModel.inventoryItems.firstWhere((i) => i.name == widget.item.name);
-            newItem.quantity = invItem.quantity;
-            // print('Q - ${invItem.quantity}');
+        // if new name, check for duplicates
+        if (((widget.item.name != newItem.name) && (productCatalogModel.productCatalog.any((existingItem) => existingItem.name.toLowerCase() == newItem.name.toLowerCase())))
+            || ((widget.item.name != newItem.name) && (cartModel.cartItems.any((existingItem) => existingItem.name.toLowerCase() == newItem.name.toLowerCase())) )
+            || ((widget.item.name != newItem.name) && inventoryModel.inventoryItems.any((existingItem) => existingItem.name.toLowerCase() == newItem.name.toLowerCase()))) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text('Duplicate Item'),
+              content: const Text('An item with the same name already exists in the product catalog.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+
+        if(widget.callingPage == ProductCatalogPage) { // has validator if stocks from inventory can accomodate new quantity
+          if(widget.isAddingToCatalog) { // from inv to cat
+            // print('WEEEEEEEEEEEEEEEEEEEEEEEEEE');
+            // if existing item in catalog
+            // update the details of catalogitem and cartitem
+
+            //in cart, update only the details, not quantity
+            bool isInCart = cartModel.cartItems.any((item) => item.name == widget.item.name);
+            if(isInCart) { // only details get updated, not quantity
+              Item cartItem = cartModel.cartItems.firstWhere((c) => c.name == widget.item.name);
+              newItemCartDup.quantity = cartItem.quantity;
+              cartModel.updateItem(widget.item, newItemCartDup);
+            }
+
+            // if item is in catalog, add item, otherwise increment the new quantity
+            bool containsItem = productCatalogModel.productCatalog.any((catalogItem) => catalogItem.name == (widget.item.name));
+            if (containsItem) {
+              Item catalogItem = productCatalogModel.productCatalog.firstWhere((catalogItem) => catalogItem.name == (widget.item.name));
+              newItemPCDup.quantity += catalogItem.quantity;
+              productCatalogModel.updateItem(widget.item, newItemPCDup);
+            } else {
+              productCatalogModel.addItem(newItemPCDup);
+            }
             inventoryModel.updateItem(widget.item, newItem);
+          } else { // from prod cat
+            // for (final item in inventoryModel.inventoryItems) {
+            //   print(item);
+            // }
+            bool hasInvItem = inventoryModel.inventoryItems.any((i) => i.name == widget.item.name);
+            if (hasInvItem) { // found in inv
+              Item invItem = inventoryModel.inventoryItems.firstWhere((i) => i.name == widget.item.name);
+              // print('Q - ${invItem.quantity}');
+              if(newItem.quantity < invItem.quantity) { // if edited quantity is less than inv, do not change inv
+                newItem.quantity = invItem.quantity;
+              }
+              // allow qty in inv increase
+              // cat item edits will refelct to inv item including quantity since we have Stocks checker or threshold for limiting max stocks
+              inventoryModel.updateItem(widget.item, newItem);
+            }
+            productCatalogModel.updateItem(widget.item, newItemPCDup);
+            bool isInCart = cartModel.cartItems.any((item) => item.name == widget.item.name);
+            if(isInCart) { // only details get updated, not quantity
+              Item cartItem = cartModel.cartItems.firstWhere((c) => c.name == widget.item.name);
+              newItemCartDup.quantity = cartItem.quantity;
+              cartModel.updateItem(widget.item, newItemCartDup);
+            }
           }
-          productCatalogModel.updateItem(widget.item, newItemPCDup);
-          cartModel.updateItem(widget.item, newItemCartDup);
-        } else if (widget.callingPage is InventoryPage) { // affects the inventory
+        } else if (widget.callingPage == InventoryPage) { // affects the inventory
           if(widget.item.quantity < newItem.quantity) { // quantity is added
             inventoryModel.updateItem(widget.item, newItem);
           } else { //quantity reduced
             inventoryModel.updateItem(widget.item, newItem);
             productCatalogModel.updateItem(widget.item, newItemPCDup); // update equivalent item from catalog
             cartModel.updateItem(widget.item, newItemCartDup);
+            print('Reduced------------------------');
           }
         }
         Navigator.pop(context);
-
+        if(widget.isAddingToCatalog) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Item moved to Product Catalog'),
+              backgroundColor: const Color(0xFF616161),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              elevation: 6.0,
+              margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(widget.callingPage == ProductCatalogPage ? 'Product edited' : 'Item edited'),
+              backgroundColor: const Color(0xFF616161),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              elevation: 6.0,
+              margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
       } catch (e) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             title: const Text('Invalid entries:\n'),
             content: Text('$e'),
             actions: [
@@ -202,11 +293,62 @@ class _EditItemPageState extends State<EditItemPage> {
       bool containsItem = _selectedComponents.any((componentItem) => componentItem.name == item.name);
       if (containsItem) {
         // component already exists in components
+        Item componentItem = _selectedComponents.firstWhere((componentItem) => componentItem.name == item.name);
+        if((item.quantity - componentItem.quantity) < quantity) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: const Text('Insufficient Stock'),
+                content: const Text('The requested quantity is not available.'),
+                actions: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFFEF911E),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
         setState(() {
-          Item componentItem = _selectedComponents.firstWhere((componentItem) => componentItem.name == item.name);
           componentItem.quantity += quantity;
         });
       } else {
+        if(item.quantity < quantity) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: const Text('Insufficient Stock'),
+                content: const Text('The requested quantity is not available.'),
+                actions: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFFEF911E),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+          return;
+        }
         // new product in components
         setState(() {
           Item movProd = item.duplicate();
@@ -214,8 +356,8 @@ class _EditItemPageState extends State<EditItemPage> {
           _selectedComponents.add(movProd);
         });
       }
+      _updateCostController();
     }
-    _updateCostController();
   }
 
   int calculateMaxProducts(bool hasComponents) {
@@ -224,16 +366,62 @@ class _EditItemPageState extends State<EditItemPage> {
       Provider.of<InventoryModel>(context, listen: false).inventoryItems.map((item) => item.duplicate()),
     ); // deep copy
 
-    // Reduce tempInventory by items in cart
-    for (Item cartItem in Provider.of<CartModel>(context, listen: false).cartItems) {
-      bool itemFound = tempInventory.any((i) => i.name == cartItem.name);
-      if (itemFound) {
-        Item foundItem = tempInventory.firstWhere((i) => i.name == cartItem.name);
-        foundItem.quantity -= cartItem.quantity;
+    if(!hasComponents) { // no components, reduce tempInventory by items in cart
+      for (Item cartItem in Provider.of<CartModel>(context, listen: false).cartItems) {
+        bool itemFound = tempInventory.any((i) => i.name == cartItem.name);
+        if (itemFound) {
+          Item foundItem = tempInventory.firstWhere((i) => i.name == cartItem.name);
+          foundItem.quantity -= cartItem.quantity;
+        }
       }
     }
 
-    if (hasComponents) {
+    // reduce tempInventory by items in catalog since adding to cat
+    // no need for catalog to be checked if in prodcat or inv page
+    if(widget.isAddingToCatalog) {
+      for (Item prodCatItem in Provider.of<ProductCatalogModel>(context, listen: false).productCatalog) {
+        bool itemFound = tempInventory.any((i) => i.name == prodCatItem.name);
+        if (itemFound) {
+          Item foundItem = tempInventory.firstWhere((i) => i.name == prodCatItem.name);
+          foundItem.quantity -= prodCatItem.quantity;
+        }
+      }
+    }
+
+    // has components and check each if in catalog or cart
+    if(hasComponents) {
+      for (Item item in _selectedComponents) {
+        bool cartItemFound = Provider.of<CartModel>(context, listen: false).cartItems.any((c) => c.name == item.name);
+        if(cartItemFound) { // found in cart
+          Item cartItem = Provider.of<CartModel>(context, listen: false).cartItems.firstWhere((c) => c.name == item.name);
+          bool itemFound = tempInventory.any((i) => i.name == cartItem.name);
+          if (itemFound) { // confirm match of cartItem in inventory
+            Item foundItem = tempInventory.firstWhere((i) => i.name == cartItem.name);
+            foundItem.quantity -= cartItem.quantity; // reduce from invTemp
+          }
+        }
+        bool prodCatItemFound = Provider.of<ProductCatalogModel>(context, listen: false).productCatalog.any((p) => p.name == item.name);
+          if(prodCatItemFound) { // component found in catalog
+            Item prodItem = Provider.of<ProductCatalogModel>(context, listen: false).productCatalog.firstWhere((c) => c.name == item.name);
+            bool itemFound = tempInventory.any((i) => i.name == prodItem.name);
+            if (itemFound) { // confirm match of catItem in inventory
+              Item foundItem = tempInventory.firstWhere((i) => i.name == prodItem.name);
+              foundItem.quantity -= prodItem.quantity; // reduce from invTemp
+            }
+          }
+      }
+    }
+
+    if(!widget.isAddingToCatalog && widget.callingPage == ProductCatalogPage && hasComponents) { // editing from catalog w components (disabled)
+      for(Item item in tempInventory) {
+        bool itemFound = tempInventory.any((i) => i.name == item.name);
+        if(itemFound) { // item from inventory
+          Item foundItem = tempInventory.firstWhere((i) => i.name == item.name);
+          maxProducts = foundItem.quantity; // max is inventory quantity
+        }
+      }
+      print('disabled');
+    } else if (hasComponents) { // has components and check if each is in inventory
       while (true) {
         bool canCreateProduct = true;
         for (Item item in _selectedComponents) {
@@ -257,14 +445,15 @@ class _EditItemPageState extends State<EditItemPage> {
           break;
         }
       }
-    } else {
+    } else { // no components
       bool itemFound = tempInventory.any((i) => i.name == widget.item.name);
       if (itemFound) {
         Item foundItem = tempInventory.firstWhere((i) => i.name == widget.item.name);
         maxProducts = foundItem.quantity;
       }
     }
-    print(maxProducts);
+
+    // print(maxProducts);
     return maxProducts;
   }
 
@@ -355,7 +544,7 @@ class _EditItemPageState extends State<EditItemPage> {
               slivers: [
                 SliverAppBar(
                   backgroundColor: Colors.transparent,
-                  title: Text('Edit ${widget.callingPage.runtimeType == ProductCatalogPage ? 'product' : 'item'}'),
+                  title: Text('${widget.isAddingToCatalog ? 'Add' : 'Edit'} ${widget.callingPage == ProductCatalogPage ? (widget.isAddingToCatalog ? 'item to Product Catalog' : 'product') : 'item'}'),
                   elevation: 0,
                   floating: true,
                   snap: true,
@@ -445,6 +634,9 @@ class _EditItemPageState extends State<EditItemPage> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
                                           contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                           title: const Text('Cost'),
                                           content: const Text('Money spent to buy the product, the original cost. If an item has components, its cost will be the sum of the cost of its components.'),
@@ -519,6 +711,9 @@ class _EditItemPageState extends State<EditItemPage> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
                                           contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                           title: const Text('Markup'),
                                           content: const Text('Markup is the amount added to the cost of a product to determine its selling price.'),
@@ -591,6 +786,9 @@ class _EditItemPageState extends State<EditItemPage> {
                                             context: context,
                                             builder: (BuildContext context) {
                                               return AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(20),
+                                                ),
                                                 contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                                 title: const Text('Stocks'),
                                                 content: const Text('If a component is selected from inventory, the entered quantity must not exceed available stock. Otherwise, the product will be added as a new item to inventory and the entered quantity will be reflected.'),
@@ -612,7 +810,7 @@ class _EditItemPageState extends State<EditItemPage> {
                                       ),
                                     ),
                                     keyboardType: TextInputType.number,
-                                    validator: widget.callingPage.runtimeType == InventoryPage ? validateWholeIntegers: validateInventoryStocks,
+                                    validator: widget.callingPage == InventoryPage ? (_selectedComponents.isEmpty ? validateWholeIntegers : validateInventoryStocks): validateInventoryStocks,
                                   ),
                                 ),
                                 Column(
@@ -748,7 +946,9 @@ class _EditItemPageState extends State<EditItemPage> {
                             ),
                             const SizedBox(height: 10),
                             ElevatedButton(
-                              onPressed: () async {
+                              onPressed: (widget.callingPage == ProductCatalogPage)
+                                  ? null
+                                  : () async {
                                 await showDialog<Item>(
                                   context: context,
                                   builder: (context) => InventorySearchDialog(
@@ -762,11 +962,16 @@ class _EditItemPageState extends State<EditItemPage> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 backgroundColor: const Color(0xFFEF911E),
+                                padding: const EdgeInsets.fromLTRB(13,6,13,6),
                               ),
-                              child: const Column(
+                              child: Column(
                                 children: [
-                                  SizedBox(width: 4),
-                                  Text('Select Components'),
+                                  const SizedBox(width: 4),
+                                  Text((widget.callingPage == ProductCatalogPage)
+                                      ? 'Edit components from inventory\nby sliding to the left'
+                                      : 'Select Components',
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ],
                               ),
                             ),
@@ -775,7 +980,9 @@ class _EditItemPageState extends State<EditItemPage> {
                               children: _selectedComponents.map((rawMaterial) {
                                 return Chip(
                                   label: Text('(${rawMaterial.quantity}) ${rawMaterial.name}'),
-                                  onDeleted: () {
+                                  onDeleted: (widget.callingPage == ProductCatalogPage)
+                                      ? null
+                                      : () {
                                     setState(() {
                                       _selectedComponents.remove(rawMaterial);
                                       _updateCostController();

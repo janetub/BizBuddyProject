@@ -48,16 +48,24 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   ];
   bool _isAscending = true;
 
+  ScaffoldMessengerState? _scaffoldMessenger;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _scaffoldMessenger = ScaffoldMessenger.of(context);
+  }
+
   @override
   void initState() {
     super.initState();
     widget.searchButtonPressed.addListener(_searchButtonPressed);
     final productCatalogData = Provider.of<ProductCatalogModel>(context, listen: false).productCatalog;
     productCatalogNotifier.value = productCatalogData;
-    print('Prod Cat setState____________');
-    for (final item in Provider.of<ProductCatalogModel>(context, listen: false).productCatalogItemBox) {
-      print(item);
-    }
+    // print('Prod Cat setState____________');
+    // for (final item in Provider.of<ProductCatalogModel>(context, listen: false).productCatalogItemBox) {
+    //   print(item);
+    // }
   }
 
   @override
@@ -157,6 +165,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('Empty Cart'),
           content: const Text('All items in your cart have zero quantity.'),
           actions: [
@@ -194,6 +205,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('Press any button to continue'),
           content: const Text(
             'The item will be added and moved to the Order Status page for processing.',
@@ -241,7 +255,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         context,
         MaterialPageRoute(
           builder: (context) => AddItemPage(
-            callingPage: widget,
+            callingPage: widget.runtimeType,
           ),
         )
     );
@@ -254,7 +268,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       MaterialPageRoute(
         builder: (context) => EditItemPage(
           item: item,
-          callingPage: widget,
+          callingPage: widget.runtimeType,
         ),
       ),
     );
@@ -263,12 +277,22 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   void _onProductDelete(Item item) {
     final cartModel = Provider.of<CartModel>(context, listen: false);
     final productCatalogModel = Provider.of<ProductCatalogModel>(context, listen: false);
+    final cartDup = item.duplicate();
+    // for undoing
+    bool hasItemCart = cartModel.cartItems.any((i) => i.name == item.name);
+    if(hasItemCart) {
+      cartDup.quantity = cartModel.cartItems.firstWhere((i) => i.name == item.name).quantity;
+    }
     showDialog(
+      barrierDismissible: true,
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this item?'),
+          content: const Text('Are you sure you want to delete this product?'),
           actions: [
             TextButton(
               style: TextButton.styleFrom(
@@ -286,40 +310,130 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 foregroundColor: Colors.red,
               ),
               onPressed: () {
+                Navigator.of(dialogContext).pop();
                 // Check if an item with the same name exists in the cart
                 if (cartModel.cartItems.any((existingItem) => existingItem.name == item.name)) {
                   showDialog(
+                    barrierDismissible: true,
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text('Item in Cart'),
-                      content: const Text('An item with the same name exists in the cart.'),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      title: const Text('Product in Cart'),
+                      content: const Text('A product with the same name exists in your cart. Would you like to delete it from the cart as well?'),
                       actions: [
                         TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.grey,
+                          ),
                           onPressed: () {
                             setState(() {
-                              Navigator.of(dialogContext).pop();
+                              Navigator.of(context).pop();
                             });
                           },
-                          child: const Text('OK'),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              try {
+                                cartModel.removeItem(item);
+                                productCatalogModel.removeItem(item);
+                                Navigator.of(context).pop();
+                                _scaffoldMessenger?.hideCurrentSnackBar();
+                                _scaffoldMessenger?.showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Product deleted from catalog and cart'),
+                                    backgroundColor: const Color(0xFF616161),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    elevation: 6.0,
+                                    margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                                    behavior: SnackBarBehavior.floating,
+                                    action: SnackBarAction(
+                                      label: 'Undo',
+                                      textColor: const Color(0xFFEF911E),
+                                      onPressed: () {
+                                        cartModel.addItem(cartDup);
+                                        productCatalogModel.addItem(item);
+                                      },
+                                    ),
+                                  ),
+                                );
+                              } catch (e) {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext errorDialogContext) {
+                                    return AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      title: const Text('Error'),
+                                      content:
+                                      const Text('An error occurred while deleting the item. Please try again.'),
+                                      actions: [
+                                        TextButton(
+                                          child: const Text('OK'),
+                                          onPressed: () {
+                                            Navigator.of(errorDialogContext).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            });
+                          },
+                          child: const Text('Delete from Cart'),
                         ),
                       ],
                     ),
-                  );
+                  ).then((value) {
+                    setState(() {});
+                  });
                 } else {
                   try {
                     setState(() {
                       productCatalogModel.removeItem(item);
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Product deleted'),
+                          backgroundColor: const Color(0xFF616161),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          elevation: 6.0,
+                          margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                          behavior: SnackBarBehavior.floating,
+                          action: SnackBarAction(
+                            label: 'Undo',
+                            textColor: const Color(0xFFEF911E),
+                            onPressed: () {
+                              productCatalogModel.addItem(item);
+                            },
+                          ),
+                        ),
+                      );
                     });
-                    Navigator.of(dialogContext).pop();
                   } catch (e) {
                     // display a dialog indicating the error
                     showDialog(
                       context: context,
                       builder: (BuildContext errorDialogContext) {
                         return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                           title: const Text('Error'),
                           content:
-                          const Text('An error occurred while deleting the item. Please try again.'),
+                          const Text('An error occurred while deleting the product. Please try again.'),
                           actions: [
                             TextButton(
                               child: const Text('OK'),
@@ -339,26 +453,47 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           ],
         );
       },
-    );
+    ).then((value) {
+      setState(() {});
+    });
   }
 
   void _addToCart(Item item, int quantity) {
     final cartModel = Provider.of<CartModel>(context, listen: false);
+    final productCatalogModel = Provider.of<ProductCatalogModel>(context, listen: false);
     if(quantity>0) {
       bool containsItem = cartModel.cartItems.any((cartItem) => cartItem.name == item.name);
       if (containsItem) {
         // product already exists in cart
         if (item.quantity >= quantity) {
           setState(() {
-            Item cartItem = cartModel.cartItems.firstWhere((cartItem) => cartItem.name == item.name);
-            cartItem.quantity += quantity;
-            item.quantity -= quantity;
+            // Item cartItem = cartModel.cartItems.firstWhere((cartItem) => cartItem.name == item.name);
+            // cartItem.quantity += quantity;
+            // item.quantity -= quantity;
+            cartModel.addItemQuantity(item, quantity);
+            productCatalogModel.removeItemQuantity(item, quantity);
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('Product added to cart'),
+                backgroundColor: const Color(0xFF616161),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 6.0,
+                margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           });
         } else {
           showDialog(
             context: context,
             builder: (BuildContext dialogContext) {
               return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 title: const Text('Insufficient Stock'),
                 content: const Text('The requested quantity is not available.'),
                 actions: [
@@ -376,20 +511,36 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
             },
           );
         }
-      } else {
-        // new product in cart
+      } else { // new product in cart
         if (item.quantity >= quantity) {
           setState(() {
             Item movProd = item.duplicate();
             movProd.quantity = quantity;
             cartModel.addItem(movProd);
-            item.quantity -= quantity;
+            // item.quantity -= quantity;
+            productCatalogModel.removeItemQuantity(item, quantity);
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('Product added to cart'),
+                backgroundColor: const Color(0xFF616161),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 6.0,
+                margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+              ),
+            );
           });
         } else {
           showDialog(
             context: context,
             builder: (BuildContext dialogContext) {
               return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 title: const Text('Insufficient Stock'),
                 content: const Text('The requested quantity is not available.'),
                 actions: [

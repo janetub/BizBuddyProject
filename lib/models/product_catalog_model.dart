@@ -13,9 +13,19 @@ class ProductCatalogModel extends ChangeNotifier {
   LinkedHashSet<Item> get productCatalog => _productCatalog;
   LinkedHashSet<Item> get productCatalogItemBox => LinkedHashSet.from(_productItemBox.values);
 
+  void printProductCatalogItemBox() {
+    print('Product Catalog Item Box contents =============================');
+    for (Item item in productCatalogItemBox)
+      {
+        print(item);
+      }
+    print('================================');
+  }
+
   void addItem(Item item) {
     _productCatalog.add(item);
     _productItemBox.add(item);
+    // printProductCatalogItemBox();
     notifyListeners();
   }
 
@@ -28,9 +38,11 @@ class ProductCatalogModel extends ChangeNotifier {
       if (boxIndex != -1) {
         _productItemBox.deleteAt(boxIndex);
       }
+      // printProductCatalogItemBox();
       notifyListeners();
       return true;
     }
+    // printProductCatalogItemBox();
     return false;
   }
 
@@ -43,6 +55,7 @@ class ProductCatalogModel extends ChangeNotifier {
         final index = _productItemBox.values.toList().indexOf(catalogItem);
         _productItemBox.putAt(index, catalogItem);
       }
+      printProductCatalogItemBox();
       notifyListeners();
     }
   }
@@ -55,7 +68,7 @@ class ProductCatalogModel extends ChangeNotifier {
         catalogItem.quantity += quantity;
         final index = _productItemBox.values.toList().indexOf(catalogItem);
         _productItemBox.putAt(index, catalogItem);
-      } else {
+      } else { // adds an instance of the item
         Item newItem = item.duplicate();
         newItem.quantity = item.quantity;
         addItem(newItem);
@@ -66,11 +79,12 @@ class ProductCatalogModel extends ChangeNotifier {
           _productItemBox.putAt(index, item);
         }
       }
+      // printProductCatalogItemBox();
       notifyListeners();
     }
   }
 
-  void updateItem(Item originalItem, Item updatedItem) {
+  bool updateItem(Item originalItem, Item updatedItem) {
     bool hasOrigItem = _productCatalog.any((item) => item.name == originalItem.name);
     if (hasOrigItem) {
       Item duplicateItem = _productCatalog.firstWhere((item) => item.name == originalItem.name);
@@ -81,7 +95,11 @@ class ProductCatalogModel extends ChangeNotifier {
         _productItemBox.putAt(boxIndex, updatedItem);
       }
       notifyListeners();
+      // printProductCatalogItemBox();
+      return true;
     }
+    // printProductCatalogItemBox();
+    return false;
   }
 
   void copyItemQuantity(Item item) {
@@ -92,6 +110,7 @@ class ProductCatalogModel extends ChangeNotifier {
       final index = _productItemBox.values.toList().indexOf(catalogItem);
       _productItemBox.putAt(index, catalogItem);
       notifyListeners();
+      // printProductCatalogItemBox();
     }
   }
 }

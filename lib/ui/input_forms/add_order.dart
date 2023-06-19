@@ -172,6 +172,19 @@ class _AddOrderPageState extends State<AddOrderPage> {
         );
         setState(() {
           _premadeGroups[_selectedPremadeGroup]!.add(orderStatus);
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Order status added'),
+              backgroundColor: const Color(0xFF616161),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              elevation: 6.0,
+              margin: const EdgeInsets.only(bottom: 10.0),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         });
       }
     }
@@ -278,6 +291,19 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     'description': descriptionController.text,
                   });
                 }
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Status detailF edited'),
+                    backgroundColor: const Color(0xFF616161),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 6.0,
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               },
               child: const Text('OK',
                 style: TextStyle(color: Color(0xFFEF911E)),
@@ -382,6 +408,19 @@ class _AddOrderPageState extends State<AddOrderPage> {
         _premadeGroups[name] = LinkedHashSet<OrderStatus>();
         _premadeGroups[name]!.add(OrderStatus(label: 'Pending', description: ''));
         _selectedPremadeGroup = name;
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Order status group added'),
+            backgroundColor: const Color(0xFF616161),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            elevation: 6.0,
+            margin: const EdgeInsets.only(bottom: 10.0),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       });
     }
   }
@@ -391,6 +430,19 @@ class _AddOrderPageState extends State<AddOrderPage> {
       setState(() {
         _premadeGroups.remove(_selectedPremadeGroup);
         _selectedPremadeGroup = 'Default';
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Order status group deleted'),
+            backgroundColor: const Color(0xFF616161),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            elevation: 6.0,
+            margin: const EdgeInsets.only(bottom: 10.0),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       });
     }
   }
@@ -449,10 +501,26 @@ class _AddOrderPageState extends State<AddOrderPage> {
         placedOrder.currentStatusIndex = 0;
         placedOrder.description = _msgController.text;
         widget.onPlaceOrder(placedOrder);
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Order placed moved to Order Status page for processing'),
+            backgroundColor: const Color(0xFF616161),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            elevation: 6.0,
+            margin: const EdgeInsets.only(bottom: 10.0),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       } catch (e) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             title: const Text('Invalid entries:\n'),
             content: Text('$e'),
             actions: [
@@ -727,6 +795,19 @@ class _AddOrderPageState extends State<AddOrderPage> {
                                       status.label == 'Pending' ? null : () {
                                         setState(() {
                                           _premadeGroups[_selectedPremadeGroup]!.remove(status);
+                                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: const Text('Order status removed'),
+                                              backgroundColor: const Color(0xFF616161),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                              ),
+                                              elevation: 6.0,
+                                              margin: const EdgeInsets.only(bottom: 10.0),
+                                              behavior: SnackBarBehavior.floating,
+                                            ),
+                                          );
                                         });
                                       },
                                       icon:

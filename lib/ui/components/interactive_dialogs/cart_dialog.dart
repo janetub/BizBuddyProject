@@ -23,10 +23,12 @@ class _CartDialogState extends State<CartDialog> {
   @override
   void initState() {
     super.initState();
-    final cartItems = Provider.of<CartModel>(context, listen: false).cartItems;
-    for (final item in cartItems) {
-      if(item.quantity<1) {
-        cartItems.remove(item);
+    final cartModel = Provider.of<CartModel>(context, listen: false);
+    final cartItems = cartModel.cartItems;
+    final cartItemsCopy = List.of(cartItems);
+    for (final item in cartItemsCopy) {
+      if (item.quantity < 1) {
+        cartModel.removeItem(item);
       }
     }
   }
@@ -35,6 +37,48 @@ class _CartDialogState extends State<CartDialog> {
     return Provider.of<CartModel>(context, listen: false)
         .cartItems
         .fold(0, (sum, item) => sum + item.calculateTotalPriceValue());
+  }
+
+  void _onQuantityUpdate(item, quantity) {
+    if(quantity>0) {
+      print('adding======================');
+      if(item.quantity>=quantity) {
+        final itemDup = item.duplicate();
+        Provider.of<ProductCatalogModel>(context, listen: false).addItemQuantity(itemDup, quantity);
+        if(item.quantity - quantity == 0) {
+          setState(() {
+            Provider.of<CartModel>(context, listen: false).removeItem(item);
+          });
+        } else {
+          Provider.of<CartModel>(context, listen: false).removeItemQuantity(item, quantity);
+        }
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text('Invalid Quantity'),
+              content: const Text(
+                  'The requested quantity to remove is not valid.'),
+              actions: [
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFFEF911E),
+                  ),
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 
   @override
@@ -69,37 +113,7 @@ class _CartDialogState extends State<CartDialog> {
                       final item = Provider.of<CartModel>(context).cartItems.elementAt(index);
                       return CartTile(
                         item: item,
-                        onUpdateQuantity: (item, quantity) {
-                          if(quantity>0) {
-                            if(item.quantity>=quantity) {
-                              final itemDup = item.duplicate();
-                              Provider.of<CartModel>(context, listen: false).removeItemQuantity(item, quantity);
-                              Provider.of<ProductCatalogModel>(context, listen: false).addItemQuantity(itemDup, quantity);
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext dialogContext) {
-                                  return AlertDialog(
-                                    title: const Text('Invalid Quantity'),
-                                    content: const Text(
-                                        'The requested quantity to remove is not valid.'),
-                                    actions: [
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: const Color(0xFFEF911E),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(dialogContext).pop();
-                                        },
-                                        child: const Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          }
-                        },
+                        onUpdateQuantity: _onQuantityUpdate,
                       );
                     },
                   ),

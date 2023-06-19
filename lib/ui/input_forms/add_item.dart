@@ -7,7 +7,7 @@ import '../components/all_components.dart';
 import '../main_pages/all_main_pages.dart';
 
 class AddItemPage extends StatefulWidget {
-  final Widget callingPage;
+  final Type callingPage;
 
   const AddItemPage({
     Key? key,
@@ -106,11 +106,15 @@ class _AddItemPageState extends State<AddItemPage> {
 
         final inventoryModel = Provider.of<InventoryModel>(context, listen: false);
         final productCatalogModel = Provider.of<ProductCatalogModel>(context, listen: false);
+        final cartModel = Provider.of<CartModel>(context, listen: false);
 
-        if (productCatalogModel.productCatalog.any((existingItem) => existingItem.name.toLowerCase() == newItem.name.toLowerCase())) {
+        if ((productCatalogModel.productCatalog.any((existingItem) => existingItem.name.toLowerCase() == newItem.name.toLowerCase())) || (cartModel.cartItems.any((existingItem) => existingItem.name.toLowerCase() == newItem.name.toLowerCase())) || inventoryModel.inventoryItems.any((existingItem) => existingItem.name.toLowerCase() == newItem.name.toLowerCase())) {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               title: const Text('Duplicate Item'),
               content: const Text('An item with the same name already exists in the product catalog.'),
               actions: [
@@ -123,22 +127,38 @@ class _AddItemPageState extends State<AddItemPage> {
           );
         } else {
           final newItemDup = newItem.duplicate();
-          if(widget.callingPage is ProductCatalogPage) {
+          if(widget.callingPage == ProductCatalogPage) {
             if(_selectedComponents.isEmpty) { //add item in inventory
               inventoryModel.addItem(newItem);
             }
             productCatalogModel.addItem(newItemDup);
             Navigator.pop(context);
           }
-          if (widget.callingPage is InventoryPage) {
+          if (widget.callingPage == InventoryPage) {
             inventoryModel.addItem(newItem);
             Navigator.pop(context);
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(widget.callingPage == ProductCatalogPage ? 'Product added' : 'Item added'),
+                backgroundColor: const Color(0xFF616161),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 6.0,
+                margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           }
         }
       } catch (e) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             title: const Text('Invalid entries:\n'),
             content: Text('$e'),
             actions: [
@@ -203,11 +223,62 @@ class _AddItemPageState extends State<AddItemPage> {
       bool containsItem = _selectedComponents.any((componentItem) => componentItem.name == item.name);
       if (containsItem) {
         // component already exists in components
+        Item componentItem = _selectedComponents.firstWhere((componentItem) => componentItem.name == item.name);
+        if((item.quantity - componentItem.quantity) < quantity) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: const Text('Insufficient Stock'),
+                content: const Text('The requested quantity is not available.'),
+                actions: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFFEF911E),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
         setState(() {
-          Item componentItem = _selectedComponents.firstWhere((componentItem) => componentItem.name == item.name);
           componentItem.quantity += quantity;
         });
       } else {
+        if(item.quantity < quantity) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: const Text('Insufficient Stock'),
+                content: const Text('The requested quantity is not available.'),
+                actions: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFFEF911E),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+          return;
+        }
         // new product in components
         setState(() {
           Item movProd = item.duplicate();
@@ -215,8 +286,8 @@ class _AddItemPageState extends State<AddItemPage> {
           _selectedComponents.add(movProd);
         });
       }
+      _updateCostController();
     }
-    _updateCostController();
   }
 
   int calculateMaxProducts() {
@@ -224,6 +295,50 @@ class _AddItemPageState extends State<AddItemPage> {
     LinkedHashSet<Item> tempInventory = LinkedHashSet<Item>.from(
         Provider.of<InventoryModel>(context, listen: false).inventoryItems.map((item) => item.duplicate()),
     ); // deep copy
+
+    // reduce by items in cart
+    for (Item cartItem in Provider.of<CartModel>(context, listen: false).cartItems) {
+      bool itemFound = tempInventory.any((i) => i.name == cartItem.name);
+      if (itemFound) {
+        Item foundItem = tempInventory.firstWhere((i) => i.name == cartItem.name);
+        foundItem.quantity -= cartItem.quantity;
+      }
+    }
+
+    // reduce by items in catalog
+    for (Item prodCatItem in Provider.of<ProductCatalogModel>(context, listen: false).productCatalog) {
+      bool itemFound = tempInventory.any((i) => i.name == prodCatItem.name);
+      if (itemFound) {
+        Item foundItem = tempInventory.firstWhere((i) => i.name == prodCatItem.name);
+        foundItem.quantity -= prodCatItem.quantity;
+      }
+    }
+
+    // has components and check each if in catalog or cart
+    if(_selectedComponents.isNotEmpty) {
+      for (Item item in _selectedComponents) {
+        bool cartItemFound = Provider.of<CartModel>(context, listen: false).cartItems.any((c) => c.name == item.name);
+        if(cartItemFound) { // found in cart
+          Item cartItem = Provider.of<CartModel>(context, listen: false).cartItems.firstWhere((c) => c.name == item.name);
+          bool itemFound = tempInventory.any((i) => i.name == cartItem.name);
+          if (itemFound) { // confirm match of cartItem in inventory
+            Item foundItem = tempInventory.firstWhere((i) => i.name == cartItem.name);
+            foundItem.quantity -= cartItem.quantity; // reduce from invTemp
+          }
+        }
+        bool prodCatItemFound = Provider.of<ProductCatalogModel>(context, listen: false).productCatalog.any((p) => p.name == item.name);
+        if(prodCatItemFound) { // component found in catalog
+          Item prodItem = Provider.of<ProductCatalogModel>(context, listen: false).productCatalog.firstWhere((c) => c.name == item.name);
+          bool itemFound = tempInventory.any((i) => i.name == prodItem.name);
+          if (itemFound) { // confirm match of catItem in inventory
+            Item foundItem = tempInventory.firstWhere((i) => i.name == prodItem.name);
+            foundItem.quantity -= prodItem.quantity; // reduce from invTemp
+          }
+        }
+      }
+    }
+
+    // check inventory stocks
     while (true) {
       bool canCreateProduct = true;
       for (Item item in _selectedComponents) {
@@ -263,7 +378,7 @@ class _AddItemPageState extends State<AddItemPage> {
   void _updateCostController() {
     if (_selectedComponents.isNotEmpty) {
       final costSum = _selectedComponents.fold(0.00, (sum, component) => sum + component.calculateTotalCostValue());
-      print('${_selectedComponents} $costSum');
+      // print('${_selectedComponents} $costSum');
       _costController.text = costSum.toStringAsFixed(2);
     } else {
       _costController.clear();
@@ -338,7 +453,7 @@ class _AddItemPageState extends State<AddItemPage> {
               slivers: [
                 SliverAppBar(
                   backgroundColor: Colors.transparent,
-                  title: Text('Add ${widget.callingPage.runtimeType == ProductCatalogPage ? 'a product' : 'an item'}'),
+                  title: Text('Add ${widget.callingPage == ProductCatalogPage ? 'a product' : 'an item'}'),
                   elevation: 0,
                   floating: true,
                   snap: true,
@@ -428,6 +543,9 @@ class _AddItemPageState extends State<AddItemPage> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
                                           contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                           title: const Text('Cost'),
                                           content: const Text('Money spent to buy the product, the original cost. If an item has components, its cost will be the sum of the cost of its components.'),
@@ -502,6 +620,9 @@ class _AddItemPageState extends State<AddItemPage> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
                                           contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                           title: const Text('Markup'),
                                           content: const Text('Markup is the amount added to the cost of a product to determine its selling price.'),
@@ -574,6 +695,9 @@ class _AddItemPageState extends State<AddItemPage> {
                                             context: context,
                                             builder: (BuildContext context) {
                                               return AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(20),
+                                                ),
                                                 contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                                 title: const Text('Stocks'),
                                                 content: const Text('If a component is selected from inventory, the entered quantity must not exceed available stock. Otherwise, the product will be added as a new item to inventory and the entered quantity will be reflected.'),
@@ -735,7 +859,8 @@ class _AddItemPageState extends State<AddItemPage> {
                                 await showDialog<Item>(
                                   context: context,
                                   builder: (context) => InventorySearchDialog(
-                                    onAddToComponent: _addToComponents, hideItem: null,
+                                    onAddToComponent: _addToComponents,
+                                    hideItem: null,
                                   ),
                                 );
                               },
@@ -744,11 +869,14 @@ class _AddItemPageState extends State<AddItemPage> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 backgroundColor: const Color(0xFFEF911E),
+                                padding: const EdgeInsets.fromLTRB(13,6,13,6),
                               ),
                               child: const Column(
                                 children: [
                                   SizedBox(width: 4),
-                                  Text('Select Components'),
+                                  Text('Select Components',
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ],
                               ),
                             ),

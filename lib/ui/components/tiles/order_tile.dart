@@ -131,6 +131,19 @@ class _OrderTileState extends State<OrderTile> {
                     'description': descriptionController.text,
                   });
                 }
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Order status edited'),
+                    backgroundColor: const Color(0xFF616161),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 6.0,
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               },
               child: const Text('OK',
                 style: TextStyle(color: Color(0xFFEF911E)),
@@ -235,7 +248,7 @@ class _OrderTileState extends State<OrderTile> {
                             widget.order.datePlaced.toLocal().toString().split(' ')[0],
                             style: const TextStyle(fontSize: 18),
                           ),
-                          Text('Total: ₱ ${widget.order.calculateOrderTotalValue().toStringAsFixed(2)}',
+                          Text('Total: ${widget.order.calculateOrderTotalValue().toStringAsFixed(2)}',
                             style: const TextStyle(fontSize: 18),
                           ),
                         ],

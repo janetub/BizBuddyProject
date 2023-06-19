@@ -56,7 +56,7 @@ class _CartTileState extends State<CartTile> {
                 Container(
                   alignment: Alignment.centerRight,
                   child:
-                  Text('₱ ${widget.item.price.toStringAsFixed(2)}'),
+                  Text('Price ${widget.item.price.toStringAsFixed(2)}'),
                 ),
               ],
             ),

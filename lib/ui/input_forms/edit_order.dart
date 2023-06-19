@@ -56,6 +56,9 @@ class _EditOrderPageState extends State<EditOrderPage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('No contacts found:\n'),
           content: const Text('Please add at least one contact information from the recipient.'),
           actions: [
@@ -490,11 +493,26 @@ class _EditOrderPageState extends State<EditOrderPage> {
         final orderModel = Provider.of<OrderModel>(context, listen: false);
         orderModel.updateOrder(widget.order);
         Navigator.pop(context);
-
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Order edited'),
+            backgroundColor: const Color(0xFF616161),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            elevation: 6.0,
+            margin: const EdgeInsets.only(bottom: 10.0),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       } catch (e) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             title: const Text('Invalid entries:\n'),
             content: Text('$e'),
             actions: [

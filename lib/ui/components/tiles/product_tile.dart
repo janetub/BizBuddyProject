@@ -108,7 +108,7 @@ class _ProductTileState extends State<ProductTile> {
                           Container(
                             alignment: Alignment.centerRight,
                             child:
-                            Text('₱ ${widget.item.price.toStringAsFixed(2)}'),
+                            Text('Price: ${widget.item.price.toStringAsFixed(2)}'),
                           ),
                         ],
                       ),
@@ -125,7 +125,6 @@ class _ProductTileState extends State<ProductTile> {
                         children: [
                           SizedBox(
                             width: 70,
-                            height: 50,
                             child: TextFormField(
                               cursorColor: const Color(0xFFEF911E),
                               controller: _quantityController,

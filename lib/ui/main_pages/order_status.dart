@@ -119,11 +119,30 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
 
   void _onOrderCancel(Order order) {
     Provider.of<OrderModel>(context, listen: false).removeOrder(order);
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Order cancelled'),
+        backgroundColor: const Color(0xFF616161),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        elevation: 6.0,
+        margin: const EdgeInsets.only(bottom: 10.0),
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(
+          label: 'Undo',
+          textColor: const Color(0xFFEF911E),
+          onPressed: () {
+            Provider.of<OrderModel>(context, listen: false).addOrder(order);
+          },
+        ),
+      ),
+    );
   // TODO: cancel
   }
 
   void _onOrderEdit(Order order) {
-    final orderModel = Provider.of<OrderModel>(context, listen: false);
     Navigator.push(
       context,
       MaterialPageRoute(

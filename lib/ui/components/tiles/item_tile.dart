@@ -7,13 +7,14 @@ class ItemTile extends StatefulWidget {
   final void Function(Item) onItemEdit;
   final void Function(Item) onItemDelete;
   final void Function(Item, int, bool) onQuantityChanged;
+  final void Function(Item) onMoveToProductCatalog;
 
   const ItemTile({
     Key? key,
     required this.item,
     required this.onItemEdit,
     required this.onItemDelete,
-    required this.onQuantityChanged,
+    required this.onQuantityChanged, required this.onMoveToProductCatalog,
   }) : super(key: key);
 
   @override
@@ -112,7 +113,7 @@ class _ItemTileState extends State<ItemTile> {
                           Container(
                             alignment: Alignment.centerRight,
                             child:
-                            Text('Cost: ₱ ${widget.item.cost.toStringAsFixed(2)}'),
+                            Text('Cost: ${widget.item.cost.toStringAsFixed(2)}'),
                           ),
                         ],
                       ),
@@ -125,84 +126,100 @@ class _ItemTileState extends State<ItemTile> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // SizedBox(
-                          //   width: 50,
-                          //   height: 40,
-                          //   child: IconButton(
-                          //     //padding: EdgeInsets.zero,
-                          //     tooltip: 'Add to product catalog',
-                          //     icon: Icon(
-                          //       Icons.playlist_add,
-                          //       color: Color(0xFFEF911E),
-                          //     ),
-                          //     onPressed: () {
-                          //       /// TODO
-                          //     },
-                          //   ),
-                          // ),
                           SizedBox(
-                            width: 40,
+                            width: 50,
                             height: 40,
                             child: IconButton(
                               //padding: EdgeInsets.zero,
-                              tooltip: 'Remove quantity',
+                              tooltip: 'Add to product catalog',
                               icon: const Icon(
-                                Icons.remove,
+                                Icons.playlist_add,
                                 color: Color(0xFFEF911E),
                               ),
                               onPressed: () {
-                                int qty = int.tryParse(_quantityController.text) ?? 1;
-                                widget.onQuantityChanged(widget.item, qty, false);
-                                // if (qty <= widget.item.quantity) {
-                                //   _quantityController.clear();
-                                // }
-                                _quantityController.clear();
+                                widget.onMoveToProductCatalog(widget.item);
                               },
                             ),
                           ),
-                          SizedBox(
-                            width: 60,
-                            height: 50,
-                            child: TextFormField(
-                              cursorColor: const Color(0xFFEF911E),
-                              controller: _quantityController,
-                              decoration: InputDecoration(
-                                labelText: 'Qty',
-                                labelStyle: const TextStyle(color: Colors.grey),
-                                fillColor: Colors.white,
-                                filled: true,
-                                enabledBorder:
-                                OutlineInputBorder(borderRadius:
-                                BorderRadius.circular(15),
-                                    borderSide:
-                                    const BorderSide(color:
-                                    Colors.grey)),
-                                focusedBorder:
-                                OutlineInputBorder(borderRadius:
-                                BorderRadius.circular(15),
-                                    borderSide:
-                                    const BorderSide(color:
-                                    Colors.grey)),
+                          widget.item.components.isEmpty ?
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: IconButton(
+                                  //padding: EdgeInsets.zero,
+                                  tooltip: 'Remove quantity',
+                                  icon: const Icon(
+                                    Icons.remove,
+                                    color: Color(0xFFEF911E),
+                                  ),
+                                  onPressed: () {
+                                    int qty = int.tryParse(_quantityController.text) ?? 1;
+                                    widget.onQuantityChanged(widget.item, qty, false);
+                                    // if (qty <= widget.item.quantity) {
+                                    //   _quantityController.clear();
+                                    // }
+                                    _quantityController.clear();
+                                  },
+                                ),
                               ),
-                              keyboardType:
-                              TextInputType.number,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: IconButton(
-                              //padding: EdgeInsets.zero,
-                              tooltip: 'Add quantity',
-                              icon: const Icon(
-                                Icons.add,
-                                color: Color(0xFFEF911E),
+                              SizedBox(
+                                width: 70,
+                                child: TextFormField(
+                                  cursorColor: const Color(0xFFEF911E),
+                                  controller: _quantityController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Qty',
+                                    labelStyle: const TextStyle(color: Colors.grey),
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    enabledBorder:
+                                    OutlineInputBorder(borderRadius:
+                                    BorderRadius.circular(15),
+                                        borderSide:
+                                        const BorderSide(color:
+                                        Colors.grey)),
+                                    focusedBorder:
+                                    OutlineInputBorder(borderRadius:
+                                    BorderRadius.circular(15),
+                                        borderSide:
+                                        const BorderSide(color:
+                                        Colors.grey)),
+                                  ),
+                                  keyboardType:
+                                  TextInputType.number,
+                                ),
                               ),
-                              onPressed: () {
-                                int qty = int.tryParse(_quantityController.text) ?? 1;
-                                widget.onQuantityChanged(widget.item, qty, true);
-                                _quantityController.clear();
-                              },
+                              SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: IconButton(
+                                  //padding: EdgeInsets.zero,
+                                  tooltip: 'Add quantity',
+                                  icon: const Icon(
+                                    Icons.add,
+                                    color: Color(0xFFEF911E),
+                                  ),
+                                  onPressed: () {
+                                    int qty = int.tryParse(_quantityController.text) ?? 1;
+                                    widget.onQuantityChanged(widget.item, qty, true);
+                                    _quantityController.clear();
+                                  },
+                                ),
+                              ),
+                            ],
+                          )
+                              : const SizedBox(
+                            width: 140,
+                            child: Center(
+                              child: Text(
+                                'Edit stocks quantity by sliding to the left',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ),
                           ),
                         ],

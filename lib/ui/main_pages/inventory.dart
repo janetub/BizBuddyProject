@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:collection';
 import 'package:provider/provider.dart';
+import 'package:bizbuddyproject/ui/main_pages/all_main_pages.dart';
 import 'package:bizbuddyproject/ui/components/all_components.dart';
 import '../../models/all_models.dart';
 import '../input_forms/all_input_forms.dart';
@@ -29,6 +30,14 @@ class _InventoryPageState extends State<InventoryPage> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
+  ScaffoldMessengerState? _scaffoldMessenger;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _scaffoldMessenger = ScaffoldMessenger.of(context);
+  }
+
   final inventoryNotifier = ValueNotifier<LinkedHashSet<Item>>(
     LinkedHashSet<Item>(),
   );
@@ -52,10 +61,11 @@ class _InventoryPageState extends State<InventoryPage> {
     widget.searchButtonPressed.addListener(_searchButtonPressed);
     final inventoryData = Provider.of<InventoryModel>(context, listen: false).inventoryItems;
     inventoryNotifier.value = inventoryData;
-    print('Inv setState____________');
+    print('Inventory Notifier =============================');
     for (final item in Provider.of<InventoryModel>(context, listen: false).inventoryItems) {
       print(item);
     }
+    print('================================');
   }
 
   @override
@@ -109,9 +119,9 @@ class _InventoryPageState extends State<InventoryPage> {
       sortedItems.sort((a, b) => isAscending ? a.quantity.compareTo(b.quantity) : b.quantity.compareTo(a.quantity));
     } else {
       if (!isAscending) {
-        sortedItems = (Provider.of<ProductCatalogModel>(context, listen: false).productCatalog.toList()).reversed.toList();
+        sortedItems = (Provider.of<InventoryModel>(context, listen: false).inventoryItems.toList()).reversed.toList();
       } else {
-        sortedItems = Provider.of<ProductCatalogModel>(context, listen: false).productCatalog.toList();
+        sortedItems = Provider.of<InventoryModel>(context, listen: false).inventoryItems.toList();
       }
     }
     return LinkedHashSet.from(sortedItems);
@@ -128,7 +138,7 @@ class _InventoryPageState extends State<InventoryPage> {
         context,
         MaterialPageRoute(
           builder: (context) => AddItemPage(
-            callingPage: widget,
+            callingPage: widget.runtimeType,
           ),
         )
     );
@@ -140,17 +150,35 @@ class _InventoryPageState extends State<InventoryPage> {
       MaterialPageRoute(
         builder: (context) => EditItemPage(
           item: item,
-          callingPage: widget,
+          callingPage: widget.runtimeType,
         ),
       ),
     );
   }
 
   void _onItemDelete(Item item) {
+    final cartModel = Provider.of<CartModel>(context, listen: false);
+    final productCatalogModel = Provider.of<ProductCatalogModel>(context, listen: false);
+    final inventoryModel = Provider.of<InventoryModel>(context, listen: false);
+    final prodDup = item.duplicate();
+    final cartDup = item.duplicate();
+    // for undoing
+    bool hasItemPC = productCatalogModel.productCatalog.any((i) => i.name == item.name);
+    if(hasItemPC) {
+      prodDup.quantity = productCatalogModel.productCatalog.firstWhere((i) => i.name == item.name).quantity;
+    }
+    bool hasItemCart = cartModel.cartItems.any((i) => i.name == item.name);
+    if(hasItemCart) {
+      cartDup.quantity = cartModel.cartItems.firstWhere((i) => i.name == item.name).quantity;
+    }
     showDialog(
+      barrierDismissible: true,
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
           title: const Text('Confirm Delete'),
           content: const Text('Are you sure you want to delete this item?'),
@@ -171,37 +199,183 @@ class _InventoryPageState extends State<InventoryPage> {
                 foregroundColor: Colors.red,
               ),
               onPressed: () {
-                try {
-                  setState(() {
-                    Provider.of<InventoryModel>(context, listen: false).removeItem(item);
-                    Provider.of<ProductCatalogModel>(context, listen: false).removeItem(item);
-                    Provider.of<CartModel>(context, listen: false).removeItem(item);
-                  });
-                  Navigator.of(dialogContext).pop();
-                } catch (e) {
-                  // display a dialog indicating the error
+                Navigator.of(dialogContext).pop();
+                if (cartModel.cartItems.any((i) => i.name == item.name) || productCatalogModel.productCatalog.any((i) => i.name == item.name)) {
                   showDialog(
-                    context: context,
-                    builder: (BuildContext errorDialogContext) {
-                      return AlertDialog(
-                        contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                        title: const Text('Error'),
-                        content:
-                        const Text('An error occurred while deleting the item. Please try again.'),
+                    barrierDismissible: true,
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        title: const Text('Item in Product Catalog'),
+                        content: const Text('A product with the same name exists in your catalog. Would you like to delete it from the catalog as well?'),
                         actions: [
                           TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
                             style: TextButton.styleFrom(
-                              foregroundColor: const Color(0xFFEF911E),
+                              foregroundColor: Colors.grey,
                             ),
-                            child: const Text('OK'),
+                            onPressed: () {
+                              setState(() {
+                                Navigator.of(context).pop();
+                              });
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.red,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                inventoryModel.removeItem(item);
+                                productCatalogModel.removeItem(item);
+                                cartModel.removeItem(item);
+                                _scaffoldMessenger?.hideCurrentSnackBar();
+                                _scaffoldMessenger?.showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Item deleted from all pages'),
+                                    backgroundColor: const Color(0xFF616161),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    elevation: 6.0,
+                                    margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                                    behavior: SnackBarBehavior.floating,
+                                    action: SnackBarAction(
+                                      label: 'Undo',
+                                      textColor: const Color(0xFFEF911E),
+                                      onPressed: () {
+                                        inventoryModel.addItem(item);
+                                        productCatalogModel.addItem(prodDup);
+                                        cartModel.addItem(cartDup);
+                                      },
+                                    ),
+                                  ),
+                                );
+                                Navigator.of(context).pop();
+                                // try {
+                                //   setState(() {
+                                //     Provider.of<InventoryModel>(context, listen: false).removeItem(item);
+                                //     productCatalogModel.removeItem(item);
+                                //     cartModel.removeItem(item);
+                                //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                //     ScaffoldMessenger.of(context).showSnackBar(
+                                //       SnackBar(
+                                //         content: const Text('Item deleted from all pages'),
+                                //         backgroundColor: const Color(0xFF616161),
+                                //         shape: RoundedRectangleBorder(
+                                //           borderRadius: BorderRadius.circular(10.0),
+                                //         ),
+                                //         elevation: 6.0,
+                                //         margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                                //         behavior: SnackBarBehavior.floating,
+                                //       ),
+                                //     );
+                                //   });
+                                //   Navigator.of(dialogContext).pop();
+                                // } catch (e) {
+                                //   // display a dialog indicating the error
+                                //   showDialog(
+                                //     context: context,
+                                //     builder: (BuildContext errorDialogContext) {
+                                //       return AlertDialog(
+                                //         shape: RoundedRectangleBorder(
+                                //           borderRadius: BorderRadius.circular(20),
+                                //         ),
+                                //         contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                                //         title: const Text('Error'),
+                                //         content:
+                                //         const Text('An error occurred while deleting the item. Please try again.'),
+                                //         actions: [
+                                //           TextButton(
+                                //             onPressed: () {
+                                //               Navigator.of(context).pop();
+                                //             },
+                                //             style: TextButton.styleFrom(
+                                //               foregroundColor: const Color(0xFFEF911E),
+                                //             ),
+                                //             child: const Text('OK'),
+                                //           ),
+                                //         ],
+                                //       );
+                                //     },
+                                //   );
+                                // }
+                              });
+                            },
+                            child: const Text('Delete from Catalog'),
                           ),
                         ],
-                      );
-                    },
-                  );
+                      ),
+                  ).then((value) {
+                    setState(() {});
+                  });
+                } else {
+                  setState(() {
+                    Provider.of<InventoryModel>(context, listen: false).removeItem(item);
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Item deleted from inventory'),
+                        backgroundColor: const Color(0xFF616161),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        elevation: 6.0,
+                        margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                        behavior: SnackBarBehavior.floating,
+                        action: SnackBarAction(
+                          label: 'Undo',
+                          textColor: const Color(0xFFEF911E),
+                          onPressed: () {
+                            Provider.of<InventoryModel>(context, listen: false).addItem(item);
+                          },
+                        ),
+                      ),
+                    );
+                  });
+                  // try {
+                  //   setState(() {
+                  //     Provider.of<InventoryModel>(context, listen: false).removeItem(item);
+                  //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       SnackBar(
+                  //         content: const Text('Item deleted'),
+                  //         backgroundColor: const Color(0xFF616161),
+                  //         shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(10.0),
+                  //         ),
+                  //         elevation: 6.0,
+                  //         margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                  //         behavior: SnackBarBehavior.floating,
+                  //       ),
+                  //     );
+                  //   });
+                  // } catch (e) {
+                  //   // display a dialog indicating the error
+                  //   showDialog(
+                  //     context: context,
+                  //     builder: (BuildContext errorDialogContext) {
+                  //       return AlertDialog(
+                  //         shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(20),
+                  //         ),
+                  //         title: const Text('Error'),
+                  //         content:
+                  //         const Text('An error occurred while deleting the item. Please try again.'),
+                  //         actions: [
+                  //           TextButton(
+                  //             child: const Text('OK'),
+                  //             onPressed: () {
+                  //               Navigator.of(errorDialogContext).pop();
+                  //             },
+                  //           ),
+                  //         ],
+                  //       );
+                  //     },
+                  //   );
+                  // }
                 }
               },
               child: const Text('Delete'),
@@ -209,7 +383,9 @@ class _InventoryPageState extends State<InventoryPage> {
           ],
         );
       },
-    );
+    ).then((value) {
+      setState(() {});
+    });
   }
 
   void _onUpdateQuantity(Item item, int quantity, bool isAdd) {
@@ -218,12 +394,28 @@ class _InventoryPageState extends State<InventoryPage> {
     final success = inventoryModel.updateItemQuantity(item, quantity, isAdd);
     if (success && !isAdd) { // if quantity is being reduced, force reduce quantity of equivalent item in catalog
       productCatalogModel.copyItemQuantity(item);
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Item updated'),
+          backgroundColor: const Color(0xFF616161),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          elevation: 6.0,
+          margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+        ),
+      );
     }
     if (!success && !isAdd) {
       showDialog(
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             title: const Text('Invalid Quantity'),
             content: const Text(
               'The requested quantity to remove is not valid.',
@@ -243,6 +435,19 @@ class _InventoryPageState extends State<InventoryPage> {
         },
       );
     }
+  }
+
+  void _onMoveToProductCatalog(Item item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditItemPage(
+          item: item,
+          callingPage: ProductCatalogPage,
+          isAddingToCatalog: true,
+        ),
+      ),
+    );
   }
 
   @override
@@ -408,7 +613,7 @@ class _InventoryPageState extends State<InventoryPage> {
                                   item: item,
                                   onItemEdit: _onItemEdit,
                                   onItemDelete: _onItemDelete,
-                                  onQuantityChanged: _onUpdateQuantity,
+                                  onQuantityChanged: _onUpdateQuantity, onMoveToProductCatalog: _onMoveToProductCatalog,
                                 );
                               },
                             );
